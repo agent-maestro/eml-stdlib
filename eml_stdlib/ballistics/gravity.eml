@@ -1,0 +1,52 @@
+// gravity.eml -- ballistic drop from gravity, no drag coupling.
+//
+//   Δy = ½ * g * t²
+//
+// Chain order 0 (pure polynomial). g is positive downward by
+// convention, so the returned drop is a positive distance below
+// the line-of-sight. The full coupled-with-drag drop comes from
+// time_of_flight + this kernel: the ballistic_solver evaluates
+// `drop(g, time_of_flight(...))`.
+
+module gravity;
+
+const G_EARTH: Real = 9.80665   // standard gravity (m/s²)
+
+@verify(lean, theorem = "gravity_drop_monotone_increasing")
+fn drop(g: Real, t: Real) -> Real
+    where chain_order <= 0,
+          domain: g >= 0.0 && t >= 0.0
+    ensures (result >= 0.0)
+{
+    0.5 * g * t * t
+}
+
+@verify(lean, theorem = "gravity_drop_at_zero_is_zero")
+fn drop_at_zero(g: Real) -> Real
+    where chain_order <= 0,
+          domain: g >= 0.0
+    ensures (result == 0.0)
+{
+    0.5 * g * 0.0 * 0.0
+}
+
+// Earth-gravity convenience wrapper.
+fn drop_earth(t: Real) -> Real
+    where chain_order <= 0,
+          domain: t >= 0.0
+    ensures (result >= 0.0)
+{
+    0.5 * G_EARTH * t * t
+}
+
+// Required scope hold-up in *milliradians* given a drop distance
+// at a given range. Used by the ballistic-calculator UI.
+//   hold_up_mil = drop_meters / range_meters * 1000
+@verify(lean, theorem = "hold_up_mil_nonneg")
+fn hold_up_mil(drop_m: Real, range_m: Real) -> Real
+    where chain_order <= 0,
+          domain: drop_m >= 0.0 && range_m > 0.0
+    ensures (result >= 0.0)
+{
+    drop_m / range_m * 1000.0
+}

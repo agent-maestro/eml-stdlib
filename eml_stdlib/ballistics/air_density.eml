@@ -1,0 +1,73 @@
+// air_density.eml -- atmospheric density model.
+//
+// Density falls off roughly exponentially with altitude:
+//
+//   ρ(alt) = ρ₀ * exp(-alt / scale_height)
+//
+// Plus temperature and humidity corrections (ideal gas + saturation
+// vapour pressure).
+//
+// Chain order 1 (one exp). Reference values: ρ₀ = 1.225 kg/m³ at
+// sea level, 15 °C, dry air; scale height ~8434 m.
+
+module air_density;
+
+const RHO_0_SEA_LEVEL: Real = 1.225        // kg/m³, dry air, 15°C
+const SCALE_HEIGHT:    Real = 8434.0       // m
+const T_REF_K:         Real = 288.15       // 15°C in kelvin
+const R_DRY_AIR:       Real = 287.058      // J / (kg K)
+const R_WATER:         Real = 461.495      // J / (kg K)
+
+// Pure-altitude isothermal model.
+@verify(lean, theorem = "air_density_decreases_with_altitude")
+fn density_isothermal(alt_m: Real) -> Real
+    where chain_order <= 1,
+          domain: alt_m >= 0.0
+    ensures (result > 0.0)
+    ensures (result <= RHO_0_SEA_LEVEL)
+{
+    RHO_0_SEA_LEVEL * exp(-alt_m / SCALE_HEIGHT)
+}
+
+// Temperature correction: ρ scales inversely with absolute T at
+// fixed pressure.
+@verify(lean, theorem = "air_density_inverse_temperature")
+fn density_with_temperature(alt_m: Real, t_kelvin: Real) -> Real
+    where chain_order <= 1,
+          domain: alt_m >= 0.0 && t_kelvin > 0.0
+    ensures (result > 0.0)
+{
+    let rho_iso: Real = RHO_0_SEA_LEVEL * exp(-alt_m / SCALE_HEIGHT);
+    rho_iso * T_REF_K / t_kelvin
+}
+
+// Humid-air density: dry-air density minus the water-vapour offset.
+// p_water is saturation vapour pressure (Pa) × relative humidity in [0,1].
+@verify(lean, theorem = "air_density_humid_lower_than_dry")
+fn density_humid(alt_m: Real, t_kelvin: Real,
+                 pressure_pa: Real, humidity_fraction: Real) -> Real
+    where chain_order <= 1,
+          domain: alt_m >= 0.0 && t_kelvin > 0.0 && pressure_pa > 0.0
+    requires (humidity_fraction >= 0.0)
+    requires (humidity_fraction <= 1.0)
+    ensures (result > 0.0)
+{
+    // Saturation vapour pressure (Magnus formula): in Pa, given T in °C.
+    let t_c: Real = t_kelvin - 273.15;
+    let p_sat: Real = 610.78 * exp(17.27 * t_c / (t_c + 237.3));
+    let p_water: Real = humidity_fraction * p_sat;
+    let p_dry: Real = pressure_pa - p_water;
+    p_dry / (R_DRY_AIR * t_kelvin) + p_water / (R_WATER * t_kelvin)
+}
+
+// Convert metres of altitude to a multiplier on sea-level density —
+// useful for the "thinner air = less drag" UI bar.
+@verify(lean, theorem = "density_ratio_in_unit_interval")
+fn density_ratio(alt_m: Real) -> Real
+    where chain_order <= 1,
+          domain: alt_m >= 0.0
+    ensures (result > 0.0)
+    ensures (result <= 1.0)
+{
+    exp(-alt_m / SCALE_HEIGHT)
+}

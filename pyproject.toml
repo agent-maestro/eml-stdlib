@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "eml-stdlib"
-version = "0.1.0"
-description = "Verified standard library for the EML language. 99 modules / 305 functions / 257 with @verify(lean) contracts spanning math, DSP, control, physics, circuits, sensors, biology, wave carriers, quantum gates, and ML."
+version = "0.2.0"
+description = "Verified standard library for the EML language. 108+ modules across math, DSP, control, physics, circuits, sensors, biology, wave carriers, quantum gates, ML, and exterior ballistics. Every kernel declares its Pfaffian chain order; ~85% carry @verify(lean) contracts."
 readme = "README.md"
 license = { text = "MIT" }
 authors = [

@@ -1,5 +1,286 @@
 [
   {
+    "category": "ballistics",
+    "file": "ballistics/air_density.eml",
+    "module": "air_density",
+    "functions": [
+      {
+        "name": "density_isothermal",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "density_with_temperature",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "density_humid",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "density_ratio",
+        "chain_order": 1,
+        "verified": true
+      }
+    ],
+    "description": "atmospheric density model.",
+    "source": "new"
+  },
+  {
+    "category": "ballistics",
+    "file": "ballistics/ballistic_solver.eml",
+    "module": "ballistic_solver",
+    "functions": [
+      {
+        "name": "solve_tof",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "solve_drop",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "solve_wind_drift",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "solve_coriolis_horiz",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "solve_spin_drift",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "solve_impact_velocity",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "solve_hold_up_mil",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "solve_hold_off_mil",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "composes drag/gravity/wind/coriolis/spin",
+    "source": "new"
+  },
+  {
+    "category": "ballistics",
+    "file": "ballistics/coriolis.eml",
+    "module": "coriolis",
+    "functions": [
+      {
+        "name": "horizontal_accel",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "vertical_accel",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "horizontal_drift",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "vertical_drift",
+        "chain_order": 1,
+        "verified": true
+      }
+    ],
+    "description": "Coriolis deflection from Earth's rotation.",
+    "source": "new"
+  },
+  {
+    "category": "ballistics",
+    "file": "ballistics/drag.eml",
+    "module": "drag",
+    "functions": [
+      {
+        "name": "drag_force",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "drag_deceleration",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "drag_decel_from_bc",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "quadratic aerodynamic drag.",
+    "source": "new"
+  },
+  {
+    "category": "ballistics",
+    "file": "ballistics/gravity.eml",
+    "module": "gravity",
+    "functions": [
+      {
+        "name": "drop",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "drop_at_zero",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "drop_earth",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "hold_up_mil",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "ballistic drop from gravity, no drag coupling.",
+    "source": "new"
+  },
+  {
+    "category": "ballistics",
+    "file": "ballistics/muzzle_velocity.eml",
+    "module": "muzzle_velocity",
+    "functions": [
+      {
+        "name": "corrected_velocity",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "corrected_default",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "percent_change",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "temperature compensation for muzzle velocity.",
+    "source": "new"
+  },
+  {
+    "category": "ballistics",
+    "file": "ballistics/spin_drift.eml",
+    "module": "spin_drift",
+    "functions": [
+      {
+        "name": "drift_inches_litz",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "drift_metres_litz",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "drift_metres_surrogate",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "hold_off_mil",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "horizontal drift from gyroscopic Magnus effect.",
+    "source": "new"
+  },
+  {
+    "category": "ballistics",
+    "file": "ballistics/time_of_flight.eml",
+    "module": "time_of_flight",
+    "functions": [
+      {
+        "name": "tof_vacuum",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "tof_constant_decel",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "tof_pejsa",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "step_range",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "step_velocity",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "iterative time-of-flight under quadratic drag.",
+    "source": "new"
+  },
+  {
+    "category": "ballistics",
+    "file": "ballistics/wind.eml",
+    "module": "wind",
+    "functions": [
+      {
+        "name": "drift",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "relative_airspeed",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "perp_component",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "along_component",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "hold_off_mil",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "crosswind deflection.",
+    "source": "new"
+  },
+  {
     "category": "biology",
     "file": "biology/cone_l.eml",
     "module": "cone_l",

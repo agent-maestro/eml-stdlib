@@ -1,0 +1,60 @@
+// spin_drift.eml -- horizontal drift from gyroscopic Magnus effect.
+//
+// A spinning projectile precesses slightly off its line-of-flight,
+// causing a horizontal drift in the direction of the spin. For a
+// right-hand twist barrel (the U.S. standard) the drift is to the
+// right.
+//
+// Bryan Litz's curve-fit (Applied Ballistics):
+//
+//   SD_inches = 1.25 * (Sg + 1.2) * tof^1.83
+//
+// where Sg is the gyroscopic stability factor (dimensionless,
+// computed from the Miller stability formula) and tof is time of
+// flight in seconds.
+//
+// This module ships the Litz approximation plus a chain-order-0
+// linear surrogate for FPGA / shader use.
+
+module spin_drift;
+
+// Litz curve-fit. Returns drift in inches.
+@verify(lean, theorem = "spin_drift_litz_nonneg")
+fn drift_inches_litz(stability_factor: Real, time_of_flight: Real) -> Real
+    where chain_order <= 1,
+          domain: stability_factor > 0.0 && time_of_flight >= 0.0
+    ensures (result >= 0.0)
+{
+    1.25 * (stability_factor + 1.2) * pow(time_of_flight, 1.83)
+}
+
+// Same in metres, for the SI side of the calculator.
+@verify(lean, theorem = "spin_drift_litz_metres_nonneg")
+fn drift_metres_litz(stability_factor: Real, time_of_flight: Real) -> Real
+    where chain_order <= 1,
+          domain: stability_factor > 0.0 && time_of_flight >= 0.0
+    ensures (result >= 0.0)
+{
+    0.0254 * 1.25 * (stability_factor + 1.2) * pow(time_of_flight, 1.83)
+}
+
+// Linear surrogate for the budget pipeline:
+//   SD_m = k * tof
+// k tuned so the surrogate matches Litz at tof = 1.0 s.
+@verify(lean, theorem = "spin_drift_surrogate_nonneg")
+fn drift_metres_surrogate(stability_factor: Real, time_of_flight: Real) -> Real
+    where chain_order <= 0,
+          domain: stability_factor > 0.0 && time_of_flight >= 0.0
+    ensures (result >= 0.0)
+{
+    0.0254 * 1.25 * (stability_factor + 1.2) * time_of_flight
+}
+
+// Hold-off in milliradians.
+@verify(lean, theorem = "spin_drift_hold_off_signed")
+fn hold_off_mil(drift_m: Real, range_m: Real) -> Real
+    where chain_order <= 0,
+          domain: range_m > 0.0
+{
+    drift_m / range_m * 1000.0
+}

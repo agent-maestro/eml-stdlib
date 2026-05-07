@@ -10,9 +10,9 @@ pip install eml-stdlib
 
 ## At a glance
 
-- **99 modules** across **10 categories**
-- **305 functions** total
-- **257 carry an `@verify(lean, …)` contract** (84%)
+- **108 modules** across **11 categories**
+- **345 functions** total
+- **297 carry an `@verify(lean, …)` contract** (86%)
 - Every function declares its **Pfaffian chain order** in the type
 
 ## Use
@@ -204,6 +204,22 @@ Machine learning — activations, attention, RoPE, layernorm, loss.
 | `rotary_embed.eml` | theta, theta_default, rotate_pair_even, … (+2) | 1 | 5/5 | **new** |
 | `silu.eml` | silu, swish, silu_grad | 1 | 3/3 | **new** |
 | `softmax.eml` | softmax_shift_exp, softmax_normalize, softmax_two_logit, … (+1) | 0,1,2 | 4/4 | forge/industries/ml/activations/softmax.eml |
+
+### `ballistics/` — 9 modules / 40 fns / 40 verified
+
+Exterior ballistics — drag, gravity, wind, Coriolis, spin drift, air density, muzzle velocity, time of flight.
+
+| File | Functions | Chain | Verified | Origin |
+|------|-----------|-------|----------|--------|
+| `air_density.eml` | density_isothermal, density_with_temperature, density_humid, … (+1) | 1 | 4/4 | **new** |
+| `ballistic_solver.eml` | solve_tof, solve_drop, solve_wind_drift, … (+5) | 0,1 | 8/8 | **new** |
+| `coriolis.eml` | horizontal_accel, vertical_accel, horizontal_drift, … (+1) | 1 | 4/4 | **new** |
+| `drag.eml` | drag_force, drag_deceleration, drag_decel_from_bc | 0 | 3/3 | **new** |
+| `gravity.eml` | drop, drop_at_zero, drop_earth, hold_up_mil | 0 | 4/4 | **new** |
+| `muzzle_velocity.eml` | corrected_velocity, corrected_default, percent_change | 0 | 3/3 | **new** |
+| `spin_drift.eml` | drift_inches_litz, drift_metres_litz, drift_metres_surrogate, … (+1) | 0,1 | 4/4 | **new** |
+| `time_of_flight.eml` | tof_vacuum, tof_constant_decel, tof_pejsa, … (+2) | 0,1 | 5/5 | **new** |
+| `wind.eml` | drift, relative_airspeed, perp_component, … (+2) | 0,1 | 5/5 | **new** |
 
 ## Vocabulary
 

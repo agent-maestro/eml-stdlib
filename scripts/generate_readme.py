@@ -29,7 +29,8 @@ CATEGORY_ORDER = [
     ("biology",  "Biology — vision, olfaction, magnetoreception, ion channels."),
     ("carriers", "Wave carriers — photonic, magnonic, phononic, ferronic."),
     ("quantum",  "Quantum gates — Hadamard, Pauli, phase, CNOT, Grover oracle."),
-    ("ml",       "Machine learning — activations, attention, RoPE, layernorm, loss."),
+    ("ml",         "Machine learning — activations, attention, RoPE, layernorm, loss."),
+    ("ballistics", "Exterior ballistics — drag, gravity, wind, Coriolis, spin drift, air density, muzzle velocity, time of flight."),
 ]
 
 

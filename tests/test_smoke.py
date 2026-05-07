@@ -8,7 +8,7 @@ import eml_stdlib
 
 
 def test_version_exposed() -> None:
-    assert eml_stdlib.__version__ == "0.1.0"
+    assert eml_stdlib.__version__ == "0.2.0"
 
 
 def test_categories_match_directory_layout() -> None:
@@ -16,6 +16,7 @@ def test_categories_match_directory_layout() -> None:
     expected = {
         "math", "signal", "control", "physics", "circuits",
         "sensors", "biology", "carriers", "quantum", "ml",
+        "ballistics",
     }
     assert set(cats) == expected
 
@@ -47,7 +48,7 @@ def test_list_modules_filtered_by_category() -> None:
 def test_catalog_loadable_and_well_formed() -> None:
     cat = eml_stdlib.load_catalog()
     assert isinstance(cat, list)
-    assert len(cat) == 99
+    assert len(cat) >= 108
     for entry in cat:
         assert {"category", "file", "module", "functions", "description", "source"} <= set(entry)
         assert isinstance(entry["functions"], list)
@@ -56,5 +57,16 @@ def test_catalog_loadable_and_well_formed() -> None:
 def test_catalog_minimum_verified_count() -> None:
     cat = eml_stdlib.load_catalog()
     verified = sum(1 for m in cat for f in m["functions"] if f["verified"])
-    # Regression guard: never drop below the launch coverage.
-    assert verified >= 250, f"verified count regressed: {verified}"
+    # Regression guard: never drop below the v0.2 coverage.
+    assert verified >= 290, f"verified count regressed: {verified}"
+
+
+def test_ballistics_category_present() -> None:
+    files = eml_stdlib.list_modules("ballistics")
+    file_names = {f.name for f in files}
+    expected = {
+        "drag.eml", "gravity.eml", "wind.eml", "coriolis.eml",
+        "spin_drift.eml", "air_density.eml", "muzzle_velocity.eml",
+        "time_of_flight.eml", "ballistic_solver.eml",
+    }
+    assert expected <= file_names, f"missing: {expected - file_names}"

@@ -1,0 +1,60 @@
+// coriolis.eml -- Coriolis deflection from Earth's rotation.
+//
+// At the latitudes long-range shooters operate, the Coriolis
+// acceleration is small but non-negligible for shots beyond 1000 m.
+// Two components:
+//
+//   horizontal: 2 * Ω * sin(lat) * v          (always rightward in
+//                                               the N hemisphere,
+//                                               leftward in S)
+//   vertical:   2 * Ω * cos(lat) * v * sin(heading)
+//                                              (Eötvös effect: more
+//                                               apparent drop east-
+//                                               firing, less west)
+//
+// where Ω is Earth's angular velocity and v is muzzle velocity.
+
+module coriolis;
+
+const OMEGA_EARTH: Real = 7.2921159e-5    // rad/s
+
+// Horizontal Coriolis acceleration (m/s²). Sign convention: positive
+// = rightward when facing the line-of-sight in the northern hemisphere.
+@verify(lean, theorem = "coriolis_horizontal_signed")
+fn horizontal_accel(v: Real, latitude_rad: Real) -> Real
+    where chain_order <= 1
+{
+    2.0 * OMEGA_EARTH * sin(latitude_rad) * v
+}
+
+// Vertical (Eötvös) Coriolis acceleration. heading_rad is azimuth
+// of the line of sight, measured east of true north.
+//   positive result = bullet rises (apparent drop reduces)
+//   negative result = bullet drops faster (apparent drop increases)
+@verify(lean, theorem = "coriolis_vertical_signed")
+fn vertical_accel(v: Real, latitude_rad: Real, heading_rad: Real) -> Real
+    where chain_order <= 1
+{
+    2.0 * OMEGA_EARTH * cos(latitude_rad) * v * sin(heading_rad)
+}
+
+// Total horizontal drift over the time of flight. Linearised:
+//   x = ½ * a * t²
+@verify(lean, theorem = "coriolis_drift_signed")
+fn horizontal_drift(v: Real, latitude_rad: Real, time_of_flight: Real) -> Real
+    where chain_order <= 1,
+          domain: time_of_flight >= 0.0
+{
+    0.5 * 2.0 * OMEGA_EARTH * sin(latitude_rad) * v * time_of_flight * time_of_flight
+}
+
+// Vertical drift contribution.
+@verify(lean, theorem = "coriolis_eotvos_signed")
+fn vertical_drift(v: Real, latitude_rad: Real, heading_rad: Real,
+                  time_of_flight: Real) -> Real
+    where chain_order <= 1,
+          domain: time_of_flight >= 0.0
+{
+    0.5 * 2.0 * OMEGA_EARTH * cos(latitude_rad) * v * sin(heading_rad)
+        * time_of_flight * time_of_flight
+}

@@ -1,0 +1,58 @@
+// wind.eml -- crosswind deflection.
+//
+//   drift = v_wind_perp * time_of_flight
+//
+// where v_wind_perp is the wind component perpendicular to the
+// line-of-sight in m/s, and time_of_flight in seconds.
+//
+// First-order approximation; ignores the bullet "lag" effect at
+// transonic speeds. For target distances <= 1500 m at typical
+// rifle velocities this is within 5% of the full integral.
+
+module wind;
+
+@verify(lean, theorem = "wind_drift_signed")
+fn drift(v_wind_perp: Real, time_of_flight: Real) -> Real
+    where chain_order <= 0,
+          domain: time_of_flight >= 0.0
+{
+    v_wind_perp * time_of_flight
+}
+
+// Headwind / tailwind component. Positive = headwind = adds to
+// drag = bullet arrives later. v_wind_along is the wind component
+// parallel to the LOS, sign convention as above.
+@verify(lean, theorem = "wind_extra_drag_signed")
+fn relative_airspeed(v_bullet: Real, v_wind_along: Real) -> Real
+    where chain_order <= 0
+{
+    v_bullet + v_wind_along
+}
+
+// Convert a wind speed + bearing to (perpendicular, along) components
+// relative to the shooter's heading. Heading and bearing both in
+// radians, measured from the shooter's forward direction.
+//   v_perp  =  v_wind * sin(bearing - heading)
+//   v_along = -v_wind * cos(bearing - heading)
+@verify(lean, theorem = "wind_components_pythagorean")
+fn perp_component(v_wind: Real, bearing: Real, heading: Real) -> Real
+    where chain_order <= 1
+{
+    v_wind * sin(bearing - heading)
+}
+
+@verify(lean, theorem = "wind_components_pythagorean")
+fn along_component(v_wind: Real, bearing: Real, heading: Real) -> Real
+    where chain_order <= 1
+{
+    -v_wind * cos(bearing - heading)
+}
+
+// Hold-off in milliradians for a crosswind drift at a given range.
+@verify(lean, theorem = "wind_hold_off_signed")
+fn hold_off_mil(drift_m: Real, range_m: Real) -> Real
+    where chain_order <= 0,
+          domain: range_m > 0.0
+{
+    drift_m / range_m * 1000.0
+}

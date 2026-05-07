@@ -1,0 +1,44 @@
+// drag.eml -- quadratic aerodynamic drag.
+//
+//   F_drag = ½ * rho * v² * C_d * A
+//
+// where rho is air density [kg/m³], v is the airspeed magnitude
+// [m/s], C_d the drag coefficient (dimensionless), and A the
+// reference area [m²].
+//
+// Chain order 0 — pure polynomial in v. The exponential-tail
+// regimes (transonic + supersonic) are folded into C_d, kept as
+// a piecewise table outside this kernel.
+
+module drag;
+
+@verify(lean, theorem = "drag_force_nonneg")
+fn drag_force(rho: Real, v: Real, c_d: Real, area: Real) -> Real
+    where chain_order <= 0,
+          domain: rho >= 0.0 && c_d >= 0.0 && area >= 0.0
+    ensures (result >= 0.0)
+{
+    0.5 * rho * v * v * c_d * area
+}
+
+// Drag deceleration: a_drag = F_drag / m.
+@verify(lean, theorem = "drag_decel_nonneg")
+fn drag_deceleration(rho: Real, v: Real, c_d: Real, area: Real, mass: Real) -> Real
+    where chain_order <= 0,
+          domain: rho >= 0.0 && c_d >= 0.0 && area >= 0.0 && mass > 0.0
+    ensures (result >= 0.0)
+{
+    0.5 * rho * v * v * c_d * area / mass
+}
+
+// Ballistic coefficient form: BC = m / (C_d * A). BC encodes the
+// projectile's resistance to drag in a single number; ammunition
+// manufacturers publish BC instead of C_d/A separately.
+@verify(lean, theorem = "drag_decel_from_bc_nonneg")
+fn drag_decel_from_bc(rho: Real, v: Real, ballistic_coeff: Real) -> Real
+    where chain_order <= 0,
+          domain: rho >= 0.0 && ballistic_coeff > 0.0
+    ensures (result >= 0.0)
+{
+    0.5 * rho * v * v / ballistic_coeff
+}

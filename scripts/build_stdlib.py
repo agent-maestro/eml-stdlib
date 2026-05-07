@@ -134,6 +134,17 @@ COPY_MAP: list[tuple[str, str | None]] = [
     ("quantum/pauli_z.eml",       "monogate-research/industries/quantum/kernels/pauli_z.eml"),
     ("quantum/rotation_rz.eml",   "monogate-research/industries/quantum/kernels/rotation.eml"),
 
+    # ── ballistics ───────────────────────────────────────────────
+    ("ballistics/drag.eml",             None),
+    ("ballistics/gravity.eml",          None),
+    ("ballistics/wind.eml",             None),
+    ("ballistics/coriolis.eml",         None),
+    ("ballistics/spin_drift.eml",       None),
+    ("ballistics/air_density.eml",      None),
+    ("ballistics/muzzle_velocity.eml",  None),
+    ("ballistics/time_of_flight.eml",   None),
+    ("ballistics/ballistic_solver.eml", None),
+
     # ── ml ───────────────────────────────────────────────────────
     ("ml/gelu.eml",          "forge/industries/ml/activations/gelu.eml"),
     ("ml/silu.eml",          None),

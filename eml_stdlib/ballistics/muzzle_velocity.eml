@@ -1,0 +1,42 @@
+// muzzle_velocity.eml -- temperature compensation for muzzle velocity.
+//
+// Powder burn rate increases with temperature, raising muzzle
+// velocity. A common rule of thumb:
+//
+//   v_m(T) = v_m(T_ref) + α * (T - T_ref)
+//
+// where α ≈ 1 m/s per °C (roughly 1.5 fps/°F) for typical
+// smokeless powders. The exact slope depends on the powder.
+
+module muzzle_velocity;
+
+const T_REF_C: Real = 21.0     // 70°F reference, °C
+const ALPHA:   Real = 1.0      // m/s per °C, typical
+
+// Linear correction.
+@verify(lean, theorem = "muzzle_velocity_linear_in_temp")
+fn corrected_velocity(v_ref: Real, temp_c: Real, alpha: Real) -> Real
+    where chain_order <= 0,
+          domain: v_ref > 0.0
+{
+    v_ref + alpha * (temp_c - T_REF_C)
+}
+
+// Default-α convenience.
+@verify(lean, theorem = "muzzle_velocity_default_alpha")
+fn corrected_default(v_ref: Real, temp_c: Real) -> Real
+    where chain_order <= 0,
+          domain: v_ref > 0.0
+{
+    v_ref + ALPHA * (temp_c - T_REF_C)
+}
+
+// Powder-temperature sensitivity expressed as percentage change
+// per degree. Used by the calculator UI.
+@verify(lean, theorem = "powder_sensitivity_signed")
+fn percent_change(temp_c: Real, alpha: Real, v_ref: Real) -> Real
+    where chain_order <= 0,
+          domain: v_ref > 0.0
+{
+    alpha * (temp_c - T_REF_C) / v_ref * 100.0
+}

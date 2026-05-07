@@ -1,0 +1,102 @@
+// ballistic_solver.eml -- composes drag/gravity/wind/coriolis/spin
+// into a single trajectory prediction.
+//
+// This is the kernel the longshot calculator UI calls per shot.
+// Inputs:  shooter state (velocity, BC, twist), environmental state
+//          (rho, wind vector, latitude, heading), target state (range).
+// Outputs: drop (m), drift (m), eastward Coriolis component (m),
+//          spin drift (m), time of flight (s), impact velocity (m/s).
+//
+// Each output is reported separately so the post-shot analysis
+// screen can show how much each force contributed.
+//
+// Chain order 1 across the composition (Pejsa-style log + density
+// exp dominate the cost).
+
+module ballistic_solver;
+
+use stdlib::ballistics::drag;
+use stdlib::ballistics::gravity;
+use stdlib::ballistics::wind;
+use stdlib::ballistics::coriolis;
+use stdlib::ballistics::spin_drift;
+use stdlib::ballistics::time_of_flight;
+
+// Time of flight via the Pejsa form (single-step accurate).
+@verify(lean, theorem = "solver_tof_nonneg")
+fn solve_tof(range_m: Real, v_0: Real, k_retard: Real) -> Real
+    where chain_order <= 1,
+          domain: v_0 > 0.0 && k_retard > 0.0 && range_m >= 0.0
+    ensures (result >= 0.0)
+{
+    time_of_flight::tof_pejsa(range_m, v_0, k_retard)
+}
+
+// Gravity drop given the time of flight.
+@verify(lean, theorem = "solver_drop_nonneg")
+fn solve_drop(g: Real, tof: Real) -> Real
+    where chain_order <= 0,
+          domain: g >= 0.0 && tof >= 0.0
+    ensures (result >= 0.0)
+{
+    gravity::drop(g, tof)
+}
+
+// Crosswind drift.
+@verify(lean, theorem = "solver_wind_drift_signed")
+fn solve_wind_drift(v_wind_perp: Real, tof: Real) -> Real
+    where chain_order <= 0,
+          domain: tof >= 0.0
+{
+    wind::drift(v_wind_perp, tof)
+}
+
+// Coriolis horizontal component.
+@verify(lean, theorem = "solver_coriolis_signed")
+fn solve_coriolis_horiz(v_0: Real, latitude_rad: Real, tof: Real) -> Real
+    where chain_order <= 1,
+          domain: tof >= 0.0
+{
+    coriolis::horizontal_drift(v_0, latitude_rad, tof)
+}
+
+// Spin drift via Litz curve.
+@verify(lean, theorem = "solver_spin_drift_nonneg")
+fn solve_spin_drift(stability_factor: Real, tof: Real) -> Real
+    where chain_order <= 1,
+          domain: stability_factor > 0.0 && tof >= 0.0
+    ensures (result >= 0.0)
+{
+    spin_drift::drift_metres_litz(stability_factor, tof)
+}
+
+// Impact velocity at the target via Pejsa retardation.
+@verify(lean, theorem = "solver_impact_velocity_le_muzzle")
+fn solve_impact_velocity(v_0: Real, k_retard: Real, range_m: Real) -> Real
+    where chain_order <= 1,
+          domain: v_0 > 0.0 && k_retard > 0.0 && range_m >= 0.0
+    ensures (result >= 0.0)
+    ensures (result <= v_0)
+{
+    v_0 * exp(-range_m / k_retard)
+}
+
+// Total predicted hold-up in milliradians.
+@verify(lean, theorem = "solver_hold_up_mil_nonneg")
+fn solve_hold_up_mil(drop_m: Real, range_m: Real) -> Real
+    where chain_order <= 0,
+          domain: range_m > 0.0 && drop_m >= 0.0
+    ensures (result >= 0.0)
+{
+    drop_m / range_m * 1000.0
+}
+
+// Total predicted hold-off in milliradians (wind + coriolis + spin).
+@verify(lean, theorem = "solver_hold_off_mil_signed")
+fn solve_hold_off_mil(wind_drift_m: Real, coriolis_m: Real, spin_drift_m: Real,
+                       range_m: Real) -> Real
+    where chain_order <= 0,
+          domain: range_m > 0.0
+{
+    (wind_drift_m + coriolis_m + spin_drift_m) / range_m * 1000.0
+}
