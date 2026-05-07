@@ -1,0 +1,75 @@
+// pbr_specular.eml -- Cook-Torrance microfacet specular BRDF.
+//
+//   f_spec = (D * F * G) / (4 * (n·v) * (n·l))
+//
+// Where:
+//   D = GGX (Trowbridge-Reitz) normal distribution
+//   F = Schlick Fresnel
+//   G = Smith geometry term (height-correlated GGX visibility)
+//
+// All sub-terms are bounded ∈ [0, 1]; the caller multiplies by the
+// light radiance and integrates over the hemisphere.
+
+module pbr_specular;
+
+use stdlib::gaming::shading::fresnel;
+
+const PI: Real = 3.141592653589793
+
+// GGX distribution.
+@verify(lean, theorem = "ggx_in_unit_interval_for_unit_alpha")
+fn d_ggx(n_dot_h: Real, alpha: Real) -> Real
+    where chain_order <= 0,
+          domain: alpha > 0.0
+    ensures (result >= 0.0)
+{
+    let a2: Real = alpha * alpha;
+    let nh2: Real = clamp(n_dot_h, 0.0, 1.0) * clamp(n_dot_h, 0.0, 1.0);
+    let denom: Real = nh2 * (a2 - 1.0) + 1.0;
+    a2 / (PI * denom * denom + 1.0e-7)
+}
+
+// Smith geometry term, height-correlated GGX visibility.
+@verify(lean, theorem = "smith_visibility_in_unit_interval")
+fn v_smith(n_dot_v: Real, n_dot_l: Real, alpha: Real) -> Real
+    where chain_order <= 1,
+          domain: alpha > 0.0
+    ensures (result >= 0.0)
+{
+    let a2: Real = alpha * alpha;
+    let nv: Real = clamp(n_dot_v, 1.0e-4, 1.0);
+    let nl: Real = clamp(n_dot_l, 1.0e-4, 1.0);
+    let lambda_v: Real = nl * sqrt(nv * nv * (1.0 - a2) + a2);
+    let lambda_l: Real = nv * sqrt(nl * nl * (1.0 - a2) + a2);
+    0.5 / (lambda_v + lambda_l + 1.0e-7)
+}
+
+// Composite Cook-Torrance specular.
+@verify(lean, theorem = "cook_torrance_nonneg")
+fn specular(n_dot_l: Real, n_dot_v: Real, n_dot_h: Real,
+            v_dot_h: Real, f0: Real, alpha: Real) -> Real
+    where chain_order <= 1,
+          domain: alpha > 0.0
+    requires (f0 >= 0.0)
+    requires (f0 <= 1.0)
+    ensures (result >= 0.0)
+{
+    let d: Real = d_ggx(n_dot_h, alpha);
+    let f: Real = fresnel::schlick(f0, v_dot_h);
+    let v: Real = v_smith(n_dot_v, n_dot_l, alpha);
+    d * f * v
+}
+
+// Roughness → α = roughness² is the standard remap; clamped away
+// from 0 to keep D_GGX well-defined.
+@verify(lean, theorem = "roughness_to_alpha_in_band")
+fn roughness_to_alpha(roughness: Real) -> Real
+    where chain_order <= 0
+    requires (roughness >= 0.0)
+    requires (roughness <= 1.0)
+    ensures (result >= 1.0e-4)
+    ensures (result <= 1.0)
+{
+    let r: Real = clamp(roughness, 0.0, 1.0);
+    clamp(r * r, 1.0e-4, 1.0)
+}

@@ -1,0 +1,65 @@
+// perlin_2d.eml -- classic 2D Perlin noise.
+//
+// Lattice-based gradient noise. At each integer-grid corner we
+// pick a pseudo-random gradient vector; the noise value at point
+// p is the smoothstep-blended dot product of (p - corner) with
+// each corner's gradient. Output is in [-1, 1] (typically scaled
+// to [0, 1] by the caller via 0.5 * (n + 1)).
+//
+// Chain order 1.
+
+module perlin_2d;
+
+use stdlib::gaming::noise::white_noise;
+
+// Pseudo-gradient: pick one of 4 unit-axis vectors based on the
+// hash. Using axis-aligned gradients keeps chain order at 1 (one
+// trig call inside white_noise::hash2). For higher quality switch
+// to the 8-direction Perlin gradient set; the shape of the proof
+// obligation is identical.
+fn _grad_dot(xi: Real, yi: Real, xf: Real, yf: Real) -> Real
+    where chain_order <= 1
+{
+    let h: Real = white_noise::hash2(xi, yi);
+    let q: Real = floor(h * 4.0);   // 0..3
+    // 0=+x, 1=+y, 2=-x, 3=-y
+    if q < 1.0     { xf      }
+    else if q < 2.0 { yf      }
+    else if q < 3.0 { -xf     }
+    else            { -yf     }
+}
+
+@verify(lean, theorem = "perlin2_in_signed_unit_band")
+fn perlin2(x: Real, y: Real) -> Real
+    where chain_order <= 1
+    ensures (result >= -1.0)
+    ensures (result <=  1.0)
+{
+    let xi: Real = floor(x);
+    let yi: Real = floor(y);
+    let xf: Real = x - xi;
+    let yf: Real = y - yi;
+
+    let n00: Real = _grad_dot(xi,       yi,       xf,       yf);
+    let n10: Real = _grad_dot(xi + 1.0, yi,       xf - 1.0, yf);
+    let n01: Real = _grad_dot(xi,       yi + 1.0, xf,       yf - 1.0);
+    let n11: Real = _grad_dot(xi + 1.0, yi + 1.0, xf - 1.0, yf - 1.0);
+
+    // Quintic ease (Ken Perlin's improved smoothstep).
+    let u: Real = xf * xf * xf * (xf * (xf * 6.0 - 15.0) + 10.0);
+    let v: Real = yf * yf * yf * (yf * (yf * 6.0 - 15.0) + 10.0);
+
+    let l0: Real = n00 + u * (n10 - n00);
+    let l1: Real = n01 + u * (n11 - n01);
+    clamp(l0 + v * (l1 - l0), -1.0, 1.0)
+}
+
+// 0..1 scaled variant for height-map / texture authoring.
+@verify(lean, theorem = "perlin2_unit_in_unit_interval")
+fn perlin2_unit(x: Real, y: Real) -> Real
+    where chain_order <= 1
+    ensures (result >= 0.0)
+    ensures (result <= 1.0)
+{
+    0.5 * (perlin2(x, y) + 1.0)
+}

@@ -1,0 +1,61 @@
+// rigid_body_2d.eml -- semi-implicit Euler step for a 2D rigid body.
+//
+// State: (x, y, theta, vx, vy, omega).
+// Forces: linear (fx, fy) + torque tau.
+//
+//   v_new = v + (f / m) * dt
+//   p_new = p + v_new * dt        (semi-implicit Euler — stable)
+//
+// Each component shipped as its own kernel so callers can chain
+// only what they need on the GPU.
+
+module rigid_body_2d;
+
+@verify(lean, theorem = "rb2d_velocity_x_signed")
+fn integrate_vx(vx: Real, fx: Real, mass_kg: Real, dt: Real) -> Real
+    where chain_order <= 0,
+          domain: mass_kg > 0.0 && dt >= 0.0
+{
+    vx + (fx / mass_kg) * dt
+}
+
+@verify(lean, theorem = "rb2d_velocity_y_signed")
+fn integrate_vy(vy: Real, fy: Real, mass_kg: Real, dt: Real) -> Real
+    where chain_order <= 0,
+          domain: mass_kg > 0.0 && dt >= 0.0
+{
+    vy + (fy / mass_kg) * dt
+}
+
+@verify(lean, theorem = "rb2d_angular_velocity_signed")
+fn integrate_omega(omega: Real, tau: Real, inertia: Real, dt: Real) -> Real
+    where chain_order <= 0,
+          domain: inertia > 0.0 && dt >= 0.0
+{
+    omega + (tau / inertia) * dt
+}
+
+// Position update — uses already-updated velocity (semi-implicit).
+@verify(lean, theorem = "rb2d_position_x_signed")
+fn integrate_x(x: Real, vx_new: Real, dt: Real) -> Real
+    where chain_order <= 0,
+          domain: dt >= 0.0
+{
+    x + vx_new * dt
+}
+
+@verify(lean, theorem = "rb2d_position_y_signed")
+fn integrate_y(y: Real, vy_new: Real, dt: Real) -> Real
+    where chain_order <= 0,
+          domain: dt >= 0.0
+{
+    y + vy_new * dt
+}
+
+@verify(lean, theorem = "rb2d_angle_signed")
+fn integrate_theta(theta: Real, omega_new: Real, dt: Real) -> Real
+    where chain_order <= 0,
+          domain: dt >= 0.0
+{
+    theta + omega_new * dt
+}

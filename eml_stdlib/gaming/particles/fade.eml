@@ -1,0 +1,36 @@
+// fade.eml -- linear alpha fade over a particle's lifetime.
+//
+//   alpha(t) = clamp(1 - t/lifetime, 0, 1)
+
+module fade;
+
+@verify(lean, theorem = "fade_alpha_in_unit_interval")
+fn alpha(t_s: Real, lifetime_s: Real) -> Real
+    where chain_order <= 0,
+          domain: lifetime_s > 0.0 && t_s >= 0.0
+    ensures (result >= 0.0)
+    ensures (result <= 1.0)
+{
+    clamp(1.0 - t_s / lifetime_s, 0.0, 1.0)
+}
+
+// Fade-in then fade-out: ramp up over t < fade_in, hold, ramp down
+// from t > lifetime - fade_out.
+@verify(lean, theorem = "fade_in_out_in_unit_interval")
+fn alpha_in_out(t_s: Real, lifetime_s: Real,
+                fade_in_s: Real, fade_out_s: Real) -> Real
+    where chain_order <= 0,
+          domain: lifetime_s > 0.0 && t_s >= 0.0
+    requires (fade_in_s >= 0.0)
+    requires (fade_out_s >= 0.0)
+    ensures (result >= 0.0)
+    ensures (result <= 1.0)
+{
+    if t_s < fade_in_s {
+        clamp(t_s / max(fade_in_s, 1.0e-6), 0.0, 1.0)
+    } else if t_s > lifetime_s - fade_out_s {
+        clamp((lifetime_s - t_s) / max(fade_out_s, 1.0e-6), 0.0, 1.0)
+    } else {
+        1.0
+    }
+}

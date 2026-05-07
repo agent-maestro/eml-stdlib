@@ -1,0 +1,47 @@
+// fov_projection.eml -- perspective projection matrix coefficients.
+//
+// Returns the four non-zero entries of a standard right-handed
+// perspective matrix (column-major):
+//
+//   m00 = 1 / (aspect * tan(fov/2))
+//   m11 = 1 / tan(fov/2)
+//   m22 = -(far + near) / (far - near)
+//   m23 = -(2 * far * near) / (far - near)
+
+module fov_projection;
+
+@verify(lean, theorem = "fov_m00_positive")
+fn m00(fov_y_rad: Real, aspect: Real) -> Real
+    where chain_order <= 2,
+          domain: fov_y_rad > 0.0 && fov_y_rad < 3.141 && aspect > 0.0
+    ensures (result > 0.0)
+{
+    1.0 / (aspect * tan(0.5 * fov_y_rad))
+}
+
+@verify(lean, theorem = "fov_m11_positive")
+fn m11(fov_y_rad: Real) -> Real
+    where chain_order <= 2,
+          domain: fov_y_rad > 0.0 && fov_y_rad < 3.141
+    ensures (result > 0.0)
+{
+    1.0 / tan(0.5 * fov_y_rad)
+}
+
+@verify(lean, theorem = "fov_m22_signed")
+fn m22(near: Real, far: Real) -> Real
+    where chain_order <= 0,
+          domain: near > 0.0 && far > near
+    ensures (result < 0.0)
+{
+    -(far + near) / (far - near)
+}
+
+@verify(lean, theorem = "fov_m23_signed")
+fn m23(near: Real, far: Real) -> Real
+    where chain_order <= 0,
+          domain: near > 0.0 && far > near
+    ensures (result < 0.0)
+{
+    -(2.0 * far * near) / (far - near)
+}

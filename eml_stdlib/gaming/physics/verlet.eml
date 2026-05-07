@@ -1,0 +1,29 @@
+// verlet.eml -- Verlet position-only integration step (cloth/rope).
+//
+//   x_new = 2*x - x_prev + a * dt²
+//
+// No explicit velocity state — velocity is implicit in (x - x_prev).
+// Stable for stiff cloth + rope simulations where energy must be
+// approximately conserved over many steps.
+
+module verlet;
+
+@verify(lean, theorem = "verlet_position_signed")
+fn step(x: Real, x_prev: Real, a: Real, dt: Real) -> Real
+    where chain_order <= 0,
+          domain: dt >= 0.0
+{
+    2.0 * x - x_prev + a * dt * dt
+}
+
+// Constraint: distance between two points must remain at rest_length.
+// Returns the displacement that should be applied (split between
+// the two endpoints by the caller, weighted by inverse mass).
+@verify(lean, theorem = "verlet_constraint_signed")
+fn distance_constraint_correction(current_distance: Real,
+                                   rest_length: Real) -> Real
+    where chain_order <= 0,
+          domain: rest_length >= 0.0
+{
+    current_distance - rest_length
+}

@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "eml-stdlib"
-version = "0.2.0"
-description = "Verified standard library for the EML language. 108+ modules across math, DSP, control, physics, circuits, sensors, biology, wave carriers, quantum gates, ML, and exterior ballistics. Every kernel declares its Pfaffian chain order; ~85% carry @verify(lean) contracts."
+version = "0.3.0"
+description = "The first verified standard library for game development. PBR shaders, procedural noise, procedural textures, lighting, terrain, animation curves, particles, audio attenuation + Doppler, rigid-body physics — every module with @verify(lean) bounds. Plus the math/signal/control/biology/ballistics/ML kernels powering the rest of the Monogate stack."
 readme = "README.md"
 license = { text = "MIT" }
 authors = [
@@ -22,15 +22,23 @@ keywords = [
     "formal-verification",
     "lean",
     "machlib",
-    "fpga",
-    "spice",
+    "godot",
+    "shader",
+    "glsl",
+    "hlsl",
+    "pbr",
+    "noise",
+    "perlin",
+    "ballistics",
+    "physics",
     "ml",
     "signal-processing",
-    "physics",
     "quantum",
     "photonics",
     "spintronics",
     "phononics",
+    "fpga",
+    "spice",
 ]
 classifiers = [
     "Development Status :: 4 - Beta",

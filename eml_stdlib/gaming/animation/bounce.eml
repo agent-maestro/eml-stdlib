@@ -1,0 +1,39 @@
+// bounce.eml -- piecewise parabolic bounce-out curve.
+//
+// The standard easing-functions bounce-out: four parabolic
+// segments of decreasing amplitude. Output ∈ [0, 1].
+
+module bounce;
+
+@verify(lean, theorem = "bounce_out_in_unit_interval")
+fn bounce_out(t: Real) -> Real
+    where chain_order <= 0
+    requires (t >= 0.0)
+    requires (t <= 1.0)
+    ensures (result >= 0.0)
+    ensures (result <= 1.0)
+{
+    if t < 0.36364 {                                       // 1 / 2.75
+        7.5625 * t * t
+    } else if t < 0.72727 {                                // 2 / 2.75
+        let u: Real = t - 0.54545;                         // 1.5 / 2.75
+        7.5625 * u * u + 0.75
+    } else if t < 0.90909 {                                // 2.5 / 2.75
+        let u: Real = t - 0.81818;                         // 2.25 / 2.75
+        7.5625 * u * u + 0.9375
+    } else {
+        let u: Real = t - 0.95455;                         // 2.625 / 2.75
+        7.5625 * u * u + 0.984375
+    }
+}
+
+@verify(lean, theorem = "bounce_in_in_unit_interval")
+fn bounce_in(t: Real) -> Real
+    where chain_order <= 0
+    requires (t >= 0.0)
+    requires (t <= 1.0)
+    ensures (result >= 0.0)
+    ensures (result <= 1.0)
+{
+    1.0 - bounce_out(1.0 - t)
+}

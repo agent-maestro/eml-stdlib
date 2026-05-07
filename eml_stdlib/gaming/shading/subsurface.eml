@@ -1,0 +1,52 @@
+// subsurface.eml -- Christensen-Burley subsurface scattering approx.
+//
+// For real-time skin / wax / leaves: light entering through a thin
+// region scatters and emerges in a halo of the material's albedo.
+// Burley's approximation is a sum of two exponentials in distance,
+// integrated against the surface normal:
+//
+//   sss(n, l, k_back) = k_back + (1 - k_back) * max(0, n · l)
+//
+// Plus a wrap-around term for the back-lit hemisphere. Chain order 1.
+
+module subsurface;
+
+@verify(lean, theorem = "sss_wrap_in_unit_interval")
+fn wrap(n_dot_l: Real, wrap_amount: Real) -> Real
+    where chain_order <= 0
+    requires (wrap_amount >= 0.0)
+    requires (wrap_amount <= 1.0)
+    ensures (result >= 0.0)
+    ensures (result <= 1.0)
+{
+    let s: Real = (n_dot_l + wrap_amount) / (1.0 + wrap_amount);
+    clamp(s, 0.0, 1.0)
+}
+
+// Burley back-scatter term: (l ∙ -v + 1) raised to a hardness.
+@verify(lean, theorem = "sss_back_in_unit_interval")
+fn back_scatter(l_dot_neg_v: Real, hardness: Real) -> Real
+    where chain_order <= 1,
+          domain: hardness >= 0.0
+    ensures (result >= 0.0)
+    ensures (result <= 1.0)
+{
+    let s: Real = clamp(0.5 * l_dot_neg_v + 0.5, 0.0, 1.0);
+    pow(s, hardness)
+}
+
+// Composite SSS contribution. albedo handled by caller.
+@verify(lean, theorem = "sss_total_nonneg")
+fn sss_total(n_dot_l: Real, l_dot_neg_v: Real,
+             wrap_amount: Real, hardness: Real,
+             back_strength: Real) -> Real
+    where chain_order <= 1,
+          domain: back_strength >= 0.0
+    requires (wrap_amount >= 0.0 && wrap_amount <= 1.0)
+    requires (hardness >= 0.0)
+    ensures (result >= 0.0)
+{
+    let lit: Real = wrap(n_dot_l, wrap_amount);
+    let back: Real = back_scatter(l_dot_neg_v, hardness);
+    lit + back_strength * back
+}

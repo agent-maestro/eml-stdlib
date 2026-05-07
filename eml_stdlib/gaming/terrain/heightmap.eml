@@ -1,0 +1,33 @@
+// heightmap.eml -- FBM-driven heightmap generation.
+//
+//   h(x, y) = fbm(x * scale, y * scale) * amplitude + base_elevation
+//
+// Output is a scalar height in metres. Caller passes the FBM scale
+// (lower = larger features) and amplitude (peak-to-trough range).
+
+module heightmap;
+
+use stdlib::gaming::noise::fbm;
+
+@verify(lean, theorem = "heightmap_in_band")
+fn height(x: Real, y: Real, scale: Real,
+          amplitude: Real, base_elevation: Real) -> Real
+    where chain_order <= 1,
+          domain: scale > 0.0 && amplitude >= 0.0
+    ensures (result >= base_elevation - amplitude)
+    ensures (result <= base_elevation + amplitude)
+{
+    base_elevation + amplitude * fbm::fbm2_default(x * scale, y * scale)
+}
+
+// Ridged variant: 1 - |fbm| produces sharp ridges (mountains).
+@verify(lean, theorem = "ridged_heightmap_in_band")
+fn ridged_height(x: Real, y: Real, scale: Real,
+                 amplitude: Real, base_elevation: Real) -> Real
+    where chain_order <= 1,
+          domain: scale > 0.0 && amplitude >= 0.0
+    ensures (result >= base_elevation)
+    ensures (result <= base_elevation + amplitude)
+{
+    base_elevation + amplitude * (1.0 - abs(fbm::fbm2_default(x * scale, y * scale)))
+}

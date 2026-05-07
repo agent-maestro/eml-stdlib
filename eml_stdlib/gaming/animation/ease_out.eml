@@ -1,0 +1,27 @@
+// ease_out.eml -- quadratic ease-out: 1 - (1 - t)².
+
+module ease_out;
+
+@verify(lean, theorem = "ease_out_in_unit_interval")
+fn ease_out_quad(t: Real) -> Real
+    where chain_order <= 0
+    requires (t >= 0.0)
+    requires (t <= 1.0)
+    ensures (result >= 0.0)
+    ensures (result <= 1.0)
+{
+    let one_minus_t: Real = 1.0 - t;
+    1.0 - one_minus_t * one_minus_t
+}
+
+@verify(lean, theorem = "ease_out_cubic_in_unit_interval")
+fn ease_out_cubic(t: Real) -> Real
+    where chain_order <= 0
+    requires (t >= 0.0)
+    requires (t <= 1.0)
+    ensures (result >= 0.0)
+    ensures (result <= 1.0)
+{
+    let one_minus_t: Real = 1.0 - t;
+    1.0 - one_minus_t * one_minus_t * one_minus_t
+}

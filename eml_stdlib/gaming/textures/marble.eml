@@ -1,0 +1,24 @@
+// marble.eml -- turbulence-perturbed sine ramp.
+//
+//   marble(x, y) = (sin(2π * f * (x + amplitude * turbulence(x, y))) + 1) / 2
+//
+// The turbulence (absolute-value FBM) bends the sine bands into
+// the cusped vein patterns marble is known for. Caller maps the
+// scalar to a colour gradient.
+
+module marble;
+
+use stdlib::gaming::noise::turbulence;
+
+const PI: Real = 3.141592653589793
+
+@verify(lean, theorem = "marble_in_unit_interval")
+fn marble(x: Real, y: Real, frequency: Real, amplitude: Real) -> Real
+    where chain_order <= 1,
+          domain: frequency > 0.0 && amplitude >= 0.0
+    ensures (result >= 0.0)
+    ensures (result <= 1.0)
+{
+    let t: Real = turbulence::turbulence2_default(x, y);
+    0.5 * (sin(2.0 * PI * frequency * (x + amplitude * t)) + 1.0)
+}

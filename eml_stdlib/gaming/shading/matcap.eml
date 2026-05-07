@@ -1,0 +1,34 @@
+// matcap.eml -- normal-based environment look-up (matcap shading).
+//
+// A "material capture" texture stores the entire lighting + shading
+// of a sphere from the camera's point of view. To shade a fragment,
+// project its view-space normal into the matcap's UV space:
+//
+//   uv = 0.5 * normal_view.xy + 0.5
+//
+// The texture sample returns the final colour. This module only
+// computes the UV; the caller does the texture lookup.
+
+module matcap;
+
+@verify(lean, theorem = "matcap_uv_in_unit_interval")
+fn uv_u(normal_view_x: Real) -> Real
+    where chain_order <= 0
+    requires (normal_view_x >= -1.0)
+    requires (normal_view_x <=  1.0)
+    ensures (result >= 0.0)
+    ensures (result <= 1.0)
+{
+    0.5 * normal_view_x + 0.5
+}
+
+@verify(lean, theorem = "matcap_uv_v_in_unit_interval")
+fn uv_v(normal_view_y: Real) -> Real
+    where chain_order <= 0
+    requires (normal_view_y >= -1.0)
+    requires (normal_view_y <=  1.0)
+    ensures (result >= 0.0)
+    ensures (result <= 1.0)
+{
+    0.5 * normal_view_y + 0.5
+}

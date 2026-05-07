@@ -1,0 +1,28 @@
+// fog_exp.eml -- exponential fog (Beer's law).
+//
+//   transmittance(d) = exp(-density * d)
+//   fog_factor = 1 - transmittance
+//
+// Output ∈ [0, 1]: 0 = no fog, 1 = fully obscured.
+
+module fog_exp;
+
+@verify(lean, theorem = "fog_exp_in_unit_interval")
+fn fog_factor(density: Real, distance_m: Real) -> Real
+    where chain_order <= 1,
+          domain: density >= 0.0 && distance_m >= 0.0
+    ensures (result >= 0.0)
+    ensures (result <= 1.0)
+{
+    1.0 - exp(-density * distance_m)
+}
+
+@verify(lean, theorem = "fog_exp_transmittance_in_unit_interval")
+fn transmittance(density: Real, distance_m: Real) -> Real
+    where chain_order <= 1,
+          domain: density >= 0.0 && distance_m >= 0.0
+    ensures (result >= 0.0)
+    ensures (result <= 1.0)
+{
+    exp(-density * distance_m)
+}

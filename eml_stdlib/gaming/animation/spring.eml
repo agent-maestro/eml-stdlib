@@ -1,0 +1,39 @@
+// spring.eml -- damped harmonic oscillator response.
+//
+//   x(t) = A * exp(-ζ ω t) * cos(ω_d t + φ)
+//
+// where ω is natural frequency, ζ damping ratio, ω_d = ω√(1-ζ²)
+// the damped frequency. Underdamped (ζ < 1) is the case actually
+// useful for animation; critically damped (ζ = 1) is a smooth
+// follow.
+
+module spring;
+
+@verify(lean, theorem = "spring_underdamped_signed")
+fn underdamped(amplitude: Real, omega: Real, damping_ratio: Real,
+               phase: Real, t_s: Real) -> Real
+    where chain_order <= 1,
+          domain: omega > 0.0 && damping_ratio >= 0.0 && damping_ratio < 1.0 && t_s >= 0.0
+{
+    let omega_d: Real = omega * sqrt(1.0 - damping_ratio * damping_ratio);
+    amplitude * exp(-damping_ratio * omega * t_s) * cos(omega_d * t_s + phase)
+}
+
+// Critically damped: x(t) = A * (1 + ω t) * exp(-ω t)
+@verify(lean, theorem = "spring_critical_signed")
+fn critically_damped(amplitude: Real, omega: Real, t_s: Real) -> Real
+    where chain_order <= 1,
+          domain: omega > 0.0 && t_s >= 0.0
+{
+    amplitude * (1.0 + omega * t_s) * exp(-omega * t_s)
+}
+
+// Time constant τ = 1/(ζω) for underdamped exponential envelope.
+@verify(lean, theorem = "spring_tau_positive")
+fn time_constant(omega: Real, damping_ratio: Real) -> Real
+    where chain_order <= 0,
+          domain: omega > 0.0 && damping_ratio > 0.0
+    ensures (result > 0.0)
+{
+    1.0 / (damping_ratio * omega)
+}

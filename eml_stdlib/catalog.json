@@ -1158,6 +1158,1276 @@
     "source": "forge/examples/pid_controller.eml"
   },
   {
+    "category": "gaming/animation",
+    "file": "gaming/animation/bounce.eml",
+    "module": "bounce",
+    "functions": [
+      {
+        "name": "bounce_out",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "bounce_in",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "piecewise parabolic bounce-out curve.",
+    "source": "new"
+  },
+  {
+    "category": "gaming/animation",
+    "file": "gaming/animation/ease_in.eml",
+    "module": "ease_in",
+    "functions": [
+      {
+        "name": "ease_in_quad",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "ease_in_cubic",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "quadratic ease-in: t\u00b2.",
+    "source": "new"
+  },
+  {
+    "category": "gaming/animation",
+    "file": "gaming/animation/ease_in_out.eml",
+    "module": "ease_in_out",
+    "functions": [
+      {
+        "name": "smoothstep",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "smootherstep",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "smoothstep: 3t\u00b2 - 2t\u00b3.",
+    "source": "new"
+  },
+  {
+    "category": "gaming/animation",
+    "file": "gaming/animation/ease_out.eml",
+    "module": "ease_out",
+    "functions": [
+      {
+        "name": "ease_out_quad",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "ease_out_cubic",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "quadratic ease-out: 1 - (1 - t)\u00b2.",
+    "source": "new"
+  },
+  {
+    "category": "gaming/animation",
+    "file": "gaming/animation/ik_2bone.eml",
+    "module": "ik_2bone",
+    "functions": [
+      {
+        "name": "elbow_angle",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "shoulder_offset",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "reachable",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "two-bone inverse kinematics via law of cosines.",
+    "source": "new"
+  },
+  {
+    "category": "gaming/animation",
+    "file": "gaming/animation/spring.eml",
+    "module": "spring",
+    "functions": [
+      {
+        "name": "underdamped",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "critically_damped",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "time_constant",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "damped harmonic oscillator response.",
+    "source": "new"
+  },
+  {
+    "category": "gaming/audio",
+    "file": "gaming/audio/distance_attenuation.eml",
+    "module": "distance_attenuation",
+    "functions": [
+      {
+        "name": "inverse",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "inverse_square",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "linear",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "3D audio falloff models.",
+    "source": "new"
+  },
+  {
+    "category": "gaming/audio",
+    "file": "gaming/audio/doppler.eml",
+    "module": "doppler",
+    "functions": [
+      {
+        "name": "observed_frequency",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "observed_frequency_air",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "Doppler frequency shift.",
+    "source": "new"
+  },
+  {
+    "category": "gaming/audio",
+    "file": "gaming/audio/lowpass_audio.eml",
+    "module": "lowpass_audio",
+    "functions": [
+      {
+        "name": "alpha_from_cutoff",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "step",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "first-order IIR low-pass for audio.",
+    "source": "new"
+  },
+  {
+    "category": "gaming/audio",
+    "file": "gaming/audio/reverb_delay.eml",
+    "module": "reverb_delay",
+    "functions": [
+      {
+        "name": "feedback_safe",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "delay_step",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "t60_seconds",
+        "chain_order": 1,
+        "verified": true
+      }
+    ],
+    "description": "single-tap delay line with feedback.",
+    "source": "new"
+  },
+  {
+    "category": "gaming/camera",
+    "file": "gaming/camera/dof_blur.eml",
+    "module": "dof_blur",
+    "functions": [
+      {
+        "name": "circle_of_confusion",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "circle_of_confusion_clamped",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "depth-of-field circle of confusion.",
+    "source": "new"
+  },
+  {
+    "category": "gaming/camera",
+    "file": "gaming/camera/fov_projection.eml",
+    "module": "fov_projection",
+    "functions": [
+      {
+        "name": "m00",
+        "chain_order": 2,
+        "verified": true
+      },
+      {
+        "name": "m11",
+        "chain_order": 2,
+        "verified": true
+      },
+      {
+        "name": "m22",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "m23",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "perspective projection matrix coefficients.",
+    "source": "new"
+  },
+  {
+    "category": "gaming/camera",
+    "file": "gaming/camera/orbit.eml",
+    "module": "orbit",
+    "functions": [
+      {
+        "name": "position_x",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "position_y",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "position_z",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "norm_witness",
+        "chain_order": 1,
+        "verified": true
+      }
+    ],
+    "description": "spherical-coordinates orbit camera.",
+    "source": "new"
+  },
+  {
+    "category": "gaming/camera",
+    "file": "gaming/camera/shake.eml",
+    "module": "shake",
+    "functions": [
+      {
+        "name": "shake1d",
+        "chain_order": 1,
+        "verified": true
+      }
+    ],
+    "description": "damped-noise camera shake.",
+    "source": "new"
+  },
+  {
+    "category": "gaming/lighting",
+    "file": "gaming/lighting/ambient_occlusion.eml",
+    "module": "ambient_occlusion",
+    "functions": [
+      {
+        "name": "sample_contribution",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "ao_factor",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "hemisphere-sampling AO approximation.",
+    "source": "new"
+  },
+  {
+    "category": "gaming/lighting",
+    "file": "gaming/lighting/area_light.eml",
+    "module": "area_light",
+    "functions": [
+      {
+        "name": "closest_on_sphere",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "solid_angle_fraction",
+        "chain_order": 1,
+        "verified": true
+      }
+    ],
+    "description": "\"Most Representative Point\" approximation.",
+    "source": "new"
+  },
+  {
+    "category": "gaming/lighting",
+    "file": "gaming/lighting/fog_exp.eml",
+    "module": "fog_exp",
+    "functions": [
+      {
+        "name": "fog_factor",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "transmittance",
+        "chain_order": 1,
+        "verified": true
+      }
+    ],
+    "description": "exponential fog (Beer's law).",
+    "source": "new"
+  },
+  {
+    "category": "gaming/lighting",
+    "file": "gaming/lighting/fog_exp2.eml",
+    "module": "fog_exp2",
+    "functions": [
+      {
+        "name": "fog_factor",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "transmittance",
+        "chain_order": 1,
+        "verified": true
+      }
+    ],
+    "description": "squared-exponential fog.",
+    "source": "new"
+  },
+  {
+    "category": "gaming/lighting",
+    "file": "gaming/lighting/point_light.eml",
+    "module": "point_light",
+    "functions": [
+      {
+        "name": "attenuation",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "inverse_square",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "inverse-square falloff with radius clamp.",
+    "source": "new"
+  },
+  {
+    "category": "gaming/lighting",
+    "file": "gaming/lighting/spot_light.eml",
+    "module": "spot_light",
+    "functions": [
+      {
+        "name": "cone_attenuation",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "attenuation",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "point light \u00d7 cone attenuation.",
+    "source": "new"
+  },
+  {
+    "category": "gaming/noise",
+    "file": "gaming/noise/fbm.eml",
+    "module": "fbm",
+    "functions": [
+      {
+        "name": "fbm2",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "fbm2_default",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "fbm2_unit",
+        "chain_order": 1,
+        "verified": true
+      }
+    ],
+    "description": "fractal Brownian motion (octave stacker).",
+    "source": "new"
+  },
+  {
+    "category": "gaming/noise",
+    "file": "gaming/noise/perlin_2d.eml",
+    "module": "perlin_2d",
+    "functions": [
+      {
+        "name": "_grad_dot",
+        "chain_order": 1,
+        "verified": false
+      },
+      {
+        "name": "perlin2",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "perlin2_unit",
+        "chain_order": 1,
+        "verified": true
+      }
+    ],
+    "description": "classic 2D Perlin noise.",
+    "source": "new"
+  },
+  {
+    "category": "gaming/noise",
+    "file": "gaming/noise/perlin_3d.eml",
+    "module": "perlin_3d",
+    "functions": [
+      {
+        "name": "_grad_dot3",
+        "chain_order": 1,
+        "verified": false
+      },
+      {
+        "name": "perlin3",
+        "chain_order": 1,
+        "verified": true
+      }
+    ],
+    "description": "3D Perlin noise for volumetric effects.",
+    "source": "new"
+  },
+  {
+    "category": "gaming/noise",
+    "file": "gaming/noise/simplex_2d.eml",
+    "module": "simplex_2d",
+    "functions": [
+      {
+        "name": "_grad_dot",
+        "chain_order": 1,
+        "verified": false
+      },
+      {
+        "name": "simplex2",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "_contribution",
+        "chain_order": 1,
+        "verified": false
+      }
+    ],
+    "description": "2D simplex noise.",
+    "source": "new"
+  },
+  {
+    "category": "gaming/noise",
+    "file": "gaming/noise/turbulence.eml",
+    "module": "turbulence",
+    "functions": [
+      {
+        "name": "turbulence2",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "turbulence2_default",
+        "chain_order": 1,
+        "verified": true
+      }
+    ],
+    "description": "absolute-value FBM for cloud / marble veining.",
+    "source": "new"
+  },
+  {
+    "category": "gaming/noise",
+    "file": "gaming/noise/value_noise.eml",
+    "module": "value_noise",
+    "functions": [
+      {
+        "name": "value2",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "value2_signed",
+        "chain_order": 1,
+        "verified": true
+      }
+    ],
+    "description": "interpolated lattice noise.",
+    "source": "new"
+  },
+  {
+    "category": "gaming/noise",
+    "file": "gaming/noise/voronoi_2d.eml",
+    "module": "voronoi_2d",
+    "functions": [
+      {
+        "name": "distance_to_nearest",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "_cell_distance",
+        "chain_order": 1,
+        "verified": false
+      },
+      {
+        "name": "f2_minus_f1",
+        "chain_order": 1,
+        "verified": true
+      }
+    ],
+    "description": "2D Voronoi cell distance field.",
+    "source": "new"
+  },
+  {
+    "category": "gaming/noise",
+    "file": "gaming/noise/white_noise.eml",
+    "module": "white_noise",
+    "functions": [
+      {
+        "name": "hash2",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "hash3",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "hash2_at_origin",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "hash-based pseudo-random scalar in [0, 1).",
+    "source": "new"
+  },
+  {
+    "category": "gaming/noise",
+    "file": "gaming/noise/worley.eml",
+    "module": "worley",
+    "functions": [
+      {
+        "name": "squared_distance",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "_cell_sq_dist",
+        "chain_order": 0,
+        "verified": false
+      },
+      {
+        "name": "manhattan_distance",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "_cell_man_dist",
+        "chain_order": 0,
+        "verified": false
+      }
+    ],
+    "description": "cellular / Worley noise for organic patterns.",
+    "source": "new"
+  },
+  {
+    "category": "gaming/particles",
+    "file": "gaming/particles/drag.eml",
+    "module": "particle_drag",
+    "functions": [
+      {
+        "name": "velocity",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "distance_covered",
+        "chain_order": 1,
+        "verified": true
+      }
+    ],
+    "description": "exponential velocity decay (linear drag model).",
+    "source": "new"
+  },
+  {
+    "category": "gaming/particles",
+    "file": "gaming/particles/emitter_radial.eml",
+    "module": "emitter_radial",
+    "functions": [
+      {
+        "name": "velocity_magnitude",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "disc_offset",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "radial particle emitter velocity.",
+    "source": "new"
+  },
+  {
+    "category": "gaming/particles",
+    "file": "gaming/particles/fade.eml",
+    "module": "fade",
+    "functions": [
+      {
+        "name": "alpha",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "alpha_in_out",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "linear alpha fade over a particle's lifetime.",
+    "source": "new"
+  },
+  {
+    "category": "gaming/particles",
+    "file": "gaming/particles/gravity_particle.eml",
+    "module": "gravity_particle",
+    "functions": [
+      {
+        "name": "position",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "velocity",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "position_earth",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "ballistic motion under gravity.",
+    "source": "new"
+  },
+  {
+    "category": "gaming/particles",
+    "file": "gaming/particles/size_over_life.eml",
+    "module": "size_over_life",
+    "functions": [
+      {
+        "name": "radius_linear",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "radius_power",
+        "chain_order": 1,
+        "verified": true
+      }
+    ],
+    "description": "particle radius as a function of age.",
+    "source": "new"
+  },
+  {
+    "category": "gaming/physics",
+    "file": "gaming/physics/aabb_overlap.eml",
+    "module": "aabb_overlap",
+    "functions": [
+      {
+        "name": "overlap_2d",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "penetration_depth_x",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "axis-aligned bounding box intersection test.",
+    "source": "new"
+  },
+  {
+    "category": "gaming/physics",
+    "file": "gaming/physics/buoyancy.eml",
+    "module": "buoyancy",
+    "functions": [
+      {
+        "name": "force",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "force_in_water",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "sphere_submerged_volume",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "Archimedes' principle for water / fluid bodies.",
+    "source": "new"
+  },
+  {
+    "category": "gaming/physics",
+    "file": "gaming/physics/circle_collision.eml",
+    "module": "circle_collision",
+    "functions": [
+      {
+        "name": "collides",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "penetration_depth",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "inv_distance",
+        "chain_order": 1,
+        "verified": true
+      }
+    ],
+    "description": "circle-vs-circle intersection test.",
+    "source": "new"
+  },
+  {
+    "category": "gaming/physics",
+    "file": "gaming/physics/impulse_resolve.eml",
+    "module": "impulse_resolve",
+    "functions": [
+      {
+        "name": "impulse_magnitude",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "velocity_a_after",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "velocity_b_after",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "collision response with restitution.",
+    "source": "new"
+  },
+  {
+    "category": "gaming/physics",
+    "file": "gaming/physics/rigid_body_2d.eml",
+    "module": "rigid_body_2d",
+    "functions": [
+      {
+        "name": "integrate_vx",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "integrate_vy",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "integrate_omega",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "integrate_x",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "integrate_y",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "integrate_theta",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "semi-implicit Euler step for a 2D rigid body.",
+    "source": "new"
+  },
+  {
+    "category": "gaming/physics",
+    "file": "gaming/physics/spring_damper.eml",
+    "module": "spring_damper",
+    "functions": [
+      {
+        "name": "force",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "critical_damping",
+        "chain_order": 1,
+        "verified": true
+      }
+    ],
+    "description": "mass-on-spring force model.",
+    "source": "new"
+  },
+  {
+    "category": "gaming/physics",
+    "file": "gaming/physics/verlet.eml",
+    "module": "verlet",
+    "functions": [
+      {
+        "name": "step",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "distance_constraint_correction",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "Verlet position-only integration step (cloth/rope).",
+    "source": "new"
+  },
+  {
+    "category": "gaming/shading",
+    "file": "gaming/shading/fresnel.eml",
+    "module": "fresnel",
+    "functions": [
+      {
+        "name": "schlick",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "schlick_at_grazing",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "schlick_at_normal",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "f0_from_ior",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "Schlick's approximation to the Fresnel term.",
+    "source": "new"
+  },
+  {
+    "category": "gaming/shading",
+    "file": "gaming/shading/matcap.eml",
+    "module": "matcap",
+    "functions": [
+      {
+        "name": "uv_u",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "uv_v",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "normal-based environment look-up (matcap shading).",
+    "source": "new"
+  },
+  {
+    "category": "gaming/shading",
+    "file": "gaming/shading/pbr_diffuse.eml",
+    "module": "pbr_diffuse",
+    "functions": [
+      {
+        "name": "lambert",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "lambert_normalised",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "half_lambert",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "Lambertian diffuse shading.",
+    "source": "new"
+  },
+  {
+    "category": "gaming/shading",
+    "file": "gaming/shading/pbr_specular.eml",
+    "module": "pbr_specular",
+    "functions": [
+      {
+        "name": "d_ggx",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "v_smith",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "specular",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "roughness_to_alpha",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "Cook-Torrance microfacet specular BRDF.",
+    "source": "new"
+  },
+  {
+    "category": "gaming/shading",
+    "file": "gaming/shading/subsurface.eml",
+    "module": "subsurface",
+    "functions": [
+      {
+        "name": "wrap",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "back_scatter",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "sss_total",
+        "chain_order": 1,
+        "verified": true
+      }
+    ],
+    "description": "Christensen-Burley subsurface scattering approx.",
+    "source": "new"
+  },
+  {
+    "category": "gaming/shading",
+    "file": "gaming/shading/toon.eml",
+    "module": "toon",
+    "functions": [
+      {
+        "name": "cel_diffuse",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "rim_light",
+        "chain_order": 1,
+        "verified": true
+      }
+    ],
+    "description": "step-based cel shading.",
+    "source": "new"
+  },
+  {
+    "category": "gaming/terrain",
+    "file": "gaming/terrain/biome_select.eml",
+    "module": "biome_select",
+    "functions": [
+      {
+        "name": "biome_id",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "temperature \u00d7 moisture biome classification.",
+    "source": "new"
+  },
+  {
+    "category": "gaming/terrain",
+    "file": "gaming/terrain/cliff_detect.eml",
+    "module": "cliff_detect",
+    "functions": [
+      {
+        "name": "gradient_magnitude",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "is_cliff",
+        "chain_order": 1,
+        "verified": true
+      }
+    ],
+    "description": "gradient-magnitude cliff detection.",
+    "source": "new"
+  },
+  {
+    "category": "gaming/terrain",
+    "file": "gaming/terrain/erosion_hydraulic.eml",
+    "module": "erosion_hydraulic",
+    "functions": [
+      {
+        "name": "capacity",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "eroded_amount",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "deposited_amount",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "updated_water",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "water flow + sediment transport step.",
+    "source": "new"
+  },
+  {
+    "category": "gaming/terrain",
+    "file": "gaming/terrain/erosion_thermal.eml",
+    "module": "erosion_thermal",
+    "functions": [
+      {
+        "name": "material_transfer",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "apply_self",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "apply_neighbour",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "talus-angle thermal erosion step.",
+    "source": "new"
+  },
+  {
+    "category": "gaming/terrain",
+    "file": "gaming/terrain/heightmap.eml",
+    "module": "heightmap",
+    "functions": [
+      {
+        "name": "height",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "ridged_height",
+        "chain_order": 1,
+        "verified": true
+      }
+    ],
+    "description": "FBM-driven heightmap generation.",
+    "source": "new"
+  },
+  {
+    "category": "gaming/textures",
+    "file": "gaming/textures/brick.eml",
+    "module": "brick",
+    "functions": [
+      {
+        "name": "pattern",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "modular brick grid with mortar gap + per-row offset.",
+    "source": "new"
+  },
+  {
+    "category": "gaming/textures",
+    "file": "gaming/textures/caustics.eml",
+    "module": "caustics",
+    "functions": [
+      {
+        "name": "intensity",
+        "chain_order": 1,
+        "verified": true
+      }
+    ],
+    "description": "refracted-light interference pattern.",
+    "source": "new"
+  },
+  {
+    "category": "gaming/textures",
+    "file": "gaming/textures/checkerboard.eml",
+    "module": "checkerboard",
+    "functions": [
+      {
+        "name": "checker",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "checker_tiled",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "canonical checkerboard pattern.",
+    "source": "new"
+  },
+  {
+    "category": "gaming/textures",
+    "file": "gaming/textures/fire.eml",
+    "module": "fire",
+    "functions": [
+      {
+        "name": "intensity",
+        "chain_order": 1,
+        "verified": true
+      }
+    ],
+    "description": "noise-advection fire texture.",
+    "source": "new"
+  },
+  {
+    "category": "gaming/textures",
+    "file": "gaming/textures/marble.eml",
+    "module": "marble",
+    "functions": [
+      {
+        "name": "marble",
+        "chain_order": 1,
+        "verified": true
+      }
+    ],
+    "description": "turbulence-perturbed sine ramp.",
+    "source": "new"
+  },
+  {
+    "category": "gaming/textures",
+    "file": "gaming/textures/rust.eml",
+    "module": "rust",
+    "functions": [
+      {
+        "name": "mask",
+        "chain_order": 1,
+        "verified": true
+      }
+    ],
+    "description": "Voronoi-driven rust / oxidation mask.",
+    "source": "new"
+  },
+  {
+    "category": "gaming/textures",
+    "file": "gaming/textures/water_surface.eml",
+    "module": "water_surface",
+    "functions": [
+      {
+        "name": "height",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "height_default",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "normal_y",
+        "chain_order": 1,
+        "verified": true
+      }
+    ],
+    "description": "sum-of-sines water height field.",
+    "source": "new"
+  },
+  {
+    "category": "gaming/textures",
+    "file": "gaming/textures/wood.eml",
+    "module": "wood",
+    "functions": [
+      {
+        "name": "grain",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "knot_mask",
+        "chain_order": 1,
+        "verified": true
+      }
+    ],
+    "description": "procedural wood-grain texture.",
+    "source": "new"
+  },
+  {
     "category": "math",
     "file": "math/abs.eml",
     "module": "abs_module",

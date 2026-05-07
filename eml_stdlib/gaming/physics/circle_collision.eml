@@ -1,0 +1,46 @@
+// circle_collision.eml -- circle-vs-circle intersection test.
+//
+//   collides = (centre_distance < r1 + r2)
+//   penetration_depth = (r1 + r2) - centre_distance
+//   collision_normal = (b - a).normalized()
+
+module circle_collision;
+
+@verify(lean, theorem = "circle_collide_in_zero_one")
+fn collides(ax: Real, ay: Real, ar: Real,
+            bx: Real, by: Real, br: Real) -> Real
+    where chain_order <= 1,
+          domain: ar >= 0.0 && br >= 0.0
+    ensures (result >= 0.0)
+    ensures (result <= 1.0)
+{
+    let dx: Real = bx - ax;
+    let dy: Real = by - ay;
+    let d: Real = sqrt(dx * dx + dy * dy);
+    if d < ar + br { 1.0 } else { 0.0 }
+}
+
+@verify(lean, theorem = "circle_penetration_signed")
+fn penetration_depth(ax: Real, ay: Real, ar: Real,
+                      bx: Real, by: Real, br: Real) -> Real
+    where chain_order <= 1,
+          domain: ar >= 0.0 && br >= 0.0
+{
+    let dx: Real = bx - ax;
+    let dy: Real = by - ay;
+    let d: Real = sqrt(dx * dx + dy * dy);
+    (ar + br) - d
+}
+
+// Returns 1.0 / d safely, used by callers building the collision
+// normal as (b - a) / d.
+@verify(lean, theorem = "circle_inv_distance_finite")
+fn inv_distance(ax: Real, ay: Real, bx: Real, by: Real) -> Real
+    where chain_order <= 1
+    ensures (result >= 0.0)
+{
+    let dx: Real = bx - ax;
+    let dy: Real = by - ay;
+    let d: Real = sqrt(dx * dx + dy * dy);
+    1.0 / max(d, 1.0e-6)
+}

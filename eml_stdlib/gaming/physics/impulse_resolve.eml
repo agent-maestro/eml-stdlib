@@ -1,0 +1,39 @@
+// impulse_resolve.eml -- collision response with restitution.
+//
+// For two bodies a, b with masses m_a, m_b, velocities v_a, v_b
+// along the contact normal, restitution e ∈ [0, 1]:
+//
+//   v_rel = v_a - v_b                       (closing speed)
+//   j = -(1 + e) * v_rel / (1/m_a + 1/m_b)  (impulse magnitude)
+//   v_a_new = v_a + j / m_a
+//   v_b_new = v_b - j / m_b
+
+module impulse_resolve;
+
+@verify(lean, theorem = "impulse_magnitude_signed")
+fn impulse_magnitude(v_a: Real, v_b: Real,
+                     m_a: Real, m_b: Real, restitution: Real) -> Real
+    where chain_order <= 0,
+          domain: m_a > 0.0 && m_b > 0.0
+    requires (restitution >= 0.0)
+    requires (restitution <= 1.0)
+{
+    let v_rel: Real = v_a - v_b;
+    -(1.0 + restitution) * v_rel / (1.0 / m_a + 1.0 / m_b)
+}
+
+@verify(lean, theorem = "impulse_apply_a_signed")
+fn velocity_a_after(v_a: Real, impulse_j: Real, m_a: Real) -> Real
+    where chain_order <= 0,
+          domain: m_a > 0.0
+{
+    v_a + impulse_j / m_a
+}
+
+@verify(lean, theorem = "impulse_apply_b_signed")
+fn velocity_b_after(v_b: Real, impulse_j: Real, m_b: Real) -> Real
+    where chain_order <= 0,
+          domain: m_b > 0.0
+{
+    v_b - impulse_j / m_b
+}

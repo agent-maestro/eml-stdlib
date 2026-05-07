@@ -1,0 +1,40 @@
+// ambient_occlusion.eml -- hemisphere-sampling AO approximation.
+//
+// SSAO-style scalar: how much of the upper hemisphere is occluded
+// by nearby geometry. The kernel here computes a per-sample
+// occlusion contribution (occluded if the sample is behind the
+// surface plane), letting the caller average across the kernel.
+
+module ambient_occlusion;
+
+// Single-sample contribution: returns 1.0 if occluded, 0.0 if
+// visible. `sample_depth` and `surface_depth` are world-space
+// depths; `radius` is the AO kernel radius for range-fading.
+@verify(lean, theorem = "ao_sample_in_unit_interval")
+fn sample_contribution(sample_depth: Real, surface_depth: Real,
+                       radius: Real) -> Real
+    where chain_order <= 0,
+          domain: radius > 0.0
+    ensures (result >= 0.0)
+    ensures (result <= 1.0)
+{
+    if sample_depth >= surface_depth {
+        0.0
+    } else {
+        // Range fade: closer occluders count more.
+        let range: Real = clamp(1.0 - (surface_depth - sample_depth) / radius, 0.0, 1.0);
+        range
+    }
+}
+
+// Final AO factor (1 = fully lit, 0 = fully occluded).
+@verify(lean, theorem = "ao_factor_in_unit_interval")
+fn ao_factor(occlusion_sum: Real, num_samples: Real) -> Real
+    where chain_order <= 0,
+          domain: num_samples > 0.0
+    requires (occlusion_sum >= 0.0)
+    ensures (result >= 0.0)
+    ensures (result <= 1.0)
+{
+    clamp(1.0 - occlusion_sum / num_samples, 0.0, 1.0)
+}

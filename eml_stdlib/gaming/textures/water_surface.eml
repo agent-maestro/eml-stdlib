@@ -1,0 +1,49 @@
+// water_surface.eml -- sum-of-sines water height field.
+//
+// Three layered sine waves with different frequencies, directions
+// and phase speeds. Cheap, plausible water you can drop into any
+// shader. For real-time rendering the caller animates the `time`
+// parameter.
+
+module water_surface;
+
+const PI: Real = 3.141592653589793
+
+@verify(lean, theorem = "water_height_signed")
+fn height(x: Real, y: Real, time_s: Real,
+          amp_a: Real, amp_b: Real, amp_c: Real) -> Real
+    where chain_order <= 1
+    requires (amp_a >= 0.0)
+    requires (amp_b >= 0.0)
+    requires (amp_c >= 0.0)
+{
+    let w_a: Real = sin(2.0 * PI * (0.10 * x + 0.05 * y) + 1.4 * time_s);
+    let w_b: Real = sin(2.0 * PI * (0.07 * x - 0.13 * y) + 0.9 * time_s);
+    let w_c: Real = sin(2.0 * PI * (0.21 * x + 0.18 * y) + 2.3 * time_s);
+    amp_a * w_a + amp_b * w_b + amp_c * w_c
+}
+
+// Default parameter set good enough for most water shaders.
+@verify(lean, theorem = "water_height_default_signed")
+fn height_default(x: Real, y: Real, time_s: Real) -> Real
+    where chain_order <= 1
+{
+    height(x, y, time_s, 0.5, 0.3, 0.15)
+}
+
+// Approximate normal of the height field for shading.
+@verify(lean, theorem = "water_normal_unit_length")
+fn normal_y(x: Real, y: Real, time_s: Real, eps: Real) -> Real
+    where chain_order <= 1,
+          domain: eps > 0.0
+    ensures (result >= 0.0)
+{
+    let h_x_plus: Real  = height_default(x + eps, y,       time_s);
+    let h_x_minus: Real = height_default(x - eps, y,       time_s);
+    let h_y_plus: Real  = height_default(x,       y + eps, time_s);
+    let h_y_minus: Real = height_default(x,       y - eps, time_s);
+    let dhx: Real = (h_x_plus - h_x_minus) / (2.0 * eps);
+    let dhy: Real = (h_y_plus - h_y_minus) / (2.0 * eps);
+    let n_y: Real = 1.0 / sqrt(1.0 + dhx * dhx + dhy * dhy);
+    clamp(n_y, 0.0, 1.0)
+}

@@ -1,0 +1,41 @@
+// biome_select.eml -- temperature × moisture biome classification.
+//
+// Whittaker's biome diagram: each biome is a region of
+// (temperature, moisture) space. Returns an integer biome id ∈
+// [0, 7]:
+//
+//   0 = tundra        (cold, dry)
+//   1 = boreal        (cold, wet)
+//   2 = grassland     (temperate, dry)
+//   3 = temperate_forest (temperate, mid)
+//   4 = rainforest    (temperate/hot, wet)
+//   5 = desert        (hot, dry)
+//   6 = savanna       (hot, mid)
+//   7 = tropical_dry  (hot, very dry)
+//
+// Inputs in [0, 1]. Pure piecewise.
+
+module biome_select;
+
+@verify(lean, theorem = "biome_id_in_band")
+fn biome_id(temperature: Real, moisture: Real) -> Real
+    where chain_order <= 0
+    requires (temperature >= 0.0)
+    requires (temperature <= 1.0)
+    requires (moisture >= 0.0)
+    requires (moisture <= 1.0)
+    ensures (result >= 0.0)
+    ensures (result <= 7.0)
+{
+    if temperature < 0.30 {
+        if moisture < 0.30 { 0.0 } else { 1.0 }   // tundra / boreal
+    } else if temperature < 0.65 {
+        if moisture < 0.30 { 2.0 }                // grassland
+        else if moisture < 0.65 { 3.0 }           // temperate_forest
+        else { 4.0 }                              // rainforest
+    } else {
+        if moisture < 0.20 { 5.0 }                // desert
+        else if moisture < 0.55 { 6.0 }           // savanna
+        else { 4.0 }                              // tropical rainforest
+    }
+}

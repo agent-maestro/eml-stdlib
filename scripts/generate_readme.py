@@ -31,6 +31,18 @@ CATEGORY_ORDER = [
     ("quantum",  "Quantum gates — Hadamard, Pauli, phase, CNOT, Grover oracle."),
     ("ml",         "Machine learning — activations, attention, RoPE, layernorm, loss."),
     ("ballistics", "Exterior ballistics — drag, gravity, wind, Coriolis, spin drift, air density, muzzle velocity, time of flight."),
+
+    # ── Gaming subcategories ────────────────────────────────────────
+    ("gaming/noise",     "Procedural noise — Perlin (2D/3D), Simplex, Voronoi, Worley, value noise, FBM, turbulence."),
+    ("gaming/textures",  "Procedural textures — wood, marble, brick, checkerboard, rust, water surface, caustics, fire."),
+    ("gaming/shading",   "Shading models — Lambertian + half-Lambert, Cook-Torrance GGX/Smith, Schlick Fresnel, toon, matcap, Burley SSS."),
+    ("gaming/lighting",  "Lighting — point + spot + area, ambient occlusion, exponential and squared-exponential fog."),
+    ("gaming/terrain",   "Terrain — FBM heightmaps, thermal + hydraulic erosion, biome classification, cliff detection."),
+    ("gaming/animation", "Animation — quadratic + cubic ease-in/out, smoothstep + smootherstep, damped springs, bounce, 2-bone IK."),
+    ("gaming/particles", "Particles — radial emitter, exponential drag, gravity, lifetime fade, size-over-life."),
+    ("gaming/camera",    "Camera — perspective FOV matrix, orbit (spherical), damped-noise shake, depth-of-field circle of confusion."),
+    ("gaming/audio",     "Audio — distance attenuation (linear/inverse/inverse-square), Doppler shift, feedback delay reverb, 1-pole low-pass."),
+    ("gaming/physics",   "Physics — semi-implicit Euler rigid-body 2D, AABB + circle collision, restitution-aware impulse resolve, Verlet, spring-damper, Archimedes buoyancy."),
 ]
 
 
@@ -44,13 +56,20 @@ def main() -> None:
     lines += [
         "# eml-stdlib",
         "",
-        "Verified standard library for the [EML](https://github.com/agent-maestro/forge) language.",
-        "Every module compiles to Python and Lean (and 33 other backends via Forge); ",
-        "every `@verify` contract has a Lean proof obligation against MachLib.",
+        "**The first verified standard library for game development.**",
+        "Every shader, every texture, every physics formula — with a mathematical proof.",
+        "",
+        "Plus the math, signal-processing, control, biology, ballistics, and ML kernels",
+        "that built the rest of the Monogate stack. Every module compiles to GDScript,",
+        "GLSL, HLSL, C, Python, and Lean (and ~30 other backends via Forge); every",
+        "`@verify` contract has a Lean proof obligation against MachLib.",
         "",
         "```bash",
         "pip install eml-stdlib",
+        "eml-compile eml_stdlib/gaming/shading/pbr_specular.eml --target glsl",
         "```",
+        "",
+        "And get a verified PBR specular shader.",
         "",
     ]
 

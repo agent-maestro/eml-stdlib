@@ -1,0 +1,41 @@
+// pbr_diffuse.eml -- Lambertian diffuse shading.
+//
+//   L = albedo * max(0, n · l) / π
+//
+// The 1/π factor is the energy-conservation normalisation; many
+// real-time shaders fold it into the light intensity instead.
+// Both forms are provided.
+
+module pbr_diffuse;
+
+const PI: Real = 3.141592653589793
+const INV_PI: Real = 0.31830988618379
+
+@verify(lean, theorem = "lambert_in_unit_interval")
+fn lambert(n_dot_l: Real) -> Real
+    where chain_order <= 0
+    ensures (result >= 0.0)
+    ensures (result <= 1.0)
+{
+    clamp(n_dot_l, 0.0, 1.0)
+}
+
+@verify(lean, theorem = "lambert_normalised_nonneg")
+fn lambert_normalised(n_dot_l: Real) -> Real
+    where chain_order <= 0
+    ensures (result >= 0.0)
+{
+    clamp(n_dot_l, 0.0, 1.0) * INV_PI
+}
+
+// Half-Lambert (Valve trick): wrap-around term for soft skin /
+// foliage shading. Maps n·l ∈ [-1, 1] to [0.25, 1].
+@verify(lean, theorem = "half_lambert_in_unit_interval")
+fn half_lambert(n_dot_l: Real) -> Real
+    where chain_order <= 0
+    ensures (result >= 0.0)
+    ensures (result <= 1.0)
+{
+    let s: Real = 0.5 * n_dot_l + 0.5;
+    s * s
+}

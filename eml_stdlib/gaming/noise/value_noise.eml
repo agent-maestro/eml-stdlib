@@ -1,0 +1,45 @@
+// value_noise.eml -- interpolated lattice noise.
+//
+// Sample an integer-grid hash at four corners of a 2D cell, then
+// bilinearly interpolate via the smoothstep ease curve so the
+// result is C¹ continuous. Chain order 1 (one fract / smoothstep
+// composition; the lattice hash is already chain-0 internally).
+
+module value_noise;
+
+use stdlib::gaming::noise::white_noise;
+
+@verify(lean, theorem = "value_noise_in_unit_interval")
+fn value2(x: Real, y: Real) -> Real
+    where chain_order <= 1
+    ensures (result >= 0.0)
+    ensures (result <= 1.0)
+{
+    let xi: Real = floor(x);
+    let yi: Real = floor(y);
+    let xf: Real = x - xi;
+    let yf: Real = y - yi;
+
+    let v00: Real = white_noise::hash2(xi,       yi);
+    let v10: Real = white_noise::hash2(xi + 1.0, yi);
+    let v01: Real = white_noise::hash2(xi,       yi + 1.0);
+    let v11: Real = white_noise::hash2(xi + 1.0, yi + 1.0);
+
+    // Smoothstep weights.
+    let u: Real = xf * xf * (3.0 - 2.0 * xf);
+    let v: Real = yf * yf * (3.0 - 2.0 * yf);
+
+    let lerp_x0: Real = v00 + u * (v10 - v00);
+    let lerp_x1: Real = v01 + u * (v11 - v01);
+    lerp_x0 + v * (lerp_x1 - lerp_x0)
+}
+
+// Signed variant centred on 0: result ∈ [-1, 1].
+@verify(lean, theorem = "value_noise_signed_in_band")
+fn value2_signed(x: Real, y: Real) -> Real
+    where chain_order <= 1
+    ensures (result >= -1.0)
+    ensures (result <=  1.0)
+{
+    2.0 * value2(x, y) - 1.0
+}

@@ -1,0 +1,32 @@
+// gravity_particle.eml -- ballistic motion under gravity.
+//
+//   y(t) = y_0 + v_0 t - ½ g t²
+//   vy(t) = v_0 - g t
+
+module gravity_particle;
+
+const G_EARTH: Real = 9.80665
+
+@verify(lean, theorem = "gravity_particle_position_signed")
+fn position(y_0: Real, v_0_y: Real, g: Real, t_s: Real) -> Real
+    where chain_order <= 0,
+          domain: g >= 0.0 && t_s >= 0.0
+{
+    y_0 + v_0_y * t_s - 0.5 * g * t_s * t_s
+}
+
+@verify(lean, theorem = "gravity_particle_velocity_signed")
+fn velocity(v_0_y: Real, g: Real, t_s: Real) -> Real
+    where chain_order <= 0,
+          domain: g >= 0.0 && t_s >= 0.0
+{
+    v_0_y - g * t_s
+}
+
+@verify(lean, theorem = "gravity_particle_position_earth_signed")
+fn position_earth(y_0: Real, v_0_y: Real, t_s: Real) -> Real
+    where chain_order <= 0,
+          domain: t_s >= 0.0
+{
+    y_0 + v_0_y * t_s - 0.5 * G_EARTH * t_s * t_s
+}

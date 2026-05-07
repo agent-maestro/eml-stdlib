@@ -1,0 +1,50 @@
+// distance_attenuation.eml -- 3D audio falloff models.
+//
+// Three common laws:
+//   inverse:    a = ref_dist / max(d, ref_dist)
+//   inv_square: a = ref_dist² / max(d, ref_dist)²       (physical)
+//   linear:     a = max(0, 1 - (d - ref_dist) / (max_dist - ref_dist))
+//
+// Output ∈ [0, 1]: 1 = full volume at ref_dist, 0 = silent at max_dist.
+
+module distance_attenuation;
+
+@verify(lean, theorem = "audio_attenuation_inverse_in_unit_interval")
+fn inverse(distance_m: Real, ref_distance_m: Real) -> Real
+    where chain_order <= 0,
+          domain: distance_m >= 0.0 && ref_distance_m > 0.0
+    ensures (result >= 0.0)
+    ensures (result <= 1.0)
+{
+    let d: Real = max(distance_m, ref_distance_m);
+    ref_distance_m / d
+}
+
+@verify(lean, theorem = "audio_attenuation_inverse_square_in_unit_interval")
+fn inverse_square(distance_m: Real, ref_distance_m: Real) -> Real
+    where chain_order <= 0,
+          domain: distance_m >= 0.0 && ref_distance_m > 0.0
+    ensures (result >= 0.0)
+    ensures (result <= 1.0)
+{
+    let d: Real = max(distance_m, ref_distance_m);
+    let ratio: Real = ref_distance_m / d;
+    ratio * ratio
+}
+
+@verify(lean, theorem = "audio_attenuation_linear_in_unit_interval")
+fn linear(distance_m: Real, ref_distance_m: Real, max_distance_m: Real) -> Real
+    where chain_order <= 0,
+          domain: distance_m >= 0.0 && max_distance_m > ref_distance_m
+    ensures (result >= 0.0)
+    ensures (result <= 1.0)
+{
+    if distance_m <= ref_distance_m {
+        1.0
+    } else if distance_m >= max_distance_m {
+        0.0
+    } else {
+        clamp(1.0 - (distance_m - ref_distance_m) / (max_distance_m - ref_distance_m),
+              0.0, 1.0)
+    }
+}

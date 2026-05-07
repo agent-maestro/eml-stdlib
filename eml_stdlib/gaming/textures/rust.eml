@@ -1,0 +1,23 @@
+// rust.eml -- Voronoi-driven rust / oxidation mask.
+//
+// Combine Voronoi cells (irregular pitting) with FBM erosion (the
+// flow patterns where moisture pools). Output ∈ [0, 1] — pipe into
+// a brown-orange colour ramp.
+
+module rust;
+
+use stdlib::gaming::noise::voronoi_2d;
+use stdlib::gaming::noise::fbm;
+
+@verify(lean, theorem = "rust_mask_in_unit_interval")
+fn mask(x: Real, y: Real, pitting_strength: Real, flow_strength: Real) -> Real
+    where chain_order <= 1,
+          domain: pitting_strength >= 0.0 && flow_strength >= 0.0
+    ensures (result >= 0.0)
+    ensures (result <= 1.0)
+{
+    let pit: Real = clamp(1.0 - voronoi_2d::distance_to_nearest(x * 0.5, y * 0.5),
+                          0.0, 1.0);
+    let flow: Real = fbm::fbm2_unit(x * 0.7, y * 0.7);
+    clamp(pitting_strength * pit + flow_strength * flow, 0.0, 1.0)
+}

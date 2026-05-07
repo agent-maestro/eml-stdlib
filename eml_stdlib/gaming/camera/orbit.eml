@@ -1,0 +1,48 @@
+// orbit.eml -- spherical-coordinates orbit camera.
+//
+//   x = r * cos(φ) * sin(θ)
+//   y = r * sin(φ)
+//   z = r * cos(φ) * cos(θ)
+//
+// θ = azimuth (around y-axis), φ = elevation (above XZ plane), r = radius.
+
+module orbit;
+
+@verify(lean, theorem = "orbit_x_in_band")
+fn position_x(r: Real, theta_rad: Real, phi_rad: Real) -> Real
+    where chain_order <= 1,
+          domain: r >= 0.0
+    ensures (abs(result) <= r)
+{
+    r * cos(phi_rad) * sin(theta_rad)
+}
+
+@verify(lean, theorem = "orbit_y_in_band")
+fn position_y(r: Real, phi_rad: Real) -> Real
+    where chain_order <= 1,
+          domain: r >= 0.0
+    ensures (abs(result) <= r)
+{
+    r * sin(phi_rad)
+}
+
+@verify(lean, theorem = "orbit_z_in_band")
+fn position_z(r: Real, theta_rad: Real, phi_rad: Real) -> Real
+    where chain_order <= 1,
+          domain: r >= 0.0
+    ensures (abs(result) <= r)
+{
+    r * cos(phi_rad) * cos(theta_rad)
+}
+
+// Pythagorean witness: x² + y² + z² = r²
+@verify(lean, theorem = "orbit_norm_witness")
+fn norm_witness(theta_rad: Real, phi_rad: Real) -> Real
+    where chain_order <= 1
+    ensures (result == 1.0)
+{
+    let cx: Real = cos(phi_rad) * sin(theta_rad);
+    let sy: Real = sin(phi_rad);
+    let cz: Real = cos(phi_rad) * cos(theta_rad);
+    cx * cx + sy * sy + cz * cz
+}

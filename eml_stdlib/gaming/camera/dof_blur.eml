@@ -1,0 +1,30 @@
+// dof_blur.eml -- depth-of-field circle of confusion.
+//
+//   coc = aperture * |z_depth - z_focus| / z_depth
+//
+// `coc` is the circle of confusion radius in screen-space pixels;
+// the post-process samples a disc of that radius around each
+// fragment for the blur.
+
+module dof_blur;
+
+@verify(lean, theorem = "coc_nonneg")
+fn circle_of_confusion(aperture: Real, z_depth: Real, z_focus: Real) -> Real
+    where chain_order <= 0,
+          domain: aperture >= 0.0 && z_depth > 0.0
+    ensures (result >= 0.0)
+{
+    aperture * abs(z_depth - z_focus) / z_depth
+}
+
+// Clamp the COC to a maximum radius (texture sample budget).
+@verify(lean, theorem = "coc_clamped_in_band")
+fn circle_of_confusion_clamped(aperture: Real, z_depth: Real,
+                                z_focus: Real, max_radius_px: Real) -> Real
+    where chain_order <= 0,
+          domain: aperture >= 0.0 && z_depth > 0.0 && max_radius_px >= 0.0
+    ensures (result >= 0.0)
+    ensures (result <= max_radius_px)
+{
+    clamp(aperture * abs(z_depth - z_focus) / z_depth, 0.0, max_radius_px)
+}

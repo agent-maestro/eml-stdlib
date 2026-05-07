@@ -1,0 +1,30 @@
+// drag.eml -- exponential velocity decay (linear drag model).
+//
+//   v(t) = v_0 * exp(-k * t)
+//
+// k is the drag coefficient (1/s). For quadratic drag use the
+// stdlib::ballistics::drag kernel instead.
+
+module particle_drag;
+
+@verify(lean, theorem = "particle_drag_velocity_nonneg")
+fn velocity(v_0: Real, k_drag: Real, t_s: Real) -> Real
+    where chain_order <= 1,
+          domain: k_drag >= 0.0 && t_s >= 0.0
+    requires (v_0 >= 0.0)
+    ensures (result >= 0.0)
+    ensures (result <= v_0)
+{
+    v_0 * exp(-k_drag * t_s)
+}
+
+// Distance covered from t=0 to t=T:  x(T) = v_0/k * (1 - exp(-k*T))
+@verify(lean, theorem = "particle_drag_distance_nonneg")
+fn distance_covered(v_0: Real, k_drag: Real, t_s: Real) -> Real
+    where chain_order <= 1,
+          domain: k_drag > 0.0 && t_s >= 0.0
+    requires (v_0 >= 0.0)
+    ensures (result >= 0.0)
+{
+    (v_0 / k_drag) * (1.0 - exp(-k_drag * t_s))
+}

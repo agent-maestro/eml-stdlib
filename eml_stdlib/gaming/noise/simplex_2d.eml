@@ -1,0 +1,67 @@
+// simplex_2d.eml -- 2D simplex noise.
+//
+// Ken Perlin's simplex noise is faster than Perlin (3 corners vs
+// 4 in 2D, 4 vs 8 in 3D) and free of the directional-axis
+// artefacts the cubic lattice produces.
+//
+// The skewed coordinate transform maps (x, y) into a triangular
+// simplex grid; the contribution from each of the three nearest
+// simplex vertices is summed with a smooth radial falloff.
+//
+// Chain order 1 (sqrt + hash inside white_noise).
+
+module simplex_2d;
+
+use stdlib::gaming::noise::white_noise;
+
+const F2: Real = 0.366025404    // (sqrt(3) - 1) / 2
+const G2: Real = 0.211324865    // (3 - sqrt(3)) / 6
+
+fn _grad_dot(xi: Real, yi: Real, dx: Real, dy: Real) -> Real
+    where chain_order <= 1
+{
+    let h: Real = white_noise::hash2(xi, yi);
+    let q: Real = floor(h * 8.0);
+    let theta: Real = q * 0.78539816;   // π/4 increments → 8 directions
+    cos(theta) * dx + sin(theta) * dy
+}
+
+@verify(lean, theorem = "simplex2_in_signed_unit_band")
+fn simplex2(x: Real, y: Real) -> Real
+    where chain_order <= 1
+    ensures (result >= -1.0)
+    ensures (result <=  1.0)
+{
+    // Skew the input space to the simplex grid.
+    let s: Real = (x + y) * F2;
+    let xi: Real = floor(x + s);
+    let yi: Real = floor(y + s);
+    let t: Real = (xi + yi) * G2;
+    let x0: Real = x - (xi - t);
+    let y0: Real = y - (yi - t);
+
+    // Pick which of two simplex triangles we're in.
+    let i1: Real = if x0 > y0 { 1.0 } else { 0.0 };
+    let j1: Real = if x0 > y0 { 0.0 } else { 1.0 };
+
+    let x1: Real = x0 - i1 + G2;
+    let y1: Real = y0 - j1 + G2;
+    let x2: Real = x0 - 1.0 + 2.0 * G2;
+    let y2: Real = y0 - 1.0 + 2.0 * G2;
+
+    fn _contribution(xi_local: Real, yi_local: Real, dx: Real, dy: Real) -> Real
+        where chain_order <= 1
+    {
+        let t_sq: Real = 0.5 - dx * dx - dy * dy;
+        if t_sq <= 0.0 { 0.0 } else {
+            let t4: Real = t_sq * t_sq * t_sq * t_sq;
+            t4 * _grad_dot(xi_local, yi_local, dx, dy)
+        }
+    }
+
+    let n0: Real = _contribution(xi,        yi,        x0, y0);
+    let n1: Real = _contribution(xi + i1,   yi + j1,   x1, y1);
+    let n2: Real = _contribution(xi + 1.0,  yi + 1.0,  x2, y2);
+
+    clamp(70.0 * (n0 + n1 + n2), -1.0, 1.0)
+}

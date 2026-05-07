@@ -1,0 +1,32 @@
+// lowpass_audio.eml -- first-order IIR low-pass for audio.
+//
+//   y[n] = α * x[n] + (1 - α) * y[n-1]
+//
+// Where α = dt / (RC + dt) maps cutoff frequency to coefficient.
+// Used for muffling audio behind walls, motion blur on sound,
+// or simulating a chest-cavity filter on bullet impacts.
+
+module lowpass_audio;
+
+const TWO_PI: Real = 6.283185307179586
+
+@verify(lean, theorem = "lowpass_alpha_in_unit_interval")
+fn alpha_from_cutoff(cutoff_hz: Real, sample_rate_hz: Real) -> Real
+    where chain_order <= 0,
+          domain: cutoff_hz > 0.0 && sample_rate_hz > 0.0
+    ensures (result >= 0.0)
+    ensures (result <= 1.0)
+{
+    let dt: Real = 1.0 / sample_rate_hz;
+    let rc: Real = 1.0 / (TWO_PI * cutoff_hz);
+    clamp(dt / (rc + dt), 0.0, 1.0)
+}
+
+@verify(lean, theorem = "lowpass_step_signed_bounded")
+fn step(x_n: Real, y_prev: Real, alpha: Real) -> Real
+    where chain_order <= 0
+    requires (alpha >= 0.0)
+    requires (alpha <= 1.0)
+{
+    alpha * x_n + (1.0 - alpha) * y_prev
+}

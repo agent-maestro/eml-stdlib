@@ -1,0 +1,57 @@
+// fresnel.eml -- Schlick's approximation to the Fresnel term.
+//
+//   F = F₀ + (1 - F₀) * (1 - cos θ)⁵
+//
+// F₀ is the reflectance at normal incidence (0.04 for dielectrics,
+// material-specific for metals). cos θ = max(0, n · v).
+
+module fresnel;
+
+@verify(lean, theorem = "fresnel_schlick_in_band")
+fn schlick(f0: Real, cos_theta: Real) -> Real
+    where chain_order <= 0
+    requires (f0 >= 0.0)
+    requires (f0 <= 1.0)
+    ensures (result >= 0.0)
+    ensures (result <= 1.0)
+{
+    let c: Real = clamp(1.0 - cos_theta, 0.0, 1.0);
+    let c5: Real = c * c * c * c * c;
+    clamp(f0 + (1.0 - f0) * c5, 0.0, 1.0)
+}
+
+// Boundary witness: at grazing angle (cos θ = 0) Schlick collapses
+// to 1. At normal incidence (cos θ = 1) it collapses to f0.
+@verify(lean, theorem = "fresnel_at_grazing_is_one")
+fn schlick_at_grazing(f0: Real) -> Real
+    where chain_order <= 0
+    requires (f0 >= 0.0)
+    requires (f0 <= 1.0)
+    ensures (result == 1.0)
+{
+    f0 + (1.0 - f0) * 1.0
+}
+
+@verify(lean, theorem = "fresnel_at_normal_incidence_is_f0")
+fn schlick_at_normal(f0: Real) -> Real
+    where chain_order <= 0
+    requires (f0 >= 0.0)
+    requires (f0 <= 1.0)
+    ensures (result == f0)
+{
+    f0 + (1.0 - f0) * 0.0
+}
+
+// Convenience: F₀ for a material with the given index of refraction
+// vs air.
+//   F₀ = ((n - 1) / (n + 1))²
+@verify(lean, theorem = "f0_from_ior_in_unit_interval")
+fn f0_from_ior(n_material: Real) -> Real
+    where chain_order <= 0,
+          domain: n_material > 0.0
+    ensures (result >= 0.0)
+    ensures (result <= 1.0)
+{
+    let r: Real = (n_material - 1.0) / (n_material + 1.0);
+    clamp(r * r, 0.0, 1.0)
+}

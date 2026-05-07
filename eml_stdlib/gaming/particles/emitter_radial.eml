@@ -1,0 +1,35 @@
+// emitter_radial.eml -- radial particle emitter velocity.
+//
+//   v = direction * (speed + random_in([-spread, +spread]))
+//
+// Caller supplies the unit `direction` and a per-particle random
+// scalar ∈ [-1, 1]; the kernel returns the velocity magnitude.
+
+module emitter_radial;
+
+@verify(lean, theorem = "emitter_speed_nonneg_when_spread_le_speed")
+fn velocity_magnitude(speed: Real, spread: Real, random_unit: Real) -> Real
+    where chain_order <= 0
+    requires (speed >= 0.0)
+    requires (spread >= 0.0)
+    requires (random_unit >= -1.0)
+    requires (random_unit <=  1.0)
+    requires (spread <= speed)
+    ensures (result >= 0.0)
+{
+    speed + spread * random_unit
+}
+
+// Emit position offset: random point on a disc of radius `disc_r`,
+// returned as a magnitude (caller uses the random angle).
+@verify(lean, theorem = "emitter_disc_offset_in_band")
+fn disc_offset(disc_r: Real, random_unit: Real) -> Real
+    where chain_order <= 0,
+          domain: disc_r >= 0.0
+    requires (random_unit >= 0.0)
+    requires (random_unit <= 1.0)
+    ensures (result >= 0.0)
+    ensures (result <= disc_r)
+{
+    disc_r * sqrt(clamp(random_unit, 0.0, 1.0))
+}

@@ -1,0 +1,35 @@
+// cliff_detect.eml -- gradient-magnitude cliff detection.
+//
+// Given a heightmap sampled at four neighbours of a centre point,
+// the gradient magnitude is the slope. If it exceeds the threshold
+// the cell is "cliff" (1.0); below, "non-cliff" (0.0).
+//
+//   gradient_magnitude = sqrt((dh/dx)² + (dh/dy)²)
+//   is_cliff = gradient_magnitude > threshold
+
+module cliff_detect;
+
+@verify(lean, theorem = "cliff_gradient_magnitude_nonneg")
+fn gradient_magnitude(h_left: Real, h_right: Real,
+                      h_down: Real, h_up: Real, dx_m: Real) -> Real
+    where chain_order <= 1,
+          domain: dx_m > 0.0
+    ensures (result >= 0.0)
+{
+    let dhx: Real = (h_right - h_left) / (2.0 * dx_m);
+    let dhy: Real = (h_up - h_down) / (2.0 * dx_m);
+    sqrt(dhx * dhx + dhy * dhy)
+}
+
+@verify(lean, theorem = "cliff_classification_in_zero_one")
+fn is_cliff(h_left: Real, h_right: Real,
+            h_down: Real, h_up: Real, dx_m: Real,
+            slope_threshold: Real) -> Real
+    where chain_order <= 1,
+          domain: dx_m > 0.0 && slope_threshold >= 0.0
+    ensures (result >= 0.0)
+    ensures (result <= 1.0)
+{
+    let mag: Real = gradient_magnitude(h_left, h_right, h_down, h_up, dx_m);
+    if mag > slope_threshold { 1.0 } else { 0.0 }
+}

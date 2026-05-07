@@ -1,0 +1,43 @@
+// buoyancy.eml -- Archimedes' principle for water / fluid bodies.
+//
+//   F_buoyancy = rho_fluid * g * V_submerged
+//
+// rho_fluid in kg/m³, g in m/s², V_submerged in m³. Positive value
+// means upward (opposing gravity).
+
+module buoyancy;
+
+const RHO_WATER: Real = 1000.0    // kg/m³
+const G_EARTH:   Real = 9.80665
+
+@verify(lean, theorem = "buoyancy_force_nonneg")
+fn force(rho_fluid: Real, g: Real, volume_submerged: Real) -> Real
+    where chain_order <= 0,
+          domain: rho_fluid >= 0.0 && g >= 0.0 && volume_submerged >= 0.0
+    ensures (result >= 0.0)
+{
+    rho_fluid * g * volume_submerged
+}
+
+@verify(lean, theorem = "buoyancy_water_force_nonneg")
+fn force_in_water(volume_submerged: Real) -> Real
+    where chain_order <= 0,
+          domain: volume_submerged >= 0.0
+    ensures (result >= 0.0)
+{
+    RHO_WATER * G_EARTH * volume_submerged
+}
+
+// Volume of a sphere of radius r submerged to depth d (d in [0, 2r]).
+//   V = π * d² * (3r - d) / 3
+@verify(lean, theorem = "sphere_submerged_volume_in_band")
+fn sphere_submerged_volume(radius: Real, depth: Real) -> Real
+    where chain_order <= 0,
+          domain: radius >= 0.0
+    requires (depth >= 0.0)
+    requires (depth <= 2.0 * radius)
+    ensures (result >= 0.0)
+{
+    let pi: Real = 3.141592653589793;
+    pi * depth * depth * (3.0 * radius - depth) / 3.0
+}

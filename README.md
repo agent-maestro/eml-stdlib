@@ -1,18 +1,25 @@
 # eml-stdlib
 
-Verified standard library for the [EML](https://github.com/agent-maestro/forge) language.
-Every module compiles to Python and Lean (and 33 other backends via Forge); 
-every `@verify` contract has a Lean proof obligation against MachLib.
+**The first verified standard library for game development.**
+Every shader, every texture, every physics formula — with a mathematical proof.
+
+Plus the math, signal-processing, control, biology, ballistics, and ML kernels
+that built the rest of the Monogate stack. Every module compiles to GDScript,
+GLSL, HLSL, C, Python, and Lean (and ~30 other backends via Forge); every
+`@verify` contract has a Lean proof obligation against MachLib.
 
 ```bash
 pip install eml-stdlib
+eml-compile eml_stdlib/gaming/shading/pbr_specular.eml --target glsl
 ```
+
+And get a verified PBR specular shader.
 
 ## At a glance
 
-- **108 modules** across **11 categories**
-- **345 functions** total
-- **297 carry an `@verify(lean, …)` contract** (86%)
+- **168 modules** across **21 categories**
+- **491 functions** total
+- **436 carry an `@verify(lean, …)` contract** (88%)
 - Every function declares its **Pfaffian chain order** in the type
 
 ## Use
@@ -220,6 +227,136 @@ Exterior ballistics — drag, gravity, wind, Coriolis, spin drift, air density, 
 | `spin_drift.eml` | drift_inches_litz, drift_metres_litz, drift_metres_surrogate, … (+1) | 0,1 | 4/4 | **new** |
 | `time_of_flight.eml` | tof_vacuum, tof_constant_decel, tof_pejsa, … (+2) | 0,1 | 5/5 | **new** |
 | `wind.eml` | drift, relative_airspeed, perp_component, … (+2) | 0,1 | 5/5 | **new** |
+
+### `gaming/noise/` — 9 modules / 25 fns / 18 verified
+
+Procedural noise — Perlin (2D/3D), Simplex, Voronoi, Worley, value noise, FBM, turbulence.
+
+| File | Functions | Chain | Verified | Origin |
+|------|-----------|-------|----------|--------|
+| `noise/fbm.eml` | fbm2, fbm2_default, fbm2_unit | 1 | 3/3 | **new** |
+| `noise/perlin_2d.eml` | _grad_dot, perlin2, perlin2_unit | 1 | 2/3 | **new** |
+| `noise/perlin_3d.eml` | _grad_dot3, perlin3 | 1 | 1/2 | **new** |
+| `noise/simplex_2d.eml` | _grad_dot, simplex2, _contribution | 1 | 1/3 | **new** |
+| `noise/turbulence.eml` | turbulence2, turbulence2_default | 1 | 2/2 | **new** |
+| `noise/value_noise.eml` | value2, value2_signed | 1 | 2/2 | **new** |
+| `noise/voronoi_2d.eml` | distance_to_nearest, _cell_distance, f2_minus_f1 | 1 | 2/3 | **new** |
+| `noise/white_noise.eml` | hash2, hash3, hash2_at_origin | 0,1 | 3/3 | **new** |
+| `noise/worley.eml` | squared_distance, _cell_sq_dist, manhattan_distance, … (+1) | 0 | 2/4 | **new** |
+
+### `gaming/textures/` — 8 modules / 12 fns / 12 verified
+
+Procedural textures — wood, marble, brick, checkerboard, rust, water surface, caustics, fire.
+
+| File | Functions | Chain | Verified | Origin |
+|------|-----------|-------|----------|--------|
+| `textures/brick.eml` | pattern | 0 | 1/1 | **new** |
+| `textures/caustics.eml` | intensity | 1 | 1/1 | **new** |
+| `textures/checkerboard.eml` | checker, checker_tiled | 0 | 2/2 | **new** |
+| `textures/fire.eml` | intensity | 1 | 1/1 | **new** |
+| `textures/marble.eml` | marble | 1 | 1/1 | **new** |
+| `textures/rust.eml` | mask | 1 | 1/1 | **new** |
+| `textures/water_surface.eml` | height, height_default, normal_y | 1 | 3/3 | **new** |
+| `textures/wood.eml` | grain, knot_mask | 1 | 2/2 | **new** |
+
+### `gaming/shading/` — 6 modules / 18 fns / 18 verified
+
+Shading models — Lambertian + half-Lambert, Cook-Torrance GGX/Smith, Schlick Fresnel, toon, matcap, Burley SSS.
+
+| File | Functions | Chain | Verified | Origin |
+|------|-----------|-------|----------|--------|
+| `shading/fresnel.eml` | schlick, schlick_at_grazing, schlick_at_normal, f0_from_ior | 0 | 4/4 | **new** |
+| `shading/matcap.eml` | uv_u, uv_v | 0 | 2/2 | **new** |
+| `shading/pbr_diffuse.eml` | lambert, lambert_normalised, half_lambert | 0 | 3/3 | **new** |
+| `shading/pbr_specular.eml` | d_ggx, v_smith, specular, roughness_to_alpha | 0,1 | 4/4 | **new** |
+| `shading/subsurface.eml` | wrap, back_scatter, sss_total | 0,1 | 3/3 | **new** |
+| `shading/toon.eml` | cel_diffuse, rim_light | 0,1 | 2/2 | **new** |
+
+### `gaming/lighting/` — 6 modules / 12 fns / 12 verified
+
+Lighting — point + spot + area, ambient occlusion, exponential and squared-exponential fog.
+
+| File | Functions | Chain | Verified | Origin |
+|------|-----------|-------|----------|--------|
+| `lighting/ambient_occlusion.eml` | sample_contribution, ao_factor | 0 | 2/2 | **new** |
+| `lighting/area_light.eml` | closest_on_sphere, solid_angle_fraction | 1 | 2/2 | **new** |
+| `lighting/fog_exp.eml` | fog_factor, transmittance | 1 | 2/2 | **new** |
+| `lighting/fog_exp2.eml` | fog_factor, transmittance | 1 | 2/2 | **new** |
+| `lighting/point_light.eml` | attenuation, inverse_square | 0 | 2/2 | **new** |
+| `lighting/spot_light.eml` | cone_attenuation, attenuation | 0 | 2/2 | **new** |
+
+### `gaming/terrain/` — 5 modules / 12 fns / 12 verified
+
+Terrain — FBM heightmaps, thermal + hydraulic erosion, biome classification, cliff detection.
+
+| File | Functions | Chain | Verified | Origin |
+|------|-----------|-------|----------|--------|
+| `terrain/biome_select.eml` | biome_id | 0 | 1/1 | **new** |
+| `terrain/cliff_detect.eml` | gradient_magnitude, is_cliff | 1 | 2/2 | **new** |
+| `terrain/erosion_hydraulic.eml` | capacity, eroded_amount, deposited_amount, updated_water | 0 | 4/4 | **new** |
+| `terrain/erosion_thermal.eml` | material_transfer, apply_self, apply_neighbour | 0 | 3/3 | **new** |
+| `terrain/heightmap.eml` | height, ridged_height | 1 | 2/2 | **new** |
+
+### `gaming/animation/` — 6 modules / 14 fns / 14 verified
+
+Animation — quadratic + cubic ease-in/out, smoothstep + smootherstep, damped springs, bounce, 2-bone IK.
+
+| File | Functions | Chain | Verified | Origin |
+|------|-----------|-------|----------|--------|
+| `animation/bounce.eml` | bounce_out, bounce_in | 0 | 2/2 | **new** |
+| `animation/ease_in.eml` | ease_in_quad, ease_in_cubic | 0 | 2/2 | **new** |
+| `animation/ease_in_out.eml` | smoothstep, smootherstep | 0 | 2/2 | **new** |
+| `animation/ease_out.eml` | ease_out_quad, ease_out_cubic | 0 | 2/2 | **new** |
+| `animation/ik_2bone.eml` | elbow_angle, shoulder_offset, reachable | 0,1 | 3/3 | **new** |
+| `animation/spring.eml` | underdamped, critically_damped, time_constant | 0,1 | 3/3 | **new** |
+
+### `gaming/particles/` — 5 modules / 11 fns / 11 verified
+
+Particles — radial emitter, exponential drag, gravity, lifetime fade, size-over-life.
+
+| File | Functions | Chain | Verified | Origin |
+|------|-----------|-------|----------|--------|
+| `particles/drag.eml` | velocity, distance_covered | 1 | 2/2 | **new** |
+| `particles/emitter_radial.eml` | velocity_magnitude, disc_offset | 0 | 2/2 | **new** |
+| `particles/fade.eml` | alpha, alpha_in_out | 0 | 2/2 | **new** |
+| `particles/gravity_particle.eml` | position, velocity, position_earth | 0 | 3/3 | **new** |
+| `particles/size_over_life.eml` | radius_linear, radius_power | 0,1 | 2/2 | **new** |
+
+### `gaming/camera/` — 4 modules / 11 fns / 11 verified
+
+Camera — perspective FOV matrix, orbit (spherical), damped-noise shake, depth-of-field circle of confusion.
+
+| File | Functions | Chain | Verified | Origin |
+|------|-----------|-------|----------|--------|
+| `camera/dof_blur.eml` | circle_of_confusion, circle_of_confusion_clamped | 0 | 2/2 | **new** |
+| `camera/fov_projection.eml` | m00, m11, m22, m23 | 0,2 | 4/4 | **new** |
+| `camera/orbit.eml` | position_x, position_y, position_z, norm_witness | 1 | 4/4 | **new** |
+| `camera/shake.eml` | shake1d | 1 | 1/1 | **new** |
+
+### `gaming/audio/` — 4 modules / 10 fns / 10 verified
+
+Audio — distance attenuation (linear/inverse/inverse-square), Doppler shift, feedback delay reverb, 1-pole low-pass.
+
+| File | Functions | Chain | Verified | Origin |
+|------|-----------|-------|----------|--------|
+| `audio/distance_attenuation.eml` | inverse, inverse_square, linear | 0 | 3/3 | **new** |
+| `audio/doppler.eml` | observed_frequency, observed_frequency_air | 0 | 2/2 | **new** |
+| `audio/lowpass_audio.eml` | alpha_from_cutoff, step | 0 | 2/2 | **new** |
+| `audio/reverb_delay.eml` | feedback_safe, delay_step, t60_seconds | 0,1 | 3/3 | **new** |
+
+### `gaming/physics/` — 7 modules / 21 fns / 21 verified
+
+Physics — semi-implicit Euler rigid-body 2D, AABB + circle collision, restitution-aware impulse resolve, Verlet, spring-damper, Archimedes buoyancy.
+
+| File | Functions | Chain | Verified | Origin |
+|------|-----------|-------|----------|--------|
+| `physics/aabb_overlap.eml` | overlap_2d, penetration_depth_x | 0 | 2/2 | **new** |
+| `physics/buoyancy.eml` | force, force_in_water, sphere_submerged_volume | 0 | 3/3 | **new** |
+| `physics/circle_collision.eml` | collides, penetration_depth, inv_distance | 1 | 3/3 | **new** |
+| `physics/impulse_resolve.eml` | impulse_magnitude, velocity_a_after, velocity_b_after | 0 | 3/3 | **new** |
+| `physics/rigid_body_2d.eml` | integrate_vx, integrate_vy, integrate_omega, … (+3) | 0 | 6/6 | **new** |
+| `physics/spring_damper.eml` | force, critical_damping | 0,1 | 2/2 | **new** |
+| `physics/verlet.eml` | step, distance_constraint_correction | 0 | 2/2 | **new** |
 
 ## Vocabulary
 

@@ -1,0 +1,83 @@
+// voronoi_2d.eml -- 2D Voronoi cell distance field.
+//
+// For each query point, find the distance to the nearest of a
+// 3×3 neighbourhood of jittered grid points. The result is the
+// distance field; useful for cell rendering, rust patterns, biome
+// boundaries, and crackle textures.
+//
+// Returns the distance to the nearest feature point. Chain order
+// 1 (sqrt). The minimum search uses min() over 9 candidates.
+
+module voronoi_2d;
+
+use stdlib::gaming::noise::white_noise;
+
+@verify(lean, theorem = "voronoi2_distance_nonneg")
+fn distance_to_nearest(x: Real, y: Real) -> Real
+    where chain_order <= 1
+    ensures (result >= 0.0)
+{
+    let xi: Real = floor(x);
+    let yi: Real = floor(y);
+
+    let mut_d: Real = 1.0e9;
+    var d: Real = mut_d;
+
+    // Note: pure-functional EML doesn't allow mutation; this
+    // template unrolls the 3x3 neighbourhood explicitly so each
+    // candidate can fold via min() into a single expression.
+    let dy_min: Real = -1.0;
+    let dy_max: Real =  1.0;
+    let dx_min: Real = -1.0;
+    let dx_max: Real =  1.0;
+
+    let c00: Real = _cell_distance(x, y, xi - 1.0, yi - 1.0);
+    let c10: Real = _cell_distance(x, y, xi      , yi - 1.0);
+    let c20: Real = _cell_distance(x, y, xi + 1.0, yi - 1.0);
+    let c01: Real = _cell_distance(x, y, xi - 1.0, yi      );
+    let c11: Real = _cell_distance(x, y, xi      , yi      );
+    let c21: Real = _cell_distance(x, y, xi + 1.0, yi      );
+    let c02: Real = _cell_distance(x, y, xi - 1.0, yi + 1.0);
+    let c12: Real = _cell_distance(x, y, xi      , yi + 1.0);
+    let c22: Real = _cell_distance(x, y, xi + 1.0, yi + 1.0);
+
+    min(c00, min(c10, min(c20,
+        min(c01, min(c11, min(c21,
+            min(c02, min(c12, c22))))))))
+}
+
+fn _cell_distance(px: Real, py: Real, gx: Real, gy: Real) -> Real
+    where chain_order <= 1
+{
+    // Jitter each grid point by hash(gx, gy).
+    let jx: Real = white_noise::hash2(gx,         gy);
+    let jy: Real = white_noise::hash2(gx + 17.0,  gy + 31.0);
+    let dx: Real = px - (gx + jx);
+    let dy: Real = py - (gy + jy);
+    sqrt(dx * dx + dy * dy)
+}
+
+// F2 - F1: distance to second-nearest minus first-nearest. Used
+// for crystalline / metallic noise patterns.
+@verify(lean, theorem = "voronoi2_f2_f1_nonneg")
+fn f2_minus_f1(x: Real, y: Real) -> Real
+    where chain_order <= 1
+    ensures (result >= 0.0)
+{
+    // Approximation: pick second-min as min over the 8 ring cells
+    // (excluding the centre). Cheap surrogate; the exact second-min
+    // requires sorting all 9.
+    let xi: Real = floor(x);
+    let yi: Real = floor(y);
+    let f1: Real = _cell_distance(x, y, xi, yi);
+    let neighbours: Real = min(
+        _cell_distance(x, y, xi - 1.0, yi - 1.0),
+        min(_cell_distance(x, y, xi      , yi - 1.0),
+            min(_cell_distance(x, y, xi + 1.0, yi - 1.0),
+                min(_cell_distance(x, y, xi - 1.0, yi      ),
+                    min(_cell_distance(x, y, xi + 1.0, yi      ),
+                        min(_cell_distance(x, y, xi - 1.0, yi + 1.0),
+                            min(_cell_distance(x, y, xi      , yi + 1.0),
+                                _cell_distance(x, y, xi + 1.0, yi + 1.0))))))));
+    clamp(neighbours - f1, 0.0, 1.0e9)
+}

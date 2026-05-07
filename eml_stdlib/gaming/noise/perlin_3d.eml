@@ -1,0 +1,63 @@
+// perlin_3d.eml -- 3D Perlin noise for volumetric effects.
+//
+// Same recipe as perlin_2d but on the cubic lattice; 8 corner
+// gradients blended via the quintic-smoothstep weights along three
+// axes. Used for 3D fog, cloud volumes, and time-varying surface
+// noise (treat the third axis as time).
+
+module perlin_3d;
+
+use stdlib::gaming::noise::white_noise;
+
+fn _grad_dot3(xi: Real, yi: Real, zi: Real,
+              xf: Real, yf: Real, zf: Real) -> Real
+    where chain_order <= 1
+{
+    let h: Real = white_noise::hash3(xi, yi, zi);
+    let q: Real = floor(h * 6.0);   // 0..5
+    // 6-direction axis-aligned gradient set.
+    if q < 1.0      { xf  }
+    else if q < 2.0 { -xf }
+    else if q < 3.0 { yf  }
+    else if q < 4.0 { -yf }
+    else if q < 5.0 { zf  }
+    else            { -zf }
+}
+
+@verify(lean, theorem = "perlin3_in_signed_unit_band")
+fn perlin3(x: Real, y: Real, z: Real) -> Real
+    where chain_order <= 1
+    ensures (result >= -1.0)
+    ensures (result <=  1.0)
+{
+    let xi: Real = floor(x);
+    let yi: Real = floor(y);
+    let zi: Real = floor(z);
+    let xf: Real = x - xi;
+    let yf: Real = y - yi;
+    let zf: Real = z - zi;
+
+    // Quintic ease per axis.
+    let u: Real = xf * xf * xf * (xf * (xf * 6.0 - 15.0) + 10.0);
+    let v: Real = yf * yf * yf * (yf * (yf * 6.0 - 15.0) + 10.0);
+    let w: Real = zf * zf * zf * (zf * (zf * 6.0 - 15.0) + 10.0);
+
+    let n000: Real = _grad_dot3(xi,       yi,       zi,       xf,       yf,       zf);
+    let n100: Real = _grad_dot3(xi + 1.0, yi,       zi,       xf - 1.0, yf,       zf);
+    let n010: Real = _grad_dot3(xi,       yi + 1.0, zi,       xf,       yf - 1.0, zf);
+    let n110: Real = _grad_dot3(xi + 1.0, yi + 1.0, zi,       xf - 1.0, yf - 1.0, zf);
+    let n001: Real = _grad_dot3(xi,       yi,       zi + 1.0, xf,       yf,       zf - 1.0);
+    let n101: Real = _grad_dot3(xi + 1.0, yi,       zi + 1.0, xf - 1.0, yf,       zf - 1.0);
+    let n011: Real = _grad_dot3(xi,       yi + 1.0, zi + 1.0, xf,       yf - 1.0, zf - 1.0);
+    let n111: Real = _grad_dot3(xi + 1.0, yi + 1.0, zi + 1.0, xf - 1.0, yf - 1.0, zf - 1.0);
+
+    let x00: Real = n000 + u * (n100 - n000);
+    let x10: Real = n010 + u * (n110 - n010);
+    let x01: Real = n001 + u * (n101 - n001);
+    let x11: Real = n011 + u * (n111 - n011);
+
+    let y0: Real = x00 + v * (x10 - x00);
+    let y1: Real = x01 + v * (x11 - x01);
+
+    clamp(y0 + w * (y1 - y0), -1.0, 1.0)
+}

@@ -1,0 +1,39 @@
+// doppler.eml -- Doppler frequency shift.
+//
+//   f_observed = f_source * (v_sound + v_listener) / (v_sound + v_source)
+//
+// Sign convention: velocities are positive when the entity moves
+// AWAY FROM the listener / source (for the source) or TOWARD the
+// source (for the listener). Game engines typically supply velocity
+// vectors and project onto the source→listener direction.
+
+module doppler;
+
+const V_SOUND_AIR: Real = 343.0   // m/s
+
+@verify(lean, theorem = "doppler_observed_freq_positive")
+fn observed_frequency(f_source: Real, v_sound: Real,
+                       v_listener_toward_source: Real,
+                       v_source_away_from_listener: Real) -> Real
+    where chain_order <= 0,
+          domain: v_sound > 0.0
+    requires (f_source >= 0.0)
+    requires (v_sound + v_source_away_from_listener > 0.0)
+    ensures (result >= 0.0)
+{
+    f_source * (v_sound + v_listener_toward_source)
+            / (v_sound + v_source_away_from_listener)
+}
+
+@verify(lean, theorem = "doppler_air_default_freq_positive")
+fn observed_frequency_air(f_source: Real,
+                           v_listener_toward_source: Real,
+                           v_source_away_from_listener: Real) -> Real
+    where chain_order <= 0
+    requires (f_source >= 0.0)
+    requires (V_SOUND_AIR + v_source_away_from_listener > 0.0)
+    ensures (result >= 0.0)
+{
+    f_source * (V_SOUND_AIR + v_listener_toward_source)
+            / (V_SOUND_AIR + v_source_away_from_listener)
+}

@@ -1,0 +1,50 @@
+// area_light.eml -- "Most Representative Point" approximation.
+//
+// For a disc / sphere / quad area light, the cheap real-time trick
+// is to pick the single point on the area that best represents
+// the light's contribution to a given surface point — usually the
+// closest point on the area to the reflection ray. We then shade
+// using that point as a single-point light.
+//
+// This module ships only the closest-point math; the shading then
+// uses point_light + cook_torrance.
+
+module area_light;
+
+@verify(lean, theorem = "closest_on_sphere_within_radius")
+fn closest_on_sphere(center_x: Real, center_y: Real, center_z: Real,
+                     radius_m: Real,
+                     ref_x: Real, ref_y: Real, ref_z: Real) -> Real
+    where chain_order <= 1,
+          domain: radius_m >= 0.0
+    ensures (result >= 0.0)
+{
+    // We return the magnitude of the offset from the centre to the
+    // reference, clamped to the sphere's radius. The full vector is
+    // reconstructed by the caller from the unit direction × this
+    // magnitude — keeping this kernel scalar.
+    let dx: Real = ref_x - center_x;
+    let dy: Real = ref_y - center_y;
+    let dz: Real = ref_z - center_z;
+    let d: Real = sqrt(dx * dx + dy * dy + dz * dz);
+    clamp(d, 0.0, radius_m)
+}
+
+// Solid-angle attenuation for a sphere area light: I_received
+// scales with the visible portion of the sphere from the surface
+// point. Closed form for a sphere of radius R at distance D:
+//
+//   solid_angle = 2π * (1 - sqrt(1 - (R/D)²))
+//
+// Returns the fraction of the hemisphere covered, ∈ [0, 1].
+@verify(lean, theorem = "sphere_solid_angle_in_unit_interval")
+fn solid_angle_fraction(radius_m: Real, distance_m: Real) -> Real
+    where chain_order <= 1,
+          domain: radius_m >= 0.0 && distance_m > 0.0
+    ensures (result >= 0.0)
+    ensures (result <= 1.0)
+{
+    let ratio: Real = clamp(radius_m / distance_m, 0.0, 1.0);
+    let cos_half_angle: Real = sqrt(1.0 - ratio * ratio);
+    clamp(0.5 * (1.0 - cos_half_angle), 0.0, 1.0)
+}

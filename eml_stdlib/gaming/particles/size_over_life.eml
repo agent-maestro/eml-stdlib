@@ -1,0 +1,28 @@
+// size_over_life.eml -- particle radius as a function of age.
+//
+//   r(t) = r_0 + growth * t      (linear)
+//   r(t) = r_0 * (t/lifetime)^p  (power-shape)
+
+module size_over_life;
+
+@verify(lean, theorem = "size_linear_nonneg")
+fn radius_linear(r_0: Real, growth: Real, t_s: Real) -> Real
+    where chain_order <= 0
+    requires (r_0 >= 0.0)
+    requires (t_s >= 0.0)
+    requires (r_0 + growth * t_s >= 0.0)
+    ensures (result >= 0.0)
+{
+    r_0 + growth * t_s
+}
+
+@verify(lean, theorem = "size_power_nonneg")
+fn radius_power(r_0: Real, lifetime_s: Real, t_s: Real, exponent: Real) -> Real
+    where chain_order <= 1,
+          domain: lifetime_s > 0.0 && t_s >= 0.0
+    requires (r_0 >= 0.0)
+    requires (exponent >= 0.0)
+    ensures (result >= 0.0)
+{
+    r_0 * pow(clamp(t_s / lifetime_s, 0.0, 1.0), exponent)
+}

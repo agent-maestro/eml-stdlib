@@ -1,0 +1,43 @@
+// spot_light.eml -- point light × cone attenuation.
+//
+//   spot(d, r, cos θ, cos_inner, cos_outer)
+//      = point_attenuation(d, r) * smooth_cone(cos θ, cos_inner, cos_outer)
+//
+// `cos θ` is the angle between the light's forward direction and
+// the vector to the lit surface. `cos_inner` and `cos_outer` define
+// the falloff cone.
+
+module spot_light;
+
+use stdlib::gaming::lighting::point_light;
+
+@verify(lean, theorem = "spot_cone_in_unit_interval")
+fn cone_attenuation(cos_theta: Real, cos_inner: Real, cos_outer: Real) -> Real
+    where chain_order <= 0
+    requires (cos_inner >= cos_outer)
+    ensures (result >= 0.0)
+    ensures (result <= 1.0)
+{
+    if cos_theta >= cos_inner {
+        1.0
+    } else if cos_theta <= cos_outer {
+        0.0
+    } else {
+        let t: Real = (cos_theta - cos_outer) / (cos_inner - cos_outer + 1.0e-7);
+        let s: Real = t * t * (3.0 - 2.0 * t);
+        clamp(s, 0.0, 1.0)
+    }
+}
+
+@verify(lean, theorem = "spot_total_in_unit_interval")
+fn attenuation(distance_m: Real, range_m: Real,
+               cos_theta: Real, cos_inner: Real, cos_outer: Real) -> Real
+    where chain_order <= 0,
+          domain: range_m > 0.0
+    requires (cos_inner >= cos_outer)
+    ensures (result >= 0.0)
+    ensures (result <= 1.0)
+{
+    point_light::attenuation(distance_m, range_m)
+        * cone_attenuation(cos_theta, cos_inner, cos_outer)
+}

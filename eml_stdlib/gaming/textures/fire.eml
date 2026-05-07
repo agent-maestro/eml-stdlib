@@ -1,0 +1,26 @@
+// fire.eml -- noise-advection fire texture.
+//
+// Vertical advection of FBM noise produces flickering tongues of
+// flame; remap to a temperature-to-colour gradient.
+//
+// Output is a normalised intensity ∈ [0, 1] that the caller maps
+// to (orange, yellow, white, alpha) by table lookup.
+
+module fire;
+
+use stdlib::gaming::noise::fbm;
+
+@verify(lean, theorem = "fire_intensity_in_unit_interval")
+fn intensity(u: Real, v: Real, time_s: Real, rise_speed: Real) -> Real
+    where chain_order <= 1,
+          domain: rise_speed >= 0.0
+    ensures (result >= 0.0)
+    ensures (result <= 1.0)
+{
+    // Advect upward with time.
+    let v_advected: Real = v + rise_speed * time_s;
+    let n: Real = fbm::fbm2_unit(u * 1.5, v_advected * 0.8);
+    // Vertical fall-off: hotter at the base, cools toward the tip.
+    let falloff: Real = clamp(1.0 - v, 0.0, 1.0);
+    clamp(n * falloff, 0.0, 1.0)
+}

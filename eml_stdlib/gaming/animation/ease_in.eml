@@ -1,0 +1,27 @@
+// ease_in.eml -- quadratic ease-in: t².
+//
+// t ∈ [0, 1] → result ∈ [0, 1], starts slow, accelerates.
+
+module ease_in;
+
+@verify(lean, theorem = "ease_in_in_unit_interval")
+fn ease_in_quad(t: Real) -> Real
+    where chain_order <= 0
+    requires (t >= 0.0)
+    requires (t <= 1.0)
+    ensures (result >= 0.0)
+    ensures (result <= 1.0)
+{
+    t * t
+}
+
+@verify(lean, theorem = "ease_in_cubic_in_unit_interval")
+fn ease_in_cubic(t: Real) -> Real
+    where chain_order <= 0
+    requires (t >= 0.0)
+    requires (t <= 1.0)
+    ensures (result >= 0.0)
+    ensures (result <= 1.0)
+{
+    t * t * t
+}

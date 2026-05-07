@@ -1,0 +1,44 @@
+// erosion_thermal.eml -- talus-angle thermal erosion step.
+//
+// Per cell: if the slope to the lowest neighbour exceeds the talus
+// angle, transfer some material from this cell to the neighbour.
+//
+//   delta = max(0, dh - talus_threshold) * fraction
+//
+// The full simulation iterates this for many cells; the kernel
+// here is one (cell, neighbour) update.
+
+module erosion_thermal;
+
+@verify(lean, theorem = "thermal_step_signed_balance")
+fn material_transfer(h_self: Real, h_neighbour: Real,
+                     talus_threshold: Real, fraction: Real) -> Real
+    where chain_order <= 0,
+          domain: talus_threshold >= 0.0
+    requires (fraction >= 0.0)
+    requires (fraction <= 1.0)
+    ensures (result >= 0.0)
+{
+    let dh: Real = h_self - h_neighbour;
+    let excess: Real = clamp(dh - talus_threshold, 0.0, 1.0e6);
+    excess * fraction
+}
+
+// Apply transfer to two cells: returns the new self height.
+@verify(lean, theorem = "thermal_apply_self_decreases")
+fn apply_self(h_self: Real, transfer: Real) -> Real
+    where chain_order <= 0
+    requires (transfer >= 0.0)
+    ensures (result <= h_self)
+{
+    h_self - transfer
+}
+
+@verify(lean, theorem = "thermal_apply_neighbour_increases")
+fn apply_neighbour(h_neighbour: Real, transfer: Real) -> Real
+    where chain_order <= 0
+    requires (transfer >= 0.0)
+    ensures (result >= h_neighbour)
+{
+    h_neighbour + transfer
+}

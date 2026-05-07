@@ -1,0 +1,27 @@
+// brick.eml -- modular brick grid with mortar gap + per-row offset.
+//
+// Returns 1.0 inside a brick, 0.0 inside the mortar joint. The
+// offset alternates each row, which is the visual signature of
+// running-bond brickwork.
+
+module brick;
+
+@verify(lean, theorem = "brick_pattern_in_unit_interval")
+fn pattern(u: Real, v: Real, brick_w: Real, brick_h: Real,
+           mortar_thickness: Real) -> Real
+    where chain_order <= 0,
+          domain: brick_w > 0.0 && brick_h > 0.0 && mortar_thickness >= 0.0
+    ensures (result >= 0.0)
+    ensures (result <= 1.0)
+{
+    let row: Real = floor(v / brick_h);
+    let row_offset: Real = if (row - 2.0 * floor(row * 0.5)) < 0.5 { 0.0 } else { brick_w * 0.5 };
+    let lx: Real = u + row_offset;
+    let frac_u: Real = lx / brick_w - floor(lx / brick_w);
+    let frac_v: Real = v / brick_h - floor(v / brick_h);
+    let edge_u: Real = mortar_thickness / brick_w;
+    let edge_v: Real = mortar_thickness / brick_h;
+    let in_brick_u: Real = if frac_u > edge_u && frac_u < 1.0 - edge_u { 1.0 } else { 0.0 };
+    let in_brick_v: Real = if frac_v > edge_v && frac_v < 1.0 - edge_v { 1.0 } else { 0.0 };
+    in_brick_u * in_brick_v
+}

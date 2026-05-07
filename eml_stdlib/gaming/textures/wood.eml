@@ -1,0 +1,41 @@
+// wood.eml -- procedural wood-grain texture.
+//
+//   ring(x, y) = sin(2π * frequency * (radial_distance + warp))
+//
+// Radial distance from a virtual trunk axis modulated by Perlin
+// noise gives concentric tree rings. Output is a scalar grain
+// intensity in [0, 1] suitable for piping into a colour ramp.
+
+module wood;
+
+use stdlib::gaming::noise::perlin_2d;
+
+const PI: Real = 3.141592653589793
+
+@verify(lean, theorem = "wood_grain_in_unit_interval")
+fn grain(x: Real, y: Real, ring_frequency: Real, warp_amount: Real) -> Real
+    where chain_order <= 1,
+          domain: ring_frequency > 0.0
+    ensures (result >= 0.0)
+    ensures (result <= 1.0)
+{
+    let r: Real = sqrt(x * x + y * y);
+    let warp: Real = warp_amount * perlin_2d::perlin2(x * 0.4, y * 0.4);
+    let s: Real = sin(2.0 * PI * ring_frequency * (r + warp));
+    0.5 * (s + 1.0)
+}
+
+// Knot-mask: returns a contribution that goes to 1 inside random
+// knot blobs scattered by Perlin noise. Multiplied with the grain
+// for visual depth.
+@verify(lean, theorem = "wood_knot_in_unit_interval")
+fn knot_mask(x: Real, y: Real, threshold: Real) -> Real
+    where chain_order <= 1
+    requires (threshold >= 0.0)
+    requires (threshold <= 1.0)
+    ensures (result >= 0.0)
+    ensures (result <= 1.0)
+{
+    let n: Real = perlin_2d::perlin2_unit(x * 0.15, y * 0.15);
+    clamp((n - threshold) / (1.0 - threshold + 1.0e-3), 0.0, 1.0)
+}

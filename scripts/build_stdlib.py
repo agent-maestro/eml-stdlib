@@ -155,6 +155,86 @@ COPY_MAP: list[tuple[str, str | None]] = [
     ("ml/attention.eml",     None),
     ("ml/rotary_embed.eml",  None),
     ("ml/cross_entropy.eml", "forge/industries/ml/loss/cross_entropy.eml"),
+
+    # ── gaming/noise ─────────────────────────────────────────────
+    ("gaming/noise/white_noise.eml", None),
+    ("gaming/noise/value_noise.eml", None),
+    ("gaming/noise/perlin_2d.eml",   None),
+    ("gaming/noise/perlin_3d.eml",   None),
+    ("gaming/noise/simplex_2d.eml",  None),
+    ("gaming/noise/voronoi_2d.eml",  None),
+    ("gaming/noise/worley.eml",      None),
+    ("gaming/noise/fbm.eml",         None),
+    ("gaming/noise/turbulence.eml",  None),
+
+    # ── gaming/textures ──────────────────────────────────────────
+    ("gaming/textures/wood.eml",          None),
+    ("gaming/textures/marble.eml",        None),
+    ("gaming/textures/brick.eml",         None),
+    ("gaming/textures/checkerboard.eml",  None),
+    ("gaming/textures/rust.eml",          None),
+    ("gaming/textures/water_surface.eml", None),
+    ("gaming/textures/caustics.eml",      None),
+    ("gaming/textures/fire.eml",          None),
+
+    # ── gaming/shading ───────────────────────────────────────────
+    ("gaming/shading/pbr_diffuse.eml",  None),
+    ("gaming/shading/fresnel.eml",      None),
+    ("gaming/shading/pbr_specular.eml", None),
+    ("gaming/shading/toon.eml",         None),
+    ("gaming/shading/matcap.eml",       None),
+    ("gaming/shading/subsurface.eml",   None),
+
+    # ── gaming/lighting ──────────────────────────────────────────
+    ("gaming/lighting/point_light.eml",       None),
+    ("gaming/lighting/spot_light.eml",        None),
+    ("gaming/lighting/area_light.eml",        None),
+    ("gaming/lighting/ambient_occlusion.eml", None),
+    ("gaming/lighting/fog_exp.eml",           None),
+    ("gaming/lighting/fog_exp2.eml",          None),
+
+    # ── gaming/terrain ───────────────────────────────────────────
+    ("gaming/terrain/heightmap.eml",         None),
+    ("gaming/terrain/erosion_thermal.eml",   None),
+    ("gaming/terrain/erosion_hydraulic.eml", None),
+    ("gaming/terrain/biome_select.eml",      None),
+    ("gaming/terrain/cliff_detect.eml",      None),
+
+    # ── gaming/animation ─────────────────────────────────────────
+    ("gaming/animation/ease_in.eml",     None),
+    ("gaming/animation/ease_out.eml",    None),
+    ("gaming/animation/ease_in_out.eml", None),
+    ("gaming/animation/spring.eml",      None),
+    ("gaming/animation/bounce.eml",      None),
+    ("gaming/animation/ik_2bone.eml",    None),
+
+    # ── gaming/particles ─────────────────────────────────────────
+    ("gaming/particles/emitter_radial.eml",   None),
+    ("gaming/particles/drag.eml",             None),
+    ("gaming/particles/gravity_particle.eml", None),
+    ("gaming/particles/fade.eml",             None),
+    ("gaming/particles/size_over_life.eml",   None),
+
+    # ── gaming/camera ────────────────────────────────────────────
+    ("gaming/camera/fov_projection.eml", None),
+    ("gaming/camera/orbit.eml",          None),
+    ("gaming/camera/shake.eml",          None),
+    ("gaming/camera/dof_blur.eml",       None),
+
+    # ── gaming/audio ─────────────────────────────────────────────
+    ("gaming/audio/distance_attenuation.eml", None),
+    ("gaming/audio/doppler.eml",              None),
+    ("gaming/audio/reverb_delay.eml",         None),
+    ("gaming/audio/lowpass_audio.eml",        None),
+
+    # ── gaming/physics ───────────────────────────────────────────
+    ("gaming/physics/rigid_body_2d.eml",    None),
+    ("gaming/physics/aabb_overlap.eml",     None),
+    ("gaming/physics/circle_collision.eml", None),
+    ("gaming/physics/impulse_resolve.eml",  None),
+    ("gaming/physics/verlet.eml",           None),
+    ("gaming/physics/spring_damper.eml",    None),
+    ("gaming/physics/buoyancy.eml",         None),
 ]
 
 
@@ -279,8 +359,16 @@ def main() -> None:
 
         text = target.read_text(encoding="utf-8")
         module, fns, description = parse_eml(text)
+        # Nested categories: gaming/<subcat>/<file>.eml -> "gaming/<subcat>".
+        # Flat categories (math/, ballistics/, etc.) keep their single
+        # path segment as the category id.
+        parts = target_rel.split("/")
+        if len(parts) >= 3:
+            category = "/".join(parts[:2])
+        else:
+            category = parts[0]
         catalog.append(ModuleEntry(
-            category=target_rel.split("/", 1)[0],
+            category=category,
             file=target_rel,
             module=module,
             functions=fns,

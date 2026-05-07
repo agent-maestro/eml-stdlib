@@ -1,0 +1,33 @@
+// point_light.eml -- inverse-square falloff with radius clamp.
+//
+// Physical:    I(d) = I_0 / d²
+// Game:        clamp by a "max range" so distant lights don't add
+//              vanishingly small contributions.
+//
+//   attenuation(d, r) = (1 / (1 + (d/r)²))² * smooth_cutoff(d/r)
+
+module point_light;
+
+@verify(lean, theorem = "point_light_attenuation_in_unit_interval")
+fn attenuation(distance_m: Real, range_m: Real) -> Real
+    where chain_order <= 0,
+          domain: range_m > 0.0 && distance_m >= 0.0
+    ensures (result >= 0.0)
+    ensures (result <= 1.0)
+{
+    let dr: Real = distance_m / range_m;
+    let inv: Real = 1.0 / (1.0 + dr * dr * 4.0);
+    let smooth: Real = clamp(1.0 - dr * dr * dr * dr, 0.0, 1.0);
+    clamp(inv * inv * smooth, 0.0, 1.0)
+}
+
+// Pure 1/r² for physically-based falloff (no clamp). Caller is
+// responsible for not querying at d = 0.
+@verify(lean, theorem = "point_light_inv_sq_positive")
+fn inverse_square(distance_m: Real, intensity: Real) -> Real
+    where chain_order <= 0,
+          domain: distance_m > 0.0 && intensity >= 0.0
+    ensures (result >= 0.0)
+{
+    intensity / (distance_m * distance_m)
+}

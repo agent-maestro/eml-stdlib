@@ -1,0 +1,30 @@
+// spring_damper.eml -- mass-on-spring force model.
+//
+//   F = -k * (x - x_rest) - c * v
+//
+// k is stiffness (N/m), c the damping (N·s/m), x the current
+// position, v the current velocity. Used for soft-body bones,
+// suspension, follow cameras.
+
+module spring_damper;
+
+@verify(lean, theorem = "spring_damper_force_signed")
+fn force(x: Real, x_rest: Real, v: Real,
+         k_stiffness: Real, c_damping: Real) -> Real
+    where chain_order <= 0
+    requires (k_stiffness >= 0.0)
+    requires (c_damping >= 0.0)
+{
+    -k_stiffness * (x - x_rest) - c_damping * v
+}
+
+// Critical-damping coefficient for a given mass + stiffness:
+//   c_crit = 2 * sqrt(m * k)
+@verify(lean, theorem = "critical_damping_nonneg")
+fn critical_damping(mass_kg: Real, k_stiffness: Real) -> Real
+    where chain_order <= 1,
+          domain: mass_kg >= 0.0 && k_stiffness >= 0.0
+    ensures (result >= 0.0)
+{
+    2.0 * sqrt(mass_kg * k_stiffness)
+}

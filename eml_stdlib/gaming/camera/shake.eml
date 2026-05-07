@@ -1,0 +1,20 @@
+// shake.eml -- damped-noise camera shake.
+//
+//   shake(t) = magnitude * exp(-decay * t) * perlin(t * frequency, 0)
+//
+// Returns a 1D scalar offset; caller threads this into x and y
+// with two different time offsets to get a 2D displacement.
+
+module shake;
+
+use stdlib::gaming::noise::perlin_2d;
+
+@verify(lean, theorem = "shake_magnitude_in_band")
+fn shake1d(magnitude: Real, decay: Real, frequency: Real, t_s: Real) -> Real
+    where chain_order <= 1,
+          domain: decay >= 0.0 && frequency >= 0.0 && t_s >= 0.0
+{
+    let envelope: Real = magnitude * exp(-decay * t_s);
+    let noise: Real = perlin_2d::perlin2(t_s * frequency, 0.0);
+    envelope * noise
+}

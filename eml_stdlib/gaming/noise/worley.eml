@@ -1,0 +1,79 @@
+// worley.eml -- cellular / Worley noise for organic patterns.
+//
+// Same scaffolding as voronoi_2d (3×3 neighbourhood search) but
+// the output is the squared distance to the nearest feature point
+// (cheaper — skips the sqrt) and a configurable distance metric.
+//
+// Distance metric:  0 = Euclidean²
+//                   1 = Manhattan
+//                   2 = Chebyshev (max-component)
+// Chain order 0 in the squared / Manhattan / Chebyshev paths.
+
+module worley;
+
+use stdlib::gaming::noise::white_noise;
+
+@verify(lean, theorem = "worley_squared_nonneg")
+fn squared_distance(x: Real, y: Real) -> Real
+    where chain_order <= 0
+    ensures (result >= 0.0)
+{
+    let xi: Real = floor(x);
+    let yi: Real = floor(y);
+
+    let c00: Real = _cell_sq_dist(x, y, xi - 1.0, yi - 1.0);
+    let c10: Real = _cell_sq_dist(x, y, xi      , yi - 1.0);
+    let c20: Real = _cell_sq_dist(x, y, xi + 1.0, yi - 1.0);
+    let c01: Real = _cell_sq_dist(x, y, xi - 1.0, yi      );
+    let c11: Real = _cell_sq_dist(x, y, xi      , yi      );
+    let c21: Real = _cell_sq_dist(x, y, xi + 1.0, yi      );
+    let c02: Real = _cell_sq_dist(x, y, xi - 1.0, yi + 1.0);
+    let c12: Real = _cell_sq_dist(x, y, xi      , yi + 1.0);
+    let c22: Real = _cell_sq_dist(x, y, xi + 1.0, yi + 1.0);
+
+    min(c00, min(c10, min(c20,
+        min(c01, min(c11, min(c21,
+            min(c02, min(c12, c22))))))))
+}
+
+fn _cell_sq_dist(px: Real, py: Real, gx: Real, gy: Real) -> Real
+    where chain_order <= 0
+{
+    let jx: Real = white_noise::hash2(gx,         gy);
+    let jy: Real = white_noise::hash2(gx + 17.0,  gy + 31.0);
+    let dx: Real = px - (gx + jx);
+    let dy: Real = py - (gy + jy);
+    dx * dx + dy * dy
+}
+
+// Manhattan distance variant — characteristic blocky / chamfered
+// cell appearance.
+@verify(lean, theorem = "worley_manhattan_nonneg")
+fn manhattan_distance(x: Real, y: Real) -> Real
+    where chain_order <= 0
+    ensures (result >= 0.0)
+{
+    let xi: Real = floor(x);
+    let yi: Real = floor(y);
+
+    let c11: Real = _cell_man_dist(x, y, xi      , yi      );
+    let c00: Real = _cell_man_dist(x, y, xi - 1.0, yi - 1.0);
+    let c10: Real = _cell_man_dist(x, y, xi      , yi - 1.0);
+    let c20: Real = _cell_man_dist(x, y, xi + 1.0, yi - 1.0);
+    let c01: Real = _cell_man_dist(x, y, xi - 1.0, yi      );
+    let c21: Real = _cell_man_dist(x, y, xi + 1.0, yi      );
+    let c02: Real = _cell_man_dist(x, y, xi - 1.0, yi + 1.0);
+    let c12: Real = _cell_man_dist(x, y, xi      , yi + 1.0);
+    let c22: Real = _cell_man_dist(x, y, xi + 1.0, yi + 1.0);
+    min(c00, min(c10, min(c20,
+        min(c01, min(c11, min(c21,
+            min(c02, min(c12, c22))))))))
+}
+
+fn _cell_man_dist(px: Real, py: Real, gx: Real, gy: Real) -> Real
+    where chain_order <= 0
+{
+    let jx: Real = white_noise::hash2(gx,         gy);
+    let jy: Real = white_noise::hash2(gx + 17.0,  gy + 31.0);
+    abs(px - (gx + jx)) + abs(py - (gy + jy))
+}

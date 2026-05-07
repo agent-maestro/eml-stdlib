@@ -1,0 +1,41 @@
+// reverb_delay.eml -- single-tap delay line with feedback.
+//
+//   y[n] = x[n] + feedback * y[n - delay_samples]
+//
+// Feedback ∈ [0, 1) so the recursive sum converges. Used as the
+// elementary building block of comb-filter reverbs (chain N copies
+// in parallel with prime-number delays for natural decay).
+
+module reverb_delay;
+
+@verify(lean, theorem = "reverb_feedback_in_open_unit_interval")
+fn feedback_safe(coeff: Real) -> Real
+    where chain_order <= 0
+    requires (coeff >= 0.0)
+    requires (coeff < 1.0)
+    ensures (result >= 0.0)
+    ensures (result < 1.0)
+{
+    clamp(coeff, 0.0, 0.999)
+}
+
+// One step of a feedback delay line.
+@verify(lean, theorem = "delay_step_signed_bounded")
+fn delay_step(x_n: Real, y_delayed: Real, feedback: Real) -> Real
+    where chain_order <= 0
+    requires (feedback >= 0.0)
+    requires (feedback < 1.0)
+{
+    x_n + feedback * y_delayed
+}
+
+// Decay time for a feedback coefficient: T60 = 3 * delay_seconds / -log10(feedback)
+@verify(lean, theorem = "reverb_t60_positive")
+fn t60_seconds(delay_seconds: Real, feedback: Real) -> Real
+    where chain_order <= 1,
+          domain: delay_seconds > 0.0 && feedback > 0.0 && feedback < 1.0
+    ensures (result > 0.0)
+{
+    let log_term: Real = -ln(feedback) / 2.302585093;   // -log10(feedback)
+    3.0 * delay_seconds / log_term
+}

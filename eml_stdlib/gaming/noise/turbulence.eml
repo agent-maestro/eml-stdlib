@@ -1,0 +1,46 @@
+// turbulence.eml -- absolute-value FBM for cloud / marble veining.
+//
+// Identical to fbm but each octave's contribution is |noise(...)|
+// instead of noise(...). Produces cusped ridges instead of smooth
+// dunes; the visual signature of marble, lightning, and storm-cloud
+// turbulence.
+//
+// Output ∈ [0, 1]. Chain order 1.
+
+module turbulence;
+
+use stdlib::gaming::noise::perlin_2d;
+
+const PERSISTENCE_DEFAULT: Real = 0.5
+const LACUNARITY_DEFAULT:  Real = 2.0
+const OCTAVES_DEFAULT:     Real = 6.0
+
+@verify(lean, theorem = "turbulence_in_unit_interval")
+fn turbulence2(x: Real, y: Real, persistence: Real, lacunarity: Real) -> Real
+    where chain_order <= 1,
+          domain: persistence > 0.0 && lacunarity > 1.0
+    ensures (result >= 0.0)
+    ensures (result <= 1.0)
+{
+    let p0: Real = abs(perlin_2d::perlin2(x, y));
+    let p1: Real = abs(perlin_2d::perlin2(x * lacunarity, y * lacunarity));
+    let p2: Real = abs(perlin_2d::perlin2(x * lacunarity * lacunarity,
+                                          y * lacunarity * lacunarity));
+    let p3: Real = abs(perlin_2d::perlin2(x * lacunarity * lacunarity * lacunarity,
+                                          y * lacunarity * lacunarity * lacunarity));
+    let a0: Real = 1.0;
+    let a1: Real = persistence;
+    let a2: Real = persistence * persistence;
+    let a3: Real = persistence * persistence * persistence;
+    let total: Real = a0 + a1 + a2 + a3;
+    clamp((a0 * p0 + a1 * p1 + a2 * p2 + a3 * p3) / total, 0.0, 1.0)
+}
+
+@verify(lean, theorem = "turbulence_default_in_unit_interval")
+fn turbulence2_default(x: Real, y: Real) -> Real
+    where chain_order <= 1
+    ensures (result >= 0.0)
+    ensures (result <= 1.0)
+{
+    turbulence2(x, y, PERSISTENCE_DEFAULT, LACUNARITY_DEFAULT)
+}

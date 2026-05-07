@@ -1,0 +1,57 @@
+// erosion_hydraulic.eml -- water flow + sediment transport step.
+//
+// Per cell: water arrives, picks up some sediment (capacity =
+// flow_speed * sediment_capacity), then flows to the lowest
+// neighbour. Excess sediment beyond capacity deposits.
+//
+// The full sim iterates this on a grid; this kernel is one cell's
+// per-step state update.
+
+module erosion_hydraulic;
+
+@verify(lean, theorem = "sediment_capacity_nonneg")
+fn capacity(flow_speed: Real, sediment_capacity_coeff: Real) -> Real
+    where chain_order <= 0,
+          domain: flow_speed >= 0.0 && sediment_capacity_coeff >= 0.0
+    ensures (result >= 0.0)
+{
+    flow_speed * sediment_capacity_coeff
+}
+
+// Erosion: how much new sediment the water lifts this step.
+//   eroded = (capacity - sediment) * erosion_rate    (when capacity > sediment)
+@verify(lean, theorem = "erosion_step_nonneg")
+fn eroded_amount(sediment: Real, capacity: Real, erosion_rate: Real) -> Real
+    where chain_order <= 0,
+          domain: erosion_rate >= 0.0
+    requires (sediment >= 0.0)
+    requires (capacity >= 0.0)
+    ensures (result >= 0.0)
+{
+    clamp((capacity - sediment) * erosion_rate, 0.0, 1.0e6)
+}
+
+// Deposition: when the water slows or sediment > capacity, drop the
+// excess back to the terrain.
+@verify(lean, theorem = "deposition_step_nonneg")
+fn deposited_amount(sediment: Real, capacity: Real, deposition_rate: Real) -> Real
+    where chain_order <= 0,
+          domain: deposition_rate >= 0.0
+    requires (sediment >= 0.0)
+    requires (capacity >= 0.0)
+    ensures (result >= 0.0)
+{
+    clamp((sediment - capacity) * deposition_rate, 0.0, 1.0e6)
+}
+
+// Water-volume update with evaporation.
+@verify(lean, theorem = "water_evaporation_in_band")
+fn updated_water(water: Real, evap_rate: Real, dt: Real) -> Real
+    where chain_order <= 0,
+          domain: evap_rate >= 0.0 && dt >= 0.0
+    requires (water >= 0.0)
+    ensures (result >= 0.0)
+    ensures (result <= water)
+{
+    clamp(water * (1.0 - evap_rate * dt), 0.0, water)
+}

@@ -1,0 +1,47 @@
+// white_noise.eml -- hash-based pseudo-random scalar in [0, 1).
+//
+// The single primitive every higher-order noise module relies on:
+// a deterministic, repeatable, fast hash from integer lattice
+// coordinates to a uniform float. Chain order 0 — pure integer
+// arithmetic + sin-based fold.
+//
+// Standard fract-of-sin trick (used in countless GLSL shaders):
+//
+//   hash(x, y) = fract(sin(dot((x,y), (12.9898, 78.233))) * 43758.5453)
+//
+// The Lean obligation captures the unit-interval invariant.
+
+module white_noise;
+
+const HASH_SCALE: Real = 43758.5453
+
+@verify(lean, theorem = "white_noise_2d_in_unit_interval")
+fn hash2(x: Real, y: Real) -> Real
+    where chain_order <= 1
+    ensures (result >= 0.0)
+    ensures (result <  1.0)
+{
+    let s: Real = sin(x * 12.9898 + y * 78.233) * HASH_SCALE;
+    s - floor(s)
+}
+
+@verify(lean, theorem = "white_noise_3d_in_unit_interval")
+fn hash3(x: Real, y: Real, z: Real) -> Real
+    where chain_order <= 1
+    ensures (result >= 0.0)
+    ensures (result <  1.0)
+{
+    let s: Real = sin(x * 12.9898 + y * 78.233 + z * 37.719) * HASH_SCALE;
+    s - floor(s)
+}
+
+// Boundary witness: hash(0,0) is finite. Used by callers that want
+// a deterministic seed value for unit-tests.
+@verify(lean, theorem = "white_noise_at_origin_finite")
+fn hash2_at_origin() -> Real
+    where chain_order <= 0
+    ensures (result == 0.0)
+{
+    let s: Real = sin(0.0) * HASH_SCALE;
+    s - floor(s)
+}

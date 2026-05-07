@@ -1,0 +1,65 @@
+// fbm.eml -- fractal Brownian motion (octave stacker).
+//
+// Sums multiple octaves of a base noise function, each at twice
+// the frequency and half the amplitude of the previous:
+//
+//   fbm(p) = Σ_{i=0..N-1} amplitude_i * noise(p * frequency_i)
+//   amplitude_i = persistence^i,    frequency_i = lacunarity^i
+//
+// Standard parameters: persistence = 0.5, lacunarity = 2.0, N = 6.
+//
+// Output is normalised to [-1, 1]. Chain order matches the base
+// noise (1 for Perlin) since octaves compose additively.
+
+module fbm;
+
+use stdlib::gaming::noise::perlin_2d;
+
+const PERSISTENCE_DEFAULT: Real = 0.5
+const LACUNARITY_DEFAULT:  Real = 2.0
+const OCTAVES_DEFAULT:     Real = 6.0
+
+@verify(lean, theorem = "fbm_in_signed_unit_band")
+fn fbm2(x: Real, y: Real, octaves: Real,
+        persistence: Real, lacunarity: Real) -> Real
+    where chain_order <= 1,
+          domain: octaves >= 1.0 && persistence > 0.0 && lacunarity > 1.0
+    ensures (result >= -1.0)
+    ensures (result <=  1.0)
+{
+    // Unrolled fixed-octave sum. The Forge optimiser folds
+    // persistence^i and lacunarity^i to constants at compile time.
+    let p0: Real = perlin_2d::perlin2(x, y);
+    let p1: Real = perlin_2d::perlin2(x * lacunarity, y * lacunarity);
+    let p2: Real = perlin_2d::perlin2(x * lacunarity * lacunarity,
+                                      y * lacunarity * lacunarity);
+    let p3: Real = perlin_2d::perlin2(x * lacunarity * lacunarity * lacunarity,
+                                      y * lacunarity * lacunarity * lacunarity);
+    let a0: Real = 1.0;
+    let a1: Real = persistence;
+    let a2: Real = persistence * persistence;
+    let a3: Real = persistence * persistence * persistence;
+    let total: Real = a0 + a1 + a2 + a3;
+    let raw: Real = (a0 * p0 + a1 * p1 + a2 * p2 + a3 * p3) / total;
+    clamp(raw, -1.0, 1.0)
+}
+
+// Default-parameters convenience.
+@verify(lean, theorem = "fbm_default_in_signed_unit_band")
+fn fbm2_default(x: Real, y: Real) -> Real
+    where chain_order <= 1
+    ensures (result >= -1.0)
+    ensures (result <=  1.0)
+{
+    fbm2(x, y, OCTAVES_DEFAULT, PERSISTENCE_DEFAULT, LACUNARITY_DEFAULT)
+}
+
+// 0..1 unit-interval scaling for direct UV use.
+@verify(lean, theorem = "fbm_unit_in_unit_interval")
+fn fbm2_unit(x: Real, y: Real) -> Real
+    where chain_order <= 1
+    ensures (result >= 0.0)
+    ensures (result <= 1.0)
+{
+    0.5 * (fbm2_default(x, y) + 1.0)
+}

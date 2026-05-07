@@ -1,0 +1,30 @@
+// toon.eml -- step-based cel shading.
+//
+// Banded diffuse: take n·l, quantise into K levels.
+// Output ∈ [0, 1].
+
+module toon;
+
+@verify(lean, theorem = "toon_in_unit_interval")
+fn cel_diffuse(n_dot_l: Real, levels: Real) -> Real
+    where chain_order <= 0,
+          domain: levels >= 1.0
+    ensures (result >= 0.0)
+    ensures (result <= 1.0)
+{
+    let v: Real = clamp(n_dot_l, 0.0, 1.0);
+    let q: Real = floor(v * levels) / levels;
+    clamp(q, 0.0, 1.0)
+}
+
+// Rim-light for outline emphasis: high near grazing angles.
+@verify(lean, theorem = "toon_rim_in_unit_interval")
+fn rim_light(n_dot_v: Real, rim_power: Real) -> Real
+    where chain_order <= 1,
+          domain: rim_power >= 0.0
+    ensures (result >= 0.0)
+    ensures (result <= 1.0)
+{
+    let edge: Real = clamp(1.0 - n_dot_v, 0.0, 1.0);
+    pow(edge, rim_power)
+}

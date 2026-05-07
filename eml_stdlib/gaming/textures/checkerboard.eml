@@ -1,0 +1,27 @@
+// checkerboard.eml -- canonical checkerboard pattern.
+//
+//   checker(x, y) = mod(floor(x) + floor(y), 2)
+//
+// Returns 0.0 or 1.0 — caller maps to two colours. Chain order 0.
+
+module checkerboard;
+
+@verify(lean, theorem = "checker_returns_zero_or_one")
+fn checker(x: Real, y: Real) -> Real
+    where chain_order <= 0
+    ensures (result == 0.0 || result == 1.0)
+{
+    let s: Real = floor(x) + floor(y);
+    s - 2.0 * floor(s * 0.5)
+}
+
+// Tile-size-parameterised variant.
+@verify(lean, theorem = "checker_tiled_returns_zero_or_one")
+fn checker_tiled(x: Real, y: Real, tile_size: Real) -> Real
+    where chain_order <= 0,
+          domain: tile_size > 0.0
+    ensures (result == 0.0 || result == 1.0)
+{
+    let s: Real = floor(x / tile_size) + floor(y / tile_size);
+    s - 2.0 * floor(s * 0.5)
+}
