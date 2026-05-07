@@ -1,0 +1,41 @@
+// goldman_equation.eml -- Goldman-Hodgkin-Katz voltage equation.
+//
+// Resting membrane potential when multiple ions cross a permeable
+// membrane:
+//
+//   V_m = (RT / F) * ln( (P_K[K+]_o + P_Na[Na+]_o + P_Cl[Cl-]_i)
+//                       / (P_K[K+]_i + P_Na[Na+]_i + P_Cl[Cl-]_o) )
+//
+// The single-ion limit collapses to the Nernst equation. Chain
+// order 1.
+
+module goldman_equation;
+
+const R_GAS:  Real = 8.314462618   // J / (mol K)
+const F_FAR:  Real = 96485.33212   // C / mol
+
+// Three-ion form (K+, Na+, Cl-) at body temperature.
+@verify(lean, theorem = "goldman_voltage_sign_matches_log_argument")
+fn membrane_potential(t_kelvin: Real,
+                      p_k:  Real, k_out:  Real, k_in:  Real,
+                      p_na: Real, na_out: Real, na_in: Real,
+                      p_cl: Real, cl_out: Real, cl_in: Real) -> Real
+    where chain_order <= 1,
+          domain: t_kelvin > 0.0
+{
+    let num = p_k * k_out + p_na * na_out + p_cl * cl_in;
+    let den = p_k * k_in  + p_na * na_in  + p_cl * cl_out;
+    (R_GAS * t_kelvin / F_FAR) * ln(num / den)
+}
+
+// Nernst equation: single-ion limit.
+@verify(lean, theorem = "nernst_voltage_sign_matches_concentration_ratio")
+fn nernst(t_kelvin: Real, valence: Real, c_out: Real, c_in: Real) -> Real
+    where chain_order <= 1,
+          domain: t_kelvin > 0.0 && valence != 0.0 && c_in > 0.0
+{
+    (R_GAS * t_kelvin / (valence * F_FAR)) * ln(c_out / c_in)
+}
+
+// Body-temperature pre-factor RT/F at 37 deg C, in mV.
+const RT_OVER_F_BODY_MV: Real = 26.7148

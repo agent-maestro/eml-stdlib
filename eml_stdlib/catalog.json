@@ -1,0 +1,2418 @@
+[
+  {
+    "category": "biology",
+    "file": "biology/cone_l.eml",
+    "module": "cone_l",
+    "functions": [
+      {
+        "name": "cone_l_sensitivity",
+        "chain_order": 1,
+        "verified": true
+      }
+    ],
+    "description": "",
+    "source": "monogate-research/exploration/cat_vision/eml/cone_l.eml"
+  },
+  {
+    "category": "biology",
+    "file": "biology/cone_s.eml",
+    "module": "cone_s",
+    "functions": [
+      {
+        "name": "cone_s_sensitivity",
+        "chain_order": 1,
+        "verified": true
+      }
+    ],
+    "description": "",
+    "source": "monogate-research/exploration/cat_vision/eml/cone_s.eml"
+  },
+  {
+    "category": "biology",
+    "file": "biology/cryptochrome.eml",
+    "module": "cryptochrome",
+    "functions": [
+      {
+        "name": "cryptochrome_yield",
+        "chain_order": 1,
+        "verified": true
+      }
+    ],
+    "description": "",
+    "source": "monogate-research/exploration/pigeon_magnetoreception/eml/cryptochrome.eml"
+  },
+  {
+    "category": "biology",
+    "file": "biology/geomagnetic_field.eml",
+    "module": "geomagnetic_field",
+    "functions": [
+      {
+        "name": "geomagnetic_field",
+        "chain_order": 1,
+        "verified": true
+      }
+    ],
+    "description": "",
+    "source": "monogate-research/exploration/pigeon_magnetoreception/eml/geomagnetic_field.eml"
+  },
+  {
+    "category": "biology",
+    "file": "biology/goldman_equation.eml",
+    "module": "goldman_equation",
+    "functions": [
+      {
+        "name": "membrane_potential",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "nernst",
+        "chain_order": 1,
+        "verified": true
+      }
+    ],
+    "description": "Goldman-Hodgkin-Katz voltage equation.",
+    "source": "new"
+  },
+  {
+    "category": "biology",
+    "file": "biology/hill_equation.eml",
+    "module": "hill",
+    "functions": [
+      {
+        "name": "hill_velocity",
+        "chain_order": 2,
+        "verified": true
+      },
+      {
+        "name": "hill_logit",
+        "chain_order": 1,
+        "verified": false
+      }
+    ],
+    "description": "Hill equation for cooperative binding.",
+    "source": "forge/industries/chemistry/kinetics/hill.eml"
+  },
+  {
+    "category": "biology",
+    "file": "biology/hodgkin_huxley.eml",
+    "module": "hodgkin_huxley_step",
+    "functions": [
+      {
+        "name": "voltage_step",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "gating_step",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "HH neuron membrane voltage update.",
+    "source": "forge/industries/scientific/biology/hodgkin_huxley_step.eml"
+  },
+  {
+    "category": "biology",
+    "file": "biology/michaelis_menten.eml",
+    "module": "michaelis_menten",
+    "functions": [
+      {
+        "name": "velocity",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "lineweaver_burk",
+        "chain_order": 0,
+        "verified": false
+      },
+      {
+        "name": "eadie_hofstee",
+        "chain_order": 0,
+        "verified": false
+      }
+    ],
+    "description": "Michaelis-Menten enzyme kinetics.",
+    "source": "forge/industries/chemistry/kinetics/michaelis_menten.eml"
+  },
+  {
+    "category": "biology",
+    "file": "biology/plume_diffusion.eml",
+    "module": "plume_diffusion",
+    "functions": [
+      {
+        "name": "plume_concentration",
+        "chain_order": 1,
+        "verified": true
+      }
+    ],
+    "description": "",
+    "source": "monogate-research/exploration/dog_olfaction/eml/plume_diffusion.eml"
+  },
+  {
+    "category": "biology",
+    "file": "biology/receptor_binding.eml",
+    "module": "receptor_binding",
+    "functions": [
+      {
+        "name": "receptor_binding",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "",
+    "source": "monogate-research/exploration/dog_olfaction/eml/receptor_binding.eml"
+  },
+  {
+    "category": "biology",
+    "file": "biology/rod_sensitivity.eml",
+    "module": "rod_sensitivity",
+    "functions": [
+      {
+        "name": "rod_sensitivity",
+        "chain_order": 1,
+        "verified": true
+      }
+    ],
+    "description": "",
+    "source": "monogate-research/exploration/cat_vision/eml/rod_sensitivity.eml"
+  },
+  {
+    "category": "biology",
+    "file": "biology/tapetum.eml",
+    "module": "tapetum",
+    "functions": [
+      {
+        "name": "tapetum_gain",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "tapetum_amplify",
+        "chain_order": 1,
+        "verified": true
+      }
+    ],
+    "description": "",
+    "source": "monogate-research/exploration/cat_vision/eml/tapetum.eml"
+  },
+  {
+    "category": "carriers",
+    "file": "carriers/acoustic_cloak.eml",
+    "module": "acoustic_cloak",
+    "functions": [
+      {
+        "name": "shell_index",
+        "chain_order": 0,
+        "verified": false
+      },
+      {
+        "name": "outer_boundary_index",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "shell_thickness",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "TIER 5: PHONONICS, third demo.",
+    "source": "forge/examples/carriers/phononics/acoustic_cloak.eml"
+  },
+  {
+    "category": "carriers",
+    "file": "carriers/ferron_emission.eml",
+    "module": "ferron_emission",
+    "functions": [
+      {
+        "name": "thz_power",
+        "chain_order": 0,
+        "verified": false
+      },
+      {
+        "name": "power_at_zero_drive",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "k_emit_certificate",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "TIER 6: FERRONICS, second demo.",
+    "source": "forge/examples/carriers/ferronics/ferron_emission.eml"
+  },
+  {
+    "category": "carriers",
+    "file": "carriers/ferron_logic.eml",
+    "module": "ferron_logic",
+    "functions": [
+      {
+        "name": "output_amplitude",
+        "chain_order": 1,
+        "verified": false
+      },
+      {
+        "name": "constructive_certificate",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "p_squared_witness",
+        "chain_order": 1,
+        "verified": true
+      }
+    ],
+    "description": "TIER 6: FERRONICS, fourth demo.",
+    "source": "forge/examples/carriers/ferronics/ferron_logic.eml"
+  },
+  {
+    "category": "carriers",
+    "file": "carriers/ferron_propagation.eml",
+    "module": "ferron_propagation",
+    "functions": [
+      {
+        "name": "polarization",
+        "chain_order": 1,
+        "verified": false
+      },
+      {
+        "name": "envelope",
+        "chain_order": 1,
+        "verified": false
+      },
+      {
+        "name": "polarization_at_origin",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "envelope_at_origin",
+        "chain_order": 1,
+        "verified": true
+      }
+    ],
+    "description": "TIER 6: FERRONICS (ferron carrier)",
+    "source": "forge/examples/carriers/ferronics/ferron_propagation.eml"
+  },
+  {
+    "category": "carriers",
+    "file": "carriers/mach_zehnder.eml",
+    "module": "mach_zehnder",
+    "functions": [
+      {
+        "name": "intensity_out",
+        "chain_order": 1,
+        "verified": false
+      },
+      {
+        "name": "intensity_at_zero",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "cos_sq_at_zero",
+        "chain_order": 1,
+        "verified": true
+      }
+    ],
+    "description": "TIER 3: PHOTONICS (photon carrier)",
+    "source": "forge/examples/carriers/photonics/mach_zehnder.eml"
+  },
+  {
+    "category": "carriers",
+    "file": "carriers/magnon_dispersion.eml",
+    "module": "magnon_dispersion",
+    "functions": [
+      {
+        "name": "omega",
+        "chain_order": 0,
+        "verified": false
+      },
+      {
+        "name": "omega_at_zero_k",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "fmr_freq",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "TIER 4: SPINTRONICS (magnon carrier)",
+    "source": "forge/examples/carriers/spintronics/magnon_dispersion.eml"
+  },
+  {
+    "category": "carriers",
+    "file": "carriers/magnon_logic.eml",
+    "module": "magnon_logic",
+    "functions": [
+      {
+        "name": "output_amplitude",
+        "chain_order": 1,
+        "verified": false
+      },
+      {
+        "name": "constructive_certificate",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "intensity_witness",
+        "chain_order": 1,
+        "verified": true
+      }
+    ],
+    "description": "TIER 4: SPINTRONICS, third demo.",
+    "source": "forge/examples/carriers/spintronics/magnon_logic.eml"
+  },
+  {
+    "category": "carriers",
+    "file": "carriers/optical_neuron.eml",
+    "module": "optical_neuron",
+    "functions": [
+      {
+        "name": "activation",
+        "chain_order": 1,
+        "verified": false
+      },
+      {
+        "name": "dark_output",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "isat_certificate",
+        "chain_order": 1,
+        "verified": true
+      }
+    ],
+    "description": "TIER 3: PHOTONICS, fourth demo.",
+    "source": "forge/examples/carriers/photonics/optical_neuron.eml"
+  },
+  {
+    "category": "carriers",
+    "file": "carriers/phonon_bandgap.eml",
+    "module": "phonon_bandgap",
+    "functions": [
+      {
+        "name": "transmission",
+        "chain_order": 1,
+        "verified": false
+      },
+      {
+        "name": "transmission_at_zero",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "sin_sq_at_zero",
+        "chain_order": 1,
+        "verified": true
+      }
+    ],
+    "description": "TIER 5: PHONONICS (phonon carrier)",
+    "source": "forge/examples/carriers/phononics/phonon_bandgap.eml"
+  },
+  {
+    "category": "carriers",
+    "file": "carriers/ring_resonator.eml",
+    "module": "ring_resonator",
+    "functions": [
+      {
+        "name": "transmission",
+        "chain_order": 1,
+        "verified": false
+      },
+      {
+        "name": "peak_transmission",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "fsr_separation",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "TIER 3: PHOTONICS, second demo.",
+    "source": "forge/examples/carriers/photonics/ring_resonator.eml"
+  },
+  {
+    "category": "carriers",
+    "file": "carriers/spin_torque.eml",
+    "module": "spin_torque",
+    "functions": [
+      {
+        "name": "larmor_frequency",
+        "chain_order": 0,
+        "verified": false
+      },
+      {
+        "name": "damping_prefactor",
+        "chain_order": 0,
+        "verified": false
+      },
+      {
+        "name": "larmor_certificate",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "prefactor_at_zero_damping",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "TIER 4: SPINTRONICS, second demo.",
+    "source": "forge/examples/carriers/spintronics/spin_torque.eml"
+  },
+  {
+    "category": "carriers",
+    "file": "carriers/thermal_rectifier.eml",
+    "module": "thermal_rectifier",
+    "functions": [
+      {
+        "name": "forward_conductance",
+        "chain_order": 0,
+        "verified": false
+      },
+      {
+        "name": "rectification_ratio",
+        "chain_order": 0,
+        "verified": false
+      },
+      {
+        "name": "asymmetry",
+        "chain_order": 0,
+        "verified": false
+      },
+      {
+        "name": "forward_positive",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "symmetric_certificate",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "TIER 5: PHONONICS, second demo.",
+    "source": "forge/examples/carriers/phononics/thermal_rectifier.eml"
+  },
+  {
+    "category": "circuits",
+    "file": "circuits/buck_converter.eml",
+    "module": "buck_converter",
+    "functions": [
+      {
+        "name": "circuit",
+        "chain_order": 0,
+        "verified": false
+      },
+      {
+        "name": "output_voltage",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "inductor_ripple",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "output_ripple",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "critical_inductance",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "step-down DC-DC buck converter (CCM).",
+    "source": "new"
+  },
+  {
+    "category": "circuits",
+    "file": "circuits/cmos_inverter.eml",
+    "module": "cmos_inverter",
+    "functions": [
+      {
+        "name": "vout_at_low_input",
+        "chain_order": 0,
+        "verified": false
+      },
+      {
+        "name": "vout_at_high_input",
+        "chain_order": 0,
+        "verified": false
+      },
+      {
+        "name": "switching_threshold",
+        "chain_order": 0,
+        "verified": false
+      },
+      {
+        "name": "low_input_certificate",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "high_input_certificate",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "vm_certificate",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "TIER 2: ELECTRONICS, second demo.",
+    "source": "forge/examples/carriers/electronics/cmos_inverter.eml"
+  },
+  {
+    "category": "circuits",
+    "file": "circuits/h_bridge.eml",
+    "module": "h_bridge",
+    "functions": [
+      {
+        "name": "circuit",
+        "chain_order": 0,
+        "verified": false
+      },
+      {
+        "name": "forward_voltage",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "reverse_voltage",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "dead_time_loss",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "DC-motor H-bridge driver.",
+    "source": "new"
+  },
+  {
+    "category": "circuits",
+    "file": "circuits/ldo.eml",
+    "module": "ldo",
+    "functions": [
+      {
+        "name": "circuit",
+        "chain_order": 0,
+        "verified": false
+      },
+      {
+        "name": "output_voltage",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "efficiency",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "dissipation",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "dropout_voltage",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "low-dropout linear regulator.",
+    "source": "new"
+  },
+  {
+    "category": "circuits",
+    "file": "circuits/mosfet_iv.eml",
+    "module": "mosfet_iv",
+    "functions": [
+      {
+        "name": "drain_current_sat",
+        "chain_order": 0,
+        "verified": false
+      },
+      {
+        "name": "id_at_threshold",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "id_prefactor",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "TIER 2: ELECTRONICS (electron carrier)",
+    "source": "forge/examples/carriers/electronics/mosfet_iv.eml"
+  },
+  {
+    "category": "circuits",
+    "file": "circuits/pll_loop.eml",
+    "module": "pll_loop",
+    "functions": [
+      {
+        "name": "loop_gain",
+        "chain_order": 0,
+        "verified": false
+      },
+      {
+        "name": "steady_state_error_at_zero_offset",
+        "chain_order": 0,
+        "verified": false
+      },
+      {
+        "name": "loop_gain_certificate",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "ss_error_certificate",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "TIER 2: ELECTRONICS, third demo.",
+    "source": "forge/examples/carriers/electronics/pll_loop.eml"
+  },
+  {
+    "category": "circuits",
+    "file": "circuits/rc_filter.eml",
+    "module": "rc_filter",
+    "functions": [
+      {
+        "name": "circuit",
+        "chain_order": 0,
+        "verified": false
+      },
+      {
+        "name": "tau",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "vout_steady",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "vout_initial",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "vout_charging",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "vout_charging_at_zero",
+        "chain_order": 1,
+        "verified": true
+      }
+    ],
+    "description": "single-pole RC low-pass filter, the canonical",
+    "source": "forge/examples/rc_filter.eml"
+  },
+  {
+    "category": "circuits",
+    "file": "circuits/voltage_divider.eml",
+    "module": "voltage_divider",
+    "functions": [
+      {
+        "name": "circuit",
+        "chain_order": 0,
+        "verified": false
+      },
+      {
+        "name": "vout_divider",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "rsum",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "vout_symmetric",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "the textbook resistive divider, the",
+    "source": "forge/examples/voltage_divider.eml"
+  },
+  {
+    "category": "control",
+    "file": "control/bangbang.eml",
+    "module": "bangbang",
+    "functions": [
+      {
+        "name": "bangbang",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "bangbang_symmetric",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "bang-bang (relay) controller.",
+    "source": "new"
+  },
+  {
+    "category": "control",
+    "file": "control/deadband.eml",
+    "module": "deadband",
+    "functions": [
+      {
+        "name": "deadband",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "deadband_asymmetric",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "two-sided dead-zone (deadband) saturation.",
+    "source": "new"
+  },
+  {
+    "category": "control",
+    "file": "control/hysteresis.eml",
+    "module": "hysteresis",
+    "functions": [
+      {
+        "name": "hysteresis_step",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "Schmitt-trigger / hysteresis switching.",
+    "source": "new"
+  },
+  {
+    "category": "control",
+    "file": "control/kalman_1d.eml",
+    "module": "kalman_1d",
+    "functions": [
+      {
+        "name": "kalman1d_predict",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "kalman1d_update",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "kalman1d_step",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "one-step 1-D Kalman filter.",
+    "source": "new"
+  },
+  {
+    "category": "control",
+    "file": "control/lqr_1d.eml",
+    "module": "lqr_1d",
+    "functions": [
+      {
+        "name": "riccati",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "lqr_gain",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "lqr_control",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "1-D infinite-horizon LQR.",
+    "source": "new"
+  },
+  {
+    "category": "control",
+    "file": "control/pid.eml",
+    "module": "pid_controller",
+    "functions": [
+      {
+        "name": "pid",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "the textbook PID controller.",
+    "source": "forge/examples/pid_controller.eml"
+  },
+  {
+    "category": "math",
+    "file": "math/abs.eml",
+    "module": "abs_module",
+    "functions": [
+      {
+        "name": "abs_kernel",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "sign",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "saturate",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "softsign",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "|x|, sign, and clamp.",
+    "source": "new"
+  },
+  {
+    "category": "math",
+    "file": "math/atan.eml",
+    "module": "atan_module",
+    "functions": [
+      {
+        "name": "atan_kernel",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "atan_at_zero",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "atan_at_one",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "arctangent.",
+    "source": "new"
+  },
+  {
+    "category": "math",
+    "file": "math/atan2.eml",
+    "module": "atan2_module",
+    "functions": [
+      {
+        "name": "atan2_pos_x",
+        "chain_order": 2,
+        "verified": true
+      },
+      {
+        "name": "atan2_neg_x_upper",
+        "chain_order": 2,
+        "verified": true
+      },
+      {
+        "name": "atan2_neg_x_lower",
+        "chain_order": 2,
+        "verified": true
+      },
+      {
+        "name": "atan2_zero_x_pos_y",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "atan2_zero_x_neg_y",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "four-quadrant arctan.",
+    "source": "new"
+  },
+  {
+    "category": "math",
+    "file": "math/bessel_j0.eml",
+    "module": "bessel_j0_module",
+    "functions": [
+      {
+        "name": "bessel_j0_small",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "bessel_j0_large",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "bessel_j0_at_zero",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "Bessel function of the first kind, order 0.",
+    "source": "new"
+  },
+  {
+    "category": "math",
+    "file": "math/cos.eml",
+    "module": "cos_module",
+    "functions": [
+      {
+        "name": "cos_kernel",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "cos_at_zero",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "cos_sq",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "pythagorean",
+        "chain_order": 1,
+        "verified": true
+      }
+    ],
+    "description": "cosine, mirror of sin.eml.",
+    "source": "new"
+  },
+  {
+    "category": "math",
+    "file": "math/cosh.eml",
+    "module": "cosh_module",
+    "functions": [
+      {
+        "name": "cosh_kernel",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "cosh_at_zero",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "hyperbolic cosine.",
+    "source": "new"
+  },
+  {
+    "category": "math",
+    "file": "math/erf.eml",
+    "module": "erf_module",
+    "functions": [
+      {
+        "name": "erf_kernel",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "erf_at_zero",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "erfc",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "erf_as",
+        "chain_order": 1,
+        "verified": true
+      }
+    ],
+    "description": "the error function.",
+    "source": "new"
+  },
+  {
+    "category": "math",
+    "file": "math/exp.eml",
+    "module": "exp_module",
+    "functions": [
+      {
+        "name": "exp_kernel",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "exp_neg",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "expm1",
+        "chain_order": 1,
+        "verified": true
+      }
+    ],
+    "description": "the natural exponential, wrapped as a thin EML",
+    "source": "new"
+  },
+  {
+    "category": "math",
+    "file": "math/gamma.eml",
+    "module": "gamma_module",
+    "functions": [
+      {
+        "name": "ln_gamma_stirling",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "gamma_stirling",
+        "chain_order": 2,
+        "verified": true
+      },
+      {
+        "name": "gamma_at_one",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "the gamma function via Stirling's approximation.",
+    "source": "new"
+  },
+  {
+    "category": "math",
+    "file": "math/gaussian.eml",
+    "module": "gaussian",
+    "functions": [
+      {
+        "name": "gaussian",
+        "chain_order": 1,
+        "verified": false
+      }
+    ],
+    "description": "the bell curve.",
+    "source": "forge/examples/gaussian.eml"
+  },
+  {
+    "category": "math",
+    "file": "math/log.eml",
+    "module": "log_module",
+    "functions": [
+      {
+        "name": "ln_kernel",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "log2",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "log10",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "log_b",
+        "chain_order": 2,
+        "verified": true
+      },
+      {
+        "name": "log1p",
+        "chain_order": 1,
+        "verified": true
+      }
+    ],
+    "description": "natural log + base conversion helpers.",
+    "source": "new"
+  },
+  {
+    "category": "math",
+    "file": "math/pow.eml",
+    "module": "pow_module",
+    "functions": [
+      {
+        "name": "pow_kernel",
+        "chain_order": 2,
+        "verified": true
+      },
+      {
+        "name": "sq",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "cube",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "pow4",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "pow8",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "power via exp(b * ln(x)) plus a few hot specialisations.",
+    "source": "new"
+  },
+  {
+    "category": "math",
+    "file": "math/relu.eml",
+    "module": "relu",
+    "functions": [
+      {
+        "name": "relu",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "leaky_relu",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "relu6",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "prelu",
+        "chain_order": 0,
+        "verified": false
+      }
+    ],
+    "description": "rectified linear unit family.",
+    "source": "forge/industries/ml/activations/relu.eml"
+  },
+  {
+    "category": "math",
+    "file": "math/sigmoid.eml",
+    "module": "sigmoid",
+    "functions": [
+      {
+        "name": "sigmoid",
+        "chain_order": 2,
+        "verified": false
+      },
+      {
+        "name": "silu",
+        "chain_order": 2,
+        "verified": false
+      }
+    ],
+    "description": "the neural-network activation classic.",
+    "source": "forge/examples/sigmoid.eml"
+  },
+  {
+    "category": "math",
+    "file": "math/sin.eml",
+    "module": "sin_module",
+    "functions": [
+      {
+        "name": "sin_kernel",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "sin_at_zero",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "sin_sq",
+        "chain_order": 1,
+        "verified": true
+      }
+    ],
+    "description": "sine, with an explicit chain-order-1 contract.",
+    "source": "new"
+  },
+  {
+    "category": "math",
+    "file": "math/sinh.eml",
+    "module": "sinh_module",
+    "functions": [
+      {
+        "name": "sinh_kernel",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "sinh_at_zero",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "hyperbolic sine.",
+    "source": "new"
+  },
+  {
+    "category": "math",
+    "file": "math/softmax.eml",
+    "module": "softmax",
+    "functions": [
+      {
+        "name": "softmax_shift_exp",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "softmax_normalize",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "softmax_two_logit",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "log_sum_exp_pair",
+        "chain_order": 2,
+        "verified": true
+      }
+    ],
+    "description": "numerically-stable softmax kernels.",
+    "source": "forge/industries/ml/activations/softmax.eml"
+  },
+  {
+    "category": "math",
+    "file": "math/sqrt.eml",
+    "module": "sqrt_module",
+    "functions": [
+      {
+        "name": "sqrt_kernel",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "hypot2",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "hypot3",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "rsqrt",
+        "chain_order": 1,
+        "verified": true
+      }
+    ],
+    "description": "square root + 2D/3D Euclidean distance.",
+    "source": "new"
+  },
+  {
+    "category": "math",
+    "file": "math/tan.eml",
+    "module": "tan_module",
+    "functions": [
+      {
+        "name": "tan_kernel",
+        "chain_order": 2,
+        "verified": true
+      },
+      {
+        "name": "tan_at_zero",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "two_tan",
+        "chain_order": 2,
+        "verified": true
+      }
+    ],
+    "description": "tangent.",
+    "source": "new"
+  },
+  {
+    "category": "math",
+    "file": "math/tanh.eml",
+    "module": "tanh_activation",
+    "functions": [
+      {
+        "name": "tanh_activation",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "tanh_from_sigmoid",
+        "chain_order": 2,
+        "verified": true
+      },
+      {
+        "name": "hard_tanh",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "hyperbolic-tangent activation.",
+    "source": "forge/industries/ml/activations/tanh.eml"
+  },
+  {
+    "category": "ml",
+    "file": "ml/attention.eml",
+    "module": "attention",
+    "functions": [
+      {
+        "name": "scale_factor",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "score_qk",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "attention_step",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "causal_mask",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "padding_mask",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "scaled dot-product attention kernel.",
+    "source": "new"
+  },
+  {
+    "category": "ml",
+    "file": "ml/cross_entropy.eml",
+    "module": "cross_entropy",
+    "functions": [
+      {
+        "name": "bce_loss",
+        "chain_order": 2,
+        "verified": true
+      },
+      {
+        "name": "bce_with_logits",
+        "chain_order": 2,
+        "verified": true
+      },
+      {
+        "name": "categorical_ce_pair",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "bce_with_logits_grad",
+        "chain_order": 1,
+        "verified": false
+      }
+    ],
+    "description": "cross-entropy loss kernels.",
+    "source": "forge/industries/ml/loss/cross_entropy.eml"
+  },
+  {
+    "category": "ml",
+    "file": "ml/gelu.eml",
+    "module": "gelu",
+    "functions": [
+      {
+        "name": "gelu_tanh",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "quick_gelu",
+        "chain_order": 1,
+        "verified": true
+      }
+    ],
+    "description": "Gaussian Error Linear Unit, the activation BERT",
+    "source": "forge/industries/ml/activations/gelu.eml"
+  },
+  {
+    "category": "ml",
+    "file": "ml/layernorm.eml",
+    "module": "layernorm",
+    "functions": [
+      {
+        "name": "layernorm_step",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "layernorm_default",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "rmsnorm_step",
+        "chain_order": 1,
+        "verified": true
+      }
+    ],
+    "description": "per-feature layer normalization kernel.",
+    "source": "new"
+  },
+  {
+    "category": "ml",
+    "file": "ml/leaky_relu.eml",
+    "module": "leaky_relu",
+    "functions": [
+      {
+        "name": "leaky_relu",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "leaky_relu_default",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "prelu",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "leaky_relu_grad",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "Leaky ReLU activation.",
+    "source": "new"
+  },
+  {
+    "category": "ml",
+    "file": "ml/relu.eml",
+    "module": "relu",
+    "functions": [
+      {
+        "name": "relu",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "leaky_relu",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "relu6",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "prelu",
+        "chain_order": 0,
+        "verified": false
+      }
+    ],
+    "description": "rectified linear unit family.",
+    "source": "forge/industries/ml/activations/relu.eml"
+  },
+  {
+    "category": "ml",
+    "file": "ml/rotary_embed.eml",
+    "module": "rotary_embed",
+    "functions": [
+      {
+        "name": "theta",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "theta_default",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "rotate_pair_even",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "rotate_pair_odd",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "norm_witness",
+        "chain_order": 1,
+        "verified": true
+      }
+    ],
+    "description": "Rotary Position Embedding (RoPE) kernel.",
+    "source": "new"
+  },
+  {
+    "category": "ml",
+    "file": "ml/silu.eml",
+    "module": "silu",
+    "functions": [
+      {
+        "name": "silu",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "swish",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "silu_grad",
+        "chain_order": 1,
+        "verified": true
+      }
+    ],
+    "description": "SiLU / Swish activation.",
+    "source": "new"
+  },
+  {
+    "category": "ml",
+    "file": "ml/softmax.eml",
+    "module": "softmax",
+    "functions": [
+      {
+        "name": "softmax_shift_exp",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "softmax_normalize",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "softmax_two_logit",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "log_sum_exp_pair",
+        "chain_order": 2,
+        "verified": true
+      }
+    ],
+    "description": "numerically-stable softmax kernels.",
+    "source": "forge/industries/ml/activations/softmax.eml"
+  },
+  {
+    "category": "physics",
+    "file": "physics/coulomb.eml",
+    "module": "coulomb",
+    "functions": [
+      {
+        "name": "force",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "field",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "potential_energy",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "potential",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "Coulomb's law for electrostatic force / field.",
+    "source": "new"
+  },
+  {
+    "category": "physics",
+    "file": "physics/damped_oscillator.eml",
+    "module": "damped_wave",
+    "functions": [
+      {
+        "name": "damped_wave",
+        "chain_order": 2,
+        "verified": false
+      }
+    ],
+    "description": "exp * sin, the chain-2 archetype.",
+    "source": "forge/examples/damped_wave.eml"
+  },
+  {
+    "category": "physics",
+    "file": "physics/diffusion.eml",
+    "module": "diffusion",
+    "functions": [
+      {
+        "name": "concentration",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "sigma",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "fick_first_law",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "1-D diffusion (heat / mass) equation snapshot.",
+    "source": "new"
+  },
+  {
+    "category": "physics",
+    "file": "physics/gravity.eml",
+    "module": "gravity",
+    "functions": [
+      {
+        "name": "newtonian_acceleration",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "surface_gravity_step",
+        "chain_order": 0,
+        "verified": false
+      }
+    ],
+    "description": "two gravity models for game physics.",
+    "source": "forge/industries/gaming/physics/gravity.eml"
+  },
+  {
+    "category": "physics",
+    "file": "physics/hooke.eml",
+    "module": "hooke",
+    "functions": [
+      {
+        "name": "force",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "potential_energy",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "series_stiffness",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "parallel_stiffness",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "natural_frequency",
+        "chain_order": 1,
+        "verified": true
+      }
+    ],
+    "description": "Hooke's law for springs and elastic media.",
+    "source": "new"
+  },
+  {
+    "category": "physics",
+    "file": "physics/navier_stokes_1d.eml",
+    "module": "navier_stokes_1d",
+    "functions": [
+      {
+        "name": "pressure_term",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "viscous_term",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "convective_term",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "rhs",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "reynolds",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "1-D incompressible Navier-Stokes step.",
+    "source": "new"
+  },
+  {
+    "category": "physics",
+    "file": "physics/planck_radiation.eml",
+    "module": "planck_radiation",
+    "functions": [
+      {
+        "name": "spectral_radiance",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "wien_lambda_max",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "rayleigh_jeans_radiance",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "Planck blackbody spectral radiance.",
+    "source": "forge/industries/scientific/physics/planck_radiation.eml"
+  },
+  {
+    "category": "physics",
+    "file": "physics/stefan_boltzmann.eml",
+    "module": "stefan_boltzmann",
+    "functions": [
+      {
+        "name": "radiative_flux",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "net_exchange",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "wien_peak_wavelength",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "blackbody radiative flux.",
+    "source": "forge/industries/scientific/climate/stefan_boltzmann.eml"
+  },
+  {
+    "category": "physics",
+    "file": "physics/wave_propagation.eml",
+    "module": "wave_propagation",
+    "functions": [
+      {
+        "name": "wave",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "wavelength",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "frequency",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "phase_velocity",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "1-D linear wave equation snapshot.",
+    "source": "new"
+  },
+  {
+    "category": "quantum",
+    "file": "quantum/cnot.eml",
+    "module": "cnot",
+    "functions": [
+      {
+        "name": "cnot_control_zero_passes",
+        "chain_order": 0,
+        "verified": false
+      },
+      {
+        "name": "cnot_self_inverse_amp",
+        "chain_order": 0,
+        "verified": false
+      },
+      {
+        "name": "cnot_zero_certificate",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "cnot_involution_certificate",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "prob_witness",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "TIER 7: QUANTUM, third demo.",
+    "source": "forge/examples/carriers/quantum/cnot.eml"
+  },
+  {
+    "category": "quantum",
+    "file": "quantum/grover_oracle.eml",
+    "module": "grover_oracle",
+    "functions": [
+      {
+        "name": "reflect",
+        "chain_order": 0,
+        "verified": false
+      },
+      {
+        "name": "reflect_at_mean",
+        "chain_order": 0,
+        "verified": false
+      },
+      {
+        "name": "squared_witness",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "fixed_point_value",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "TIER 7: QUANTUM, fourth demo.",
+    "source": "forge/examples/carriers/quantum/grover_oracle.eml"
+  },
+  {
+    "category": "quantum",
+    "file": "quantum/hadamard.eml",
+    "module": "hadamard",
+    "functions": [
+      {
+        "name": "h_norm_2x_squared_unnormalised",
+        "chain_order": 0,
+        "verified": false
+      },
+      {
+        "name": "twice_input_norm",
+        "chain_order": 0,
+        "verified": false
+      },
+      {
+        "name": "h0_norm_unnormalised",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "h1_norm_unnormalised",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "squared_norm_witness",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "TIER 7: QUANTUM, second demo.",
+    "source": "forge/examples/carriers/quantum/hadamard.eml"
+  },
+  {
+    "category": "quantum",
+    "file": "quantum/pauli_x.eml",
+    "module": "pauli_x",
+    "functions": [
+      {
+        "name": "pauli_x",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "Pauli X (NOT) gate",
+    "source": "monogate-research/industries/quantum/kernels/pauli_x.eml"
+  },
+  {
+    "category": "quantum",
+    "file": "quantum/pauli_z.eml",
+    "module": "pauli_z",
+    "functions": [
+      {
+        "name": "pauli_z",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "Pauli Z (phase flip) gate",
+    "source": "monogate-research/industries/quantum/kernels/pauli_z.eml"
+  },
+  {
+    "category": "quantum",
+    "file": "quantum/phase_gate.eml",
+    "module": "phase_gate",
+    "functions": [
+      {
+        "name": "r_real",
+        "chain_order": 1,
+        "verified": false
+      },
+      {
+        "name": "r_imag",
+        "chain_order": 1,
+        "verified": false
+      },
+      {
+        "name": "r_modulus_sq",
+        "chain_order": 1,
+        "verified": false
+      },
+      {
+        "name": "r_real_at_zero",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "r_imag_at_zero",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "unitarity_witness",
+        "chain_order": 1,
+        "verified": true
+      }
+    ],
+    "description": "TIER 7: QUANTUM (probability-amplitude carrier)",
+    "source": "forge/examples/carriers/quantum/phase_gate.eml"
+  },
+  {
+    "category": "quantum",
+    "file": "quantum/rotation_rz.eml",
+    "module": "rx",
+    "functions": [
+      {
+        "name": "rx",
+        "chain_order": 1,
+        "verified": true
+      }
+    ],
+    "description": "qubit rotations Rx(\u03b8), Ry(\u03b8), Rz(\u03b8)",
+    "source": "monogate-research/industries/quantum/kernels/rotation.eml"
+  },
+  {
+    "category": "sensors",
+    "file": "sensors/accelerometer.eml",
+    "module": "accelerometer",
+    "functions": [
+      {
+        "name": "lsb_to_si",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "tilt_angle",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "tilt_two_axis",
+        "chain_order": 2,
+        "verified": true
+      },
+      {
+        "name": "magnitude",
+        "chain_order": 1,
+        "verified": true
+      }
+    ],
+    "description": "IMU accelerometer model.",
+    "source": "new"
+  },
+  {
+    "category": "sensors",
+    "file": "sensors/hall_effect.eml",
+    "module": "hall_effect",
+    "functions": [
+      {
+        "name": "hall_voltage",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "hall_coefficient",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "b_from_voltage",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "Hall sensor model.",
+    "source": "new"
+  },
+  {
+    "category": "sensors",
+    "file": "sensors/photodetector.eml",
+    "module": "photodetector",
+    "functions": [
+      {
+        "name": "photocurrent",
+        "chain_order": 0,
+        "verified": false
+      },
+      {
+        "name": "current_at_zero_power",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "nonneg_current",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "P1 PHOTONIC COMPONENT LIBRARY (3/8)",
+    "source": "forge/examples/photonics/components/photodetector.eml"
+  },
+  {
+    "category": "sensors",
+    "file": "sensors/rtd.eml",
+    "module": "rtd",
+    "functions": [
+      {
+        "name": "resistance_pos",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "resistance_neg",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "temperature_pos",
+        "chain_order": 1,
+        "verified": true
+      }
+    ],
+    "description": "Pt100 / Pt1000 RTD models (Callendar-Van Dusen).",
+    "source": "new"
+  },
+  {
+    "category": "sensors",
+    "file": "sensors/strain_gauge.eml",
+    "module": "strain_gauge",
+    "functions": [
+      {
+        "name": "resistance_change",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "strain_from_dr",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "quarter_bridge_voltage",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "half_bridge_voltage",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "full_bridge_voltage",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "stress",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "foil-resistance strain gauge model.",
+    "source": "new"
+  },
+  {
+    "category": "sensors",
+    "file": "sensors/thermistor.eml",
+    "module": "thermistor",
+    "functions": [
+      {
+        "name": "resistance_beta",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "temperature_beta",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "inv_temperature_steinhart",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "temperature_steinhart",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "kelvin_from_celsius",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "NTC thermistor models.",
+    "source": "new"
+  },
+  {
+    "category": "signal",
+    "file": "signal/bandpass.eml",
+    "module": "bandpass",
+    "functions": [
+      {
+        "name": "bandpass_step",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "alphas_from_cutoffs",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "band-pass filter as a cascade of low-pass and",
+    "source": "new"
+  },
+  {
+    "category": "signal",
+    "file": "signal/chirp.eml",
+    "module": "chirp",
+    "functions": [
+      {
+        "name": "chirp_frequency",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "",
+    "source": "monogate-research/exploration/bat_sonar/eml/chirp.eml"
+  },
+  {
+    "category": "signal",
+    "file": "signal/dft_single.eml",
+    "module": "dft_single",
+    "functions": [
+      {
+        "name": "dft_single",
+        "chain_order": 1,
+        "verified": true
+      }
+    ],
+    "description": "bin DFT (reference, used to validate FFT)",
+    "source": "monogate-research/industries/signal_processing/kernels/dft_single.eml"
+  },
+  {
+    "category": "signal",
+    "file": "signal/fft_butterfly.eml",
+    "module": "fft_butterfly",
+    "functions": [
+      {
+        "name": "fft_butterfly",
+        "chain_order": 1,
+        "verified": true
+      }
+    ],
+    "description": "Tukey FFT butterfly",
+    "source": "monogate-research/industries/signal_processing/kernels/fft_butterfly.eml"
+  },
+  {
+    "category": "signal",
+    "file": "signal/highpass.eml",
+    "module": "highpass",
+    "functions": [
+      {
+        "name": "hpf1_step",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "alpha_from_rc_dt",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "alpha_from_cutoff",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "1st-order RC high-pass filter step.",
+    "source": "new"
+  },
+  {
+    "category": "signal",
+    "file": "signal/lowpass.eml",
+    "module": "lowpass",
+    "functions": [
+      {
+        "name": "lpf1_step",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "alpha_from_rc_dt",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "alpha_from_cutoff",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "1st-order RC low-pass filter step.",
+    "source": "new"
+  },
+  {
+    "category": "signal",
+    "file": "signal/matched_filter.eml",
+    "module": "matched_filter",
+    "functions": [
+      {
+        "name": "matched_filter_score",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "",
+    "source": "monogate-research/exploration/bat_sonar/eml/matched_filter.eml"
+  },
+  {
+    "category": "signal",
+    "file": "signal/notch_filter.eml",
+    "module": "notch_filter",
+    "functions": [
+      {
+        "name": "notch_coeffs",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "notch_step",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "2nd-order biquad notch (band-reject) filter.",
+    "source": "new"
+  },
+  {
+    "category": "signal",
+    "file": "signal/window_hamming.eml",
+    "module": "window_hamming",
+    "functions": [
+      {
+        "name": "hamming",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "hamming_at_start",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "hamming_apply",
+        "chain_order": 1,
+        "verified": true
+      }
+    ],
+    "description": "Hamming window function.",
+    "source": "new"
+  },
+  {
+    "category": "signal",
+    "file": "signal/window_hann.eml",
+    "module": "window_hann",
+    "functions": [
+      {
+        "name": "hann",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "hann_at_start",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "hann_apply",
+        "chain_order": 1,
+        "verified": true
+      }
+    ],
+    "description": "Hann window function for FFT framing.",
+    "source": "new"
+  }
+]

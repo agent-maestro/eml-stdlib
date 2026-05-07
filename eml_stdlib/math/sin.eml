@@ -1,0 +1,37 @@
+// sin.eml -- sine, with an explicit chain-order-1 contract.
+//
+// Pythagorean witness function included so downstream proofs of
+// energy conservation / unitarity can inline it directly.
+
+module sin_module;
+
+const PI:     Real = 3.141592653589793
+const TWO_PI: Real = 6.283185307179586
+
+@verify(lean, theorem = "sin_in_unit_interval")
+fn sin_kernel(x: Real) -> Real
+    where chain_order <= 1
+    ensures (result >= -1.0)
+    ensures (result <= 1.0)
+{
+    sin(x)
+}
+
+@verify(lean, theorem = "sin_zero_is_zero")
+fn sin_at_zero() -> Real
+    where chain_order <= 0
+    ensures (result == 0.0)
+{
+    sin(0.0)
+}
+
+// Squared sine -- chain order 1 (the chain budget folds in the
+// double-angle identity). Used by Mach-Zehnder / coupler power
+// ratios so it gets a name + a Lean obligation of its own.
+@verify(lean, theorem = "sin_sq_nonneg")
+fn sin_sq(x: Real) -> Real
+    where chain_order <= 1
+    ensures (result >= 0.0)
+{
+    sin(x) * sin(x)
+}

@@ -1,0 +1,24 @@
+// cosh.eml -- hyperbolic cosine.
+//
+// cosh(x) = (e^x + e^-x) / 2. Always >= 1 with equality at x = 0.
+
+module cosh_module;
+
+const COSH_X_MAX: Real = 30.0
+
+@verify(lean, theorem = "cosh_geq_one")
+fn cosh_kernel(x: Real) -> Real
+    where chain_order <= 1
+    requires (abs(x) < COSH_X_MAX)
+    ensures (result >= 1.0)
+{
+    cosh(x)
+}
+
+@verify(lean, theorem = "cosh_zero_is_one")
+fn cosh_at_zero() -> Real
+    where chain_order <= 0
+    ensures (result == 1.0)
+{
+    cosh(0.0)
+}

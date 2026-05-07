@@ -1,0 +1,42 @@
+// chirp.eml
+//
+// FM-sweep emission signal — the chirp a bat broadcasts before
+// listening for echoes. Instantaneous frequency sweeps linearly
+// from F_START down to F_END over DURATION_S seconds.
+//
+//     f(t) = F_START + (F_END - F_START) · (t / DURATION_S)
+//
+// Parameters from Simmons et al. (1979) on Eptesicus fuscus
+// (big brown bat): peak emission ≈ 80 kHz, terminal frequency
+// ≈ 30 kHz, pulse length ≈ 3 ms (search-phase calls go longer,
+// terminal-buzz approach calls shorter). Linear FM is the
+// canonical pulse-compression waveform — same shape used in
+// every modern radar and SAR system, 50 million years after
+// the bats invented it.
+//
+// Postcondition: for any t in the pulse window [0, DURATION_S],
+// the instantaneous frequency stays inside [F_END, F_START].
+// This is the property the matched-filter bank downstream
+// relies on; an out-of-band tone would alias into a wrong
+// range bin and corrupt the entire echo decode.
+
+module chirp;
+
+const F_START_HZ:  Real = 80000.0
+const F_END_HZ:    Real = 30000.0
+const DURATION_S:  Real =  0.003
+
+@verify(lean, theorem = "chirp_frequency_in_band")
+fn chirp_frequency(t_s: Real{t | 0.0 <= t && t <= DURATION_S})
+    -> Real{r | F_END_HZ <= r && r <= F_START_HZ}
+    where chain_order <= 0
+{
+    // Clamp at the bounds — proves the postcondition trivially
+    // and matches the physical reality that a real FM modulator
+    // doesn't synthesize frequencies outside its commanded sweep.
+    clamp(
+        F_START_HZ + (F_END_HZ - F_START_HZ) * (t_s / DURATION_S),
+        F_END_HZ,
+        F_START_HZ
+    )
+}

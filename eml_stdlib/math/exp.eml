@@ -1,0 +1,49 @@
+// exp.eml -- the natural exponential, wrapped as a thin EML
+// kernel so callers can reference `stdlib::math::exp_kernel`
+// in chain-order calculations without re-importing the builtin.
+//
+// `exp` itself is a Forge language builtin; the parser dispatches
+// it to a dedicated AST node. This module provides:
+//
+//   exp_kernel(x)    -- alias suitable for @target(fpga, ...)
+//   exp_neg(x)       -- one-shot exp(-x), the form most loss
+//                       functions actually consume
+//   expm1(x)         -- exp(x) - 1 with no loss of precision near 0
+//
+// Chain order 1 across the board: a single transcendental wrapping
+// a polynomial argument.
+
+module exp_module;
+
+const EXP_X_MAX: Real = 30.0  // beyond this, float32 saturates
+
+@verify(lean, theorem = "exp_kernel_positive")
+fn exp_kernel(x: Real) -> Real
+    where chain_order <= 1
+    requires (abs(x) < EXP_X_MAX)
+    ensures (result > 0.0)
+{
+    exp(x)
+}
+
+@verify(lean, theorem = "exp_neg_in_unit_interval")
+fn exp_neg(x: Real) -> Real
+    where chain_order <= 1
+    requires (x >= 0.0)
+    requires (x < EXP_X_MAX)
+    ensures (result > 0.0)
+    ensures (result <= 1.0)
+{
+    exp(-x)
+}
+
+// expm1 = exp(x) - 1. Useful for compounding-rate / interest /
+// half-life math where x is small and the literal `exp(x) - 1`
+// loses ~16 leading bits to cancellation.
+@verify(lean, theorem = "expm1_zero_at_zero")
+fn expm1(x: Real) -> Real
+    where chain_order <= 1
+    requires (abs(x) < EXP_X_MAX)
+{
+    exp(x) - 1.0
+}

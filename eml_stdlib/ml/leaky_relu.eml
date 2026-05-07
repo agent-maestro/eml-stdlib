@@ -1,0 +1,51 @@
+// leaky_relu.eml -- Leaky ReLU activation.
+//
+//   leaky_relu(x) = x if x >= 0 else alpha * x
+//
+// Standard alpha = 0.01 prevents the dying-ReLU problem at the
+// cost of a small negative-tail contribution to the gradient.
+// Chain order 0; branch-free via clamp + linear blend.
+
+module leaky_relu;
+
+const DEFAULT_ALPHA: Real = 0.01
+
+@verify(lean, theorem = "leaky_relu_at_zero_is_zero")
+fn leaky_relu(x: Real, alpha: Real) -> Real
+    where chain_order <= 0
+    requires (alpha >= 0.0)
+{
+    let pos = clamp(x, 0.0, 1.0e30);
+    let neg = clamp(x, -1.0e30, 0.0);
+    pos + alpha * neg
+}
+
+@verify(lean, theorem = "default_leaky_relu_at_zero_is_zero")
+fn leaky_relu_default(x: Real) -> Real
+    where chain_order <= 0
+{
+    let pos = clamp(x, 0.0, 1.0e30);
+    let neg = clamp(x, -1.0e30, 0.0);
+    pos + DEFAULT_ALPHA * neg
+}
+
+// PReLU: alpha is a learnable parameter (per channel).
+@verify(lean, theorem = "prelu_at_zero_is_zero")
+fn prelu(x: Real, alpha: Real) -> Real
+    where chain_order <= 0
+{
+    let pos = clamp(x, 0.0, 1.0e30);
+    let neg = clamp(x, -1.0e30, 0.0);
+    pos + alpha * neg
+}
+
+// Gradient of leaky_relu: 1 for x >= 0, alpha for x < 0.
+@verify(lean, theorem = "leaky_relu_grad_in_alpha_band")
+fn leaky_relu_grad(x: Real, alpha: Real) -> Real
+    where chain_order <= 0
+    requires (alpha >= 0.0)
+    ensures (result >= 0.0)
+{
+    let s = clamp(x * 1.0e30, 0.0, 1.0);
+    s + alpha * (1.0 - s)
+}

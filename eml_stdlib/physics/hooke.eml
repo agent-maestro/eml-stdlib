@@ -1,0 +1,56 @@
+// hooke.eml -- Hooke's law for springs and elastic media.
+//
+//   F = -k * x        (restoring force)
+//   U = (1/2) * k * x^2  (stored energy)
+//
+// Linear elastic regime only; for stress/strain Mises-yield-style
+// extensions see the construction industry kernels.
+
+module hooke;
+
+@verify(lean, theorem = "hooke_force_sign_opposes_displacement")
+fn force(stiffness: Real, displacement: Real) -> Real
+    where chain_order <= 0,
+          domain: stiffness > 0.0
+{
+    -stiffness * displacement
+}
+
+@verify(lean, theorem = "hooke_energy_nonneg")
+fn potential_energy(stiffness: Real, displacement: Real) -> Real
+    where chain_order <= 0,
+          domain: stiffness > 0.0
+    ensures (result >= 0.0)
+{
+    0.5 * stiffness * displacement * displacement
+}
+
+// Series stiffness of two springs.
+@verify(lean, theorem = "hooke_series_stiffness_positive")
+fn series_stiffness(k1: Real, k2: Real) -> Real
+    where chain_order <= 0,
+          domain: k1 > 0.0 && k2 > 0.0
+    ensures (result > 0.0)
+{
+    (k1 * k2) / (k1 + k2)
+}
+
+// Parallel stiffness of two springs.
+@verify(lean, theorem = "hooke_parallel_stiffness_positive")
+fn parallel_stiffness(k1: Real, k2: Real) -> Real
+    where chain_order <= 0,
+          domain: k1 > 0.0 && k2 > 0.0
+    ensures (result > 0.0)
+{
+    k1 + k2
+}
+
+// Natural angular frequency of a mass on a spring: omega = sqrt(k/m).
+@verify(lean, theorem = "hooke_omega_positive")
+fn natural_frequency(stiffness: Real, mass: Real) -> Real
+    where chain_order <= 1,
+          domain: stiffness > 0.0 && mass > 0.0
+    ensures (result > 0.0)
+{
+    sqrt(stiffness / mass)
+}

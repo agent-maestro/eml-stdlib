@@ -1,0 +1,53 @@
+// kalman_1d.eml -- one-step 1-D Kalman filter.
+//
+// State:    estimate (scalar), variance P (scalar)
+// Inputs:   measurement z, measurement variance R, process variance Q
+//
+// The two functions update / predict the state. Caller chains them
+// each frame. All chain order 0 -- pure rational arithmetic.
+//
+// The 1-D Kalman is the workhorse for IMU heading, RC battery state
+// of charge, and any single-channel "noisy sensor + smooth dynamics"
+// fusion.
+
+module kalman_1d;
+
+// Predict step: drift the variance forward by Q.
+@verify(lean, theorem = "kalman1d_predict_variance_grows")
+fn kalman1d_predict(estimate: Real, p: Real, q: Real) -> (Real, Real)
+    where chain_order <= 0
+    requires (p >= 0.0)
+    requires (q >= 0.0)
+{
+    (estimate, p + q)
+}
+
+// Update step: combine with measurement z.
+@verify(lean, theorem = "kalman1d_update_variance_shrinks")
+fn kalman1d_update(estimate: Real, p: Real, z: Real, r: Real) -> (Real, Real)
+    where chain_order <= 0
+    requires (p >= 0.0)
+    requires (r > 0.0)
+{
+    let k       = p / (p + r);
+    let new_est = estimate + k * (z - estimate);
+    let new_p   = (1.0 - k) * p;
+    (new_est, new_p)
+}
+
+// Combined predict-then-update in one call -- the form most
+// users want when running on a fixed sample rate.
+@verify(lean, theorem = "kalman1d_step_variance_bounded")
+fn kalman1d_step(estimate: Real, p: Real, z: Real, q: Real, r: Real)
+    -> (Real, Real)
+    where chain_order <= 0
+    requires (p >= 0.0)
+    requires (q >= 0.0)
+    requires (r > 0.0)
+{
+    let p_pred  = p + q;
+    let k       = p_pred / (p_pred + r);
+    let new_est = estimate + k * (z - estimate);
+    let new_p   = (1.0 - k) * p_pred;
+    (new_est, new_p)
+}

@@ -1,0 +1,47 @@
+// lqr_1d.eml -- 1-D infinite-horizon LQR.
+//
+// For a scalar plant
+//   x' = a*x + b*u
+// with cost  J = sum  q*x^2 + r*u^2
+// the optimal control is  u = -k*x  with
+//   k = (b*p) / r
+//   p = solution of the algebraic Riccati equation
+//       p = q + a^2*p - (a*b*p)^2 / (r + b^2*p)
+//
+// For the closed-form 1-D scalar Riccati this simplifies to the
+// quadratic
+//   b^2 * p^2 - (b^2 * q / r + a^2 - 1) * p - q = 0
+// which has one positive root.
+
+module lqr_1d;
+
+// Closed-form solution of the scalar discrete-time ARE,
+// returning the Riccati P > 0.
+@verify(lean, theorem = "lqr_1d_riccati_positive")
+fn riccati(a: Real, b: Real, q: Real, r: Real) -> Real
+    where chain_order <= 1,
+          domain: r > 0.0 && q >= 0.0 && b != 0.0
+    ensures (result >= 0.0)
+{
+    let alpha = b * b / r;
+    let beta  = a * a - 1.0;
+    let disc  = (beta + alpha * q) * (beta + alpha * q) + 4.0 * alpha * q;
+    (beta + alpha * q + sqrt(disc)) / (2.0 * alpha)
+}
+
+// Optimal feedback gain k from the Riccati P.
+@verify(lean, theorem = "lqr_1d_gain_positive_for_positive_b")
+fn lqr_gain(b: Real, p: Real, r: Real) -> Real
+    where chain_order <= 0,
+          domain: r > 0.0 && p >= 0.0
+{
+    b * p / r
+}
+
+// Closed-loop control law u = -k * x.
+@verify(lean, theorem = "lqr_1d_control_proportional_to_state")
+fn lqr_control(x: Real, k: Real) -> Real
+    where chain_order <= 0
+{
+    -k * x
+}

@@ -1,0 +1,59 @@
+// accelerometer.eml -- IMU accelerometer model.
+//
+// A MEMS accelerometer measures the proper acceleration -- the
+// acceleration due to non-gravitational forces. At rest in a
+// gravity field g, the accelerometer reads +g (one g on the
+// vertical axis, since gravity must be cancelled by the supporting
+// surface).
+//
+// This module ships the standard kinematic helpers callers need
+// when fusing accelerometer data with a gyro / magnetometer:
+//
+//   raw -> physical units              (counts -> m/s^2)
+//   tilt angle from gravity            (single-axis)
+//   high-pass to remove DC bias        (filter the gravity vector)
+//
+// Chain order 0 except where the trig identities require it.
+
+module accelerometer;
+
+const G_EARTH: Real = 9.80665  // standard gravity (m/s^2)
+
+// LSB (least significant bit) scale: convert raw int to m/s^2.
+//   accel_si = raw * scale_lsb / one_g_in_lsb * G_EARTH
+@verify(lean, theorem = "accel_lsb_scale_signed")
+fn lsb_to_si(raw: Real, lsb_per_g: Real) -> Real
+    where chain_order <= 0,
+          domain: lsb_per_g > 0.0
+{
+    raw * G_EARTH / lsb_per_g
+}
+
+// Tilt angle from a single accelerometer axis under gravity.
+//   theta = asin(a / G_EARTH)
+// Caller must ensure |a| <= G_EARTH (no other accelerations).
+@verify(lean, theorem = "accel_tilt_signed_in_pi_band")
+fn tilt_angle(accel: Real) -> Real
+    where chain_order <= 1,
+          domain: abs(accel) <= G_EARTH
+{
+    asin(accel / G_EARTH)
+}
+
+// 2-axis tilt (roll about x-axis from y/z accelerations).
+@verify(lean, theorem = "accel_two_axis_tilt_signed")
+fn tilt_two_axis(ay: Real, az: Real) -> Real
+    where chain_order <= 2,
+          domain: az > 0.0
+{
+    atan(ay / az)
+}
+
+// Specific force magnitude (always positive).
+@verify(lean, theorem = "accel_magnitude_nonneg")
+fn magnitude(ax: Real, ay: Real, az: Real) -> Real
+    where chain_order <= 1
+    ensures (result >= 0.0)
+{
+    sqrt(ax * ax + ay * ay + az * az)
+}

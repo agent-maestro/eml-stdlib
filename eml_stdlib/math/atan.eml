@@ -1,0 +1,32 @@
+// atan.eml -- arctangent.
+//
+// Chain order 1. Output is bounded to (-pi/2, pi/2) so any caller
+// can reason about bounded output without a separate clamp.
+
+module atan_module;
+
+const HALF_PI: Real = 1.5707963267948966
+
+@verify(lean, theorem = "atan_in_open_half_pi_band")
+fn atan_kernel(x: Real) -> Real
+    where chain_order <= 1
+    ensures (result >  -HALF_PI)
+    ensures (result <   HALF_PI)
+{
+    atan(x)
+}
+
+@verify(lean, theorem = "atan_zero_is_zero")
+fn atan_at_zero() -> Real
+    where chain_order <= 0
+    ensures (result == 0.0)
+{
+    atan(0.0)
+}
+
+@verify(lean, theorem = "atan_odd_at_one")
+fn atan_at_one() -> Real
+    where chain_order <= 0
+{
+    atan(1.0)
+}

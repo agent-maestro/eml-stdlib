@@ -1,0 +1,52 @@
+// wave_propagation.eml -- 1-D linear wave equation snapshot.
+//
+//   u(x, t) = A * sin(k*x - omega*t + phi)
+//
+// k = 2*pi / lambda, omega = 2*pi*f, c = omega / k.
+//
+// Chain order 1 -- one transcendental, linear argument. Closed
+// boundary identities: u(x, 0) at phi=0 equals A*sin(k*x), and the
+// wave speed is the constant ratio omega/k.
+
+module wave_propagation;
+
+const TWO_PI: Real = 6.283185307179586
+
+@verify(lean, theorem = "wave_amplitude_in_unit_interval")
+fn wave(amplitude: Real, k: Real, omega: Real, phi: Real,
+        x: Real, t: Real) -> Real
+    where chain_order <= 1
+    ensures (abs(result) <= abs(amplitude))
+{
+    amplitude * sin(k * x - omega * t + phi)
+}
+
+// Wavelength from wavenumber k = 2*pi / lambda.
+@verify(lean, theorem = "wavelength_positive")
+fn wavelength(k: Real) -> Real
+    where chain_order <= 0,
+          domain: k > 0.0
+    ensures (result > 0.0)
+{
+    TWO_PI / k
+}
+
+// Frequency from angular frequency omega = 2*pi * f.
+@verify(lean, theorem = "frequency_nonneg")
+fn frequency(omega: Real) -> Real
+    where chain_order <= 0,
+          domain: omega >= 0.0
+    ensures (result >= 0.0)
+{
+    omega / TWO_PI
+}
+
+// Phase velocity c = omega / k.
+@verify(lean, theorem = "phase_velocity_positive")
+fn phase_velocity(omega: Real, k: Real) -> Real
+    where chain_order <= 0,
+          domain: k > 0.0 && omega > 0.0
+    ensures (result > 0.0)
+{
+    omega / k
+}

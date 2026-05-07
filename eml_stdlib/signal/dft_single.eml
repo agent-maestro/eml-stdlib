@@ -1,0 +1,30 @@
+# dft_single.eml — single-bin DFT (reference, used to validate FFT)
+
+@kernel
+name:        "dft_single"
+description: "Compute X[k] = Σ_{n=0..N-1} x[n] · exp(-i*2π*k*n/N) directly. O(N) per bin."
+chain_order: 1
+domain:      complex
+
+@params
+N: int       # transform size (any positive integer)
+k: int       # output bin, 0 ≤ k < N
+x: complex[N]  # input sequence
+
+@returns
+X_k: complex   # X[k]
+
+@operating_range
+N >= 1
+0 <= k < N
+all |x[n]| <= |max_input|
+
+@verify
+magnitude_bounded:        |X_k| <= sum(|x[n]| for n in 0..N-1)
+parseval_consistent:      Σ_k |X_k|² == N · Σ_n |x[n]|² (across all k; per-bin not enforceable here)
+twiddle_unit_magnitude:   |exp(-i * 2π * k * n / N)| == 1 for all (k, n)
+no_nan_in_range:          X_k is finite for all valid (N, k, x)
+conjugate_symmetry_for_real_input:  if all x[n] ∈ ℝ, then X_{N-k} == conj(X_k)
+
+@body
+sum:    X_k = Σ_{n=0..N-1} x[n] * exp(-i * 2 * PI * k * n / N)

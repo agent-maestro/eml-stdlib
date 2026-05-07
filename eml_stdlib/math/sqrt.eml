@@ -1,0 +1,46 @@
+// sqrt.eml -- square root + 2D/3D Euclidean distance.
+//
+// `sqrt` is a Forge builtin. This module ships sqrt with an
+// explicit positivity contract plus the two most-used compositions
+// (Euclidean distance) so callers can drop them into kernels
+// without re-deriving the chain-order budget.
+
+module sqrt_module;
+
+@verify(lean, theorem = "sqrt_nonneg")
+fn sqrt_kernel(x: Real) -> Real
+    where chain_order <= 1,
+          domain: x >= 0.0
+    ensures (result >= 0.0)
+{
+    sqrt(x)
+}
+
+// 2D Euclidean distance.
+@verify(lean, theorem = "hypot2_nonneg")
+fn hypot2(x: Real, y: Real) -> Real
+    where chain_order <= 1
+    ensures (result >= 0.0)
+{
+    sqrt(x * x + y * y)
+}
+
+// 3D Euclidean distance.
+@verify(lean, theorem = "hypot3_nonneg")
+fn hypot3(x: Real, y: Real, z: Real) -> Real
+    where chain_order <= 1
+    ensures (result >= 0.0)
+{
+    sqrt(x * x + y * y + z * z)
+}
+
+// Inverse square root -- shows up in normal-vector renormalisation,
+// 1/sqrt(2pi) Gaussian prefactors, and 1/r^2 force laws.
+@verify(lean, theorem = "rsqrt_positive")
+fn rsqrt(x: Real) -> Real
+    where chain_order <= 1,
+          domain: x > 0.0
+    ensures (result > 0.0)
+{
+    1.0 / sqrt(x)
+}

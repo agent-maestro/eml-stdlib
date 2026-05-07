@@ -1,0 +1,228 @@
+# eml-stdlib
+
+Verified standard library for the [EML](https://github.com/agent-maestro/forge) language.
+Every module compiles to Python and Lean (and 33 other backends via Forge); 
+every `@verify` contract has a Lean proof obligation against MachLib.
+
+```bash
+pip install eml-stdlib
+```
+
+## At a glance
+
+- **99 modules** across **10 categories**
+- **305 functions** total
+- **257 carry an `@verify(lean, …)` contract** (84%)
+- Every function declares its **Pfaffian chain order** in the type
+
+## Use
+
+After `pip install`, import the location of the `.eml` source files
+into your Forge project:
+
+```python
+from eml_stdlib import path_to
+math_dir = path_to('math')           # Path to math/ subdir
+sigmoid  = path_to('math/sigmoid.eml')  # Specific module
+```
+
+Inside an EML source file, reference modules with `use`:
+
+```eml
+use stdlib::math::sigmoid;
+use stdlib::ml::attention;
+use stdlib::circuits::rc_filter;
+```
+
+## Directory map
+
+### `math/` — 20 modules / 67 fns / 63 verified
+
+Math primitives — transcendentals, special functions, identities.
+
+| File | Functions | Chain | Verified | Origin |
+|------|-----------|-------|----------|--------|
+| `abs.eml` | abs_kernel, sign, saturate, softsign | 0 | 4/4 | **new** |
+| `atan.eml` | atan_kernel, atan_at_zero, atan_at_one | 0,1 | 3/3 | **new** |
+| `atan2.eml` | atan2_pos_x, atan2_neg_x_upper, atan2_neg_x_lower, … (+2) | 0,2 | 5/5 | **new** |
+| `bessel_j0.eml` | bessel_j0_small, bessel_j0_large, bessel_j0_at_zero | 0,1 | 3/3 | **new** |
+| `cos.eml` | cos_kernel, cos_at_zero, cos_sq, pythagorean | 0,1 | 4/4 | **new** |
+| `cosh.eml` | cosh_kernel, cosh_at_zero | 0,1 | 2/2 | **new** |
+| `erf.eml` | erf_kernel, erf_at_zero, erfc, erf_as | 0,1 | 4/4 | **new** |
+| `exp.eml` | exp_kernel, exp_neg, expm1 | 1 | 3/3 | **new** |
+| `gamma.eml` | ln_gamma_stirling, gamma_stirling, gamma_at_one | 0,1,2 | 3/3 | **new** |
+| `gaussian.eml` | gaussian | 1 | 0/1 | forge/examples/gaussian.eml |
+| `log.eml` | ln_kernel, log2, log10, log_b, log1p | 1,2 | 5/5 | **new** |
+| `pow.eml` | pow_kernel, sq, cube, pow4, pow8 | 0,2 | 5/5 | **new** |
+| `relu.eml` | relu, leaky_relu, relu6, prelu | 0 | 3/4 | forge/industries/ml/activations/relu.eml |
+| `sigmoid.eml` | sigmoid, silu | 2 | 0/2 | forge/examples/sigmoid.eml |
+| `sin.eml` | sin_kernel, sin_at_zero, sin_sq | 0,1 | 3/3 | **new** |
+| `sinh.eml` | sinh_kernel, sinh_at_zero | 0,1 | 2/2 | **new** |
+| `softmax.eml` | softmax_shift_exp, softmax_normalize, softmax_two_logit, … (+1) | 0,1,2 | 4/4 | forge/industries/ml/activations/softmax.eml |
+| `sqrt.eml` | sqrt_kernel, hypot2, hypot3, rsqrt | 1 | 4/4 | **new** |
+| `tan.eml` | tan_kernel, tan_at_zero, two_tan | 0,2 | 3/3 | **new** |
+| `tanh.eml` | tanh_activation, tanh_from_sigmoid, hard_tanh | 0,1,2 | 3/3 | forge/industries/ml/activations/tanh.eml |
+
+### `signal/` — 10 modules / 20 fns / 20 verified
+
+DSP — filters, FFT, windows, matched-filter.
+
+| File | Functions | Chain | Verified | Origin |
+|------|-----------|-------|----------|--------|
+| `bandpass.eml` | bandpass_step, alphas_from_cutoffs | 0 | 2/2 | **new** |
+| `chirp.eml` | chirp_frequency | 0 | 1/1 | monogate-research/exploration/bat_sonar/eml/chirp.eml |
+| `dft_single.eml` | dft_single | 1 | 1/1 | monogate-research/industries/signal_processing/kernels/dft_single.eml |
+| `fft_butterfly.eml` | fft_butterfly | 1 | 1/1 | monogate-research/industries/signal_processing/kernels/fft_butterfly.eml |
+| `highpass.eml` | hpf1_step, alpha_from_rc_dt, alpha_from_cutoff | 0 | 3/3 | **new** |
+| `lowpass.eml` | lpf1_step, alpha_from_rc_dt, alpha_from_cutoff | 0 | 3/3 | **new** |
+| `matched_filter.eml` | matched_filter_score | 0 | 1/1 | monogate-research/exploration/bat_sonar/eml/matched_filter.eml |
+| `notch_filter.eml` | notch_coeffs, notch_step | 0,1 | 2/2 | **new** |
+| `window_hamming.eml` | hamming, hamming_at_start, hamming_apply | 0,1 | 3/3 | **new** |
+| `window_hann.eml` | hann, hann_at_start, hann_apply | 0,1 | 3/3 | **new** |
+
+### `control/` — 6 modules / 12 fns / 12 verified
+
+Control — PID, Kalman, LQR, hysteresis, deadband.
+
+| File | Functions | Chain | Verified | Origin |
+|------|-----------|-------|----------|--------|
+| `bangbang.eml` | bangbang, bangbang_symmetric | 0 | 2/2 | **new** |
+| `deadband.eml` | deadband, deadband_asymmetric | 0 | 2/2 | **new** |
+| `hysteresis.eml` | hysteresis_step | 0 | 1/1 | **new** |
+| `kalman_1d.eml` | kalman1d_predict, kalman1d_update, kalman1d_step | 0 | 3/3 | **new** |
+| `lqr_1d.eml` | riccati, lqr_gain, lqr_control | 0,1 | 3/3 | **new** |
+| `pid.eml` | pid | 0 | 1/1 | forge/examples/pid_controller.eml |
+
+### `physics/` — 9 modules / 30 fns / 28 verified
+
+Physics — wave propagation, oscillators, blackbody, fluid flow.
+
+| File | Functions | Chain | Verified | Origin |
+|------|-----------|-------|----------|--------|
+| `coulomb.eml` | force, field, potential_energy, potential | 0 | 4/4 | **new** |
+| `damped_oscillator.eml` | damped_wave | 2 | 0/1 | forge/examples/damped_wave.eml |
+| `diffusion.eml` | concentration, sigma, fick_first_law | 0,1 | 3/3 | **new** |
+| `gravity.eml` | newtonian_acceleration, surface_gravity_step | 0 | 1/2 | forge/industries/gaming/physics/gravity.eml |
+| `hooke.eml` | force, potential_energy, series_stiffness, … (+2) | 0,1 | 5/5 | **new** |
+| `navier_stokes_1d.eml` | pressure_term, viscous_term, convective_term, rhs, reynolds | 0 | 5/5 | **new** |
+| `planck_radiation.eml` | spectral_radiance, wien_lambda_max, rayleigh_jeans_radiance | 0,1 | 3/3 | forge/industries/scientific/physics/planck_radiation.eml |
+| `stefan_boltzmann.eml` | radiative_flux, net_exchange, wien_peak_wavelength | 0,1 | 3/3 | forge/industries/scientific/climate/stefan_boltzmann.eml |
+| `wave_propagation.eml` | wave, wavelength, frequency, phase_velocity | 0,1 | 4/4 | **new** |
+
+### `circuits/` — 8 modules / 37 fns / 26 verified
+
+Analog circuits — RC, voltage divider, CMOS, MOSFET, PLL, LDO, buck.
+
+| File | Functions | Chain | Verified | Origin |
+|------|-----------|-------|----------|--------|
+| `buck_converter.eml` | circuit, output_voltage, inductor_ripple, … (+2) | 0 | 4/5 | **new** |
+| `cmos_inverter.eml` | vout_at_low_input, vout_at_high_input, switching_threshold, … (+3) | 0 | 3/6 | forge/examples/carriers/electronics/cmos_inverter.eml |
+| `h_bridge.eml` | circuit, forward_voltage, reverse_voltage, dead_time_loss | 0 | 3/4 | **new** |
+| `ldo.eml` | circuit, output_voltage, efficiency, … (+2) | 0 | 4/5 | **new** |
+| `mosfet_iv.eml` | drain_current_sat, id_at_threshold, id_prefactor | 0 | 2/3 | forge/examples/carriers/electronics/mosfet_iv.eml |
+| `pll_loop.eml` | loop_gain, steady_state_error_at_zero_offset, loop_gain_certificate, … (+1) | 0 | 2/4 | forge/examples/carriers/electronics/pll_loop.eml |
+| `rc_filter.eml` | circuit, tau, vout_steady, … (+3) | 0,1 | 5/6 | forge/examples/rc_filter.eml |
+| `voltage_divider.eml` | circuit, vout_divider, rsum, vout_symmetric | 0 | 3/4 | forge/examples/voltage_divider.eml |
+
+### `sensors/` — 6 modules / 24 fns / 23 verified
+
+Sensors — Hall effect, thermistor, RTD, accelerometer, strain gauge.
+
+| File | Functions | Chain | Verified | Origin |
+|------|-----------|-------|----------|--------|
+| `accelerometer.eml` | lsb_to_si, tilt_angle, tilt_two_axis, magnitude | 0,1,2 | 4/4 | **new** |
+| `hall_effect.eml` | hall_voltage, hall_coefficient, b_from_voltage | 0 | 3/3 | **new** |
+| `photodetector.eml` | photocurrent, current_at_zero_power, nonneg_current | 0 | 2/3 | forge/examples/photonics/components/photodetector.eml |
+| `rtd.eml` | resistance_pos, resistance_neg, temperature_pos | 0,1 | 3/3 | **new** |
+| `strain_gauge.eml` | resistance_change, strain_from_dr, quarter_bridge_voltage, … (+3) | 0 | 6/6 | **new** |
+| `thermistor.eml` | resistance_beta, temperature_beta, inv_temperature_steinhart, … (+2) | 0,1 | 5/5 | **new** |
+
+### `biology/` — 12 modules / 18 fns / 15 verified
+
+Biology — vision, olfaction, magnetoreception, ion channels.
+
+| File | Functions | Chain | Verified | Origin |
+|------|-----------|-------|----------|--------|
+| `cone_l.eml` | cone_l_sensitivity | 1 | 1/1 | monogate-research/exploration/cat_vision/eml/cone_l.eml |
+| `cone_s.eml` | cone_s_sensitivity | 1 | 1/1 | monogate-research/exploration/cat_vision/eml/cone_s.eml |
+| `cryptochrome.eml` | cryptochrome_yield | 1 | 1/1 | monogate-research/exploration/pigeon_magnetoreception/eml/cryptochrome.eml |
+| `geomagnetic_field.eml` | geomagnetic_field | 1 | 1/1 | monogate-research/exploration/pigeon_magnetoreception/eml/geomagnetic_field.eml |
+| `goldman_equation.eml` | membrane_potential, nernst | 1 | 2/2 | **new** |
+| `hill_equation.eml` | hill_velocity, hill_logit | 1,2 | 1/2 | forge/industries/chemistry/kinetics/hill.eml |
+| `hodgkin_huxley.eml` | voltage_step, gating_step | 0 | 2/2 | forge/industries/scientific/biology/hodgkin_huxley_step.eml |
+| `michaelis_menten.eml` | velocity, lineweaver_burk, eadie_hofstee | 0 | 1/3 | forge/industries/chemistry/kinetics/michaelis_menten.eml |
+| `plume_diffusion.eml` | plume_concentration | 1 | 1/1 | monogate-research/exploration/dog_olfaction/eml/plume_diffusion.eml |
+| `receptor_binding.eml` | receptor_binding | 0 | 1/1 | monogate-research/exploration/dog_olfaction/eml/receptor_binding.eml |
+| `rod_sensitivity.eml` | rod_sensitivity | 1 | 1/1 | monogate-research/exploration/cat_vision/eml/rod_sensitivity.eml |
+| `tapetum.eml` | tapetum_gain, tapetum_amplify | 1 | 2/2 | monogate-research/exploration/cat_vision/eml/tapetum.eml |
+
+### `carriers/` — 12 modules / 40 fns / 24 verified
+
+Wave carriers — photonic, magnonic, phononic, ferronic.
+
+| File | Functions | Chain | Verified | Origin |
+|------|-----------|-------|----------|--------|
+| `acoustic_cloak.eml` | shell_index, outer_boundary_index, shell_thickness | 0 | 2/3 | forge/examples/carriers/phononics/acoustic_cloak.eml |
+| `ferron_emission.eml` | thz_power, power_at_zero_drive, k_emit_certificate | 0 | 2/3 | forge/examples/carriers/ferronics/ferron_emission.eml |
+| `ferron_logic.eml` | output_amplitude, constructive_certificate, p_squared_witness, … (+0) | 1 | 2/3 | forge/examples/carriers/ferronics/ferron_logic.eml |
+| `ferron_propagation.eml` | polarization, envelope, polarization_at_origin, … (+1) | 1 | 2/4 | forge/examples/carriers/ferronics/ferron_propagation.eml |
+| `mach_zehnder.eml` | intensity_out, intensity_at_zero, cos_sq_at_zero | 1 | 2/3 | forge/examples/carriers/photonics/mach_zehnder.eml |
+| `magnon_dispersion.eml` | omega, omega_at_zero_k, fmr_freq | 0 | 2/3 | forge/examples/carriers/spintronics/magnon_dispersion.eml |
+| `magnon_logic.eml` | output_amplitude, constructive_certificate, intensity_witness, … (+0) | 1 | 2/3 | forge/examples/carriers/spintronics/magnon_logic.eml |
+| `optical_neuron.eml` | activation, dark_output, isat_certificate | 0,1 | 2/3 | forge/examples/carriers/photonics/optical_neuron.eml |
+| `phonon_bandgap.eml` | transmission, transmission_at_zero, sin_sq_at_zero | 1 | 2/3 | forge/examples/carriers/phononics/phonon_bandgap.eml |
+| `ring_resonator.eml` | transmission, peak_transmission, fsr_separation | 0,1 | 2/3 | forge/examples/carriers/photonics/ring_resonator.eml |
+| `spin_torque.eml` | larmor_frequency, damping_prefactor, larmor_certificate, … (+1) | 0 | 2/4 | forge/examples/carriers/spintronics/spin_torque.eml |
+| `thermal_rectifier.eml` | forward_conductance, rectification_ratio, asymmetry, … (+2) | 0 | 2/5 | forge/examples/carriers/phononics/thermal_rectifier.eml |
+
+### `quantum/` — 7 modules / 23 fns / 14 verified
+
+Quantum gates — Hadamard, Pauli, phase, CNOT, Grover oracle.
+
+| File | Functions | Chain | Verified | Origin |
+|------|-----------|-------|----------|--------|
+| `cnot.eml` | cnot_control_zero_passes, cnot_self_inverse_amp, cnot_zero_certificate, … (+2) | 0 | 3/5 | forge/examples/carriers/quantum/cnot.eml |
+| `grover_oracle.eml` | reflect, reflect_at_mean, squared_witness, fixed_point_value | 0 | 2/4 | forge/examples/carriers/quantum/grover_oracle.eml |
+| `hadamard.eml` | h_norm_2x_squared_unnormalised, twice_input_norm, h0_norm_unnormalised, … (+2) | 0 | 3/5 | forge/examples/carriers/quantum/hadamard.eml |
+| `pauli_x.eml` | pauli_x | 0 | 1/1 | monogate-research/industries/quantum/kernels/pauli_x.eml |
+| `pauli_z.eml` | pauli_z | 0 | 1/1 | monogate-research/industries/quantum/kernels/pauli_z.eml |
+| `phase_gate.eml` | r_real, r_imag, r_modulus_sq, … (+3) | 1 | 3/6 | forge/examples/carriers/quantum/phase_gate.eml |
+| `rotation_rz.eml` | rx | 1 | 1/1 | monogate-research/industries/quantum/kernels/rotation.eml |
+
+### `ml/` — 9 modules / 34 fns / 32 verified
+
+Machine learning — activations, attention, RoPE, layernorm, loss.
+
+| File | Functions | Chain | Verified | Origin |
+|------|-----------|-------|----------|--------|
+| `attention.eml` | scale_factor, score_qk, attention_step, … (+2) | 0,1 | 5/5 | **new** |
+| `cross_entropy.eml` | bce_loss, bce_with_logits, categorical_ce_pair, … (+1) | 0,1,2 | 3/4 | forge/industries/ml/loss/cross_entropy.eml |
+| `gelu.eml` | gelu_tanh, quick_gelu | 1 | 2/2 | forge/industries/ml/activations/gelu.eml |
+| `layernorm.eml` | layernorm_step, layernorm_default, rmsnorm_step | 1 | 3/3 | **new** |
+| `leaky_relu.eml` | leaky_relu, leaky_relu_default, prelu, leaky_relu_grad | 0 | 4/4 | **new** |
+| `relu.eml` | relu, leaky_relu, relu6, prelu | 0 | 3/4 | forge/industries/ml/activations/relu.eml |
+| `rotary_embed.eml` | theta, theta_default, rotate_pair_even, … (+2) | 1 | 5/5 | **new** |
+| `silu.eml` | silu, swish, silu_grad | 1 | 3/3 | **new** |
+| `softmax.eml` | softmax_shift_exp, softmax_normalize, softmax_two_logit, … (+1) | 0,1,2 | 4/4 | forge/industries/ml/activations/softmax.eml |
+
+## Vocabulary
+
+**Chain order** — the Pfaffian chain order, an upper bound on how many
+transcendental compositions deep a function reaches. Order 0 = pure
+polynomial / rational. Order 1 = single transcendental wrapping a
+polynomial argument (e.g. `exp`, `sin`, `ln`). Order 2 = two
+transcendentals composed (e.g. `tanh = sinh/cosh`). Forge uses chain
+order to bound termination, place transcendentals on FPGA / GPU, and
+select the right Lean tactic.
+
+**`@verify(lean, theorem = …)`** — the function carries a Lean proof
+obligation. The Forge Lean backend emits the obligation; closing it
+against MachLib is what makes the function *verified*.
+
+**Origin: `new`** — written for this stdlib. Otherwise the column
+shows the path under `~/monogate/` from which the module was copied
+(originals stay where they are; the stdlib is the curated home).
+
+## License
+
+MIT — see `LICENSE`.

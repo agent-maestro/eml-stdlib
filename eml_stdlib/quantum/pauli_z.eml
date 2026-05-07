@@ -1,0 +1,29 @@
+# pauli_z.eml — Pauli Z (phase flip) gate
+
+@kernel
+name:        "pauli_z"
+description: "Pauli Z (phase flip): |0⟩ → |0⟩, |1⟩ → -|1⟩. Matrix [[1,0],[0,-1]]."
+chain_order: 0
+domain:      complex
+
+@params
+psi_0: complex
+psi_1: complex
+
+@returns
+psi_0_out: complex
+psi_1_out: complex
+
+@operating_range
+|psi_0|² + |psi_1|² == 1
+
+@verify
+unitarity:           U†U = I
+determinant:         det(Z) = -1
+hermitian:           Z = Z†
+involutory:          Z² = I
+output_normalized:   |psi_0_out|² + |psi_1_out|² == 1
+
+@body
+psi_0_out = psi_0
+psi_1_out = -psi_1

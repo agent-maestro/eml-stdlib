@@ -1,0 +1,36 @@
+// cone_l.eml
+//
+// Feline long-wavelength (L, "green-yellow") cone spectral
+// sensitivity. This is the cone that *almost* sees red — its
+// peak at 554 nm is shifted ~10 nm shorter than the human L
+// cone's 564 nm peak, which is why a red ball looks olive-yellow
+// to a cat: the response in the deep-red region (>600 nm) tails
+// off much faster.
+//
+// Source: Loop et al. (1987) and the Govardovskii et al. (2000)
+// visual-pigment template. λ_peak = 554 nm. σ ≈ 50 nm (FWHM
+// ≈ 118 nm), reflecting the wider long-wavelength tail of L
+// cones — without this the model would render deep red as
+// absolute black instead of the dark olive cats actually see.
+//
+//     L(λ) = exp(-((λ - 554)² / (2 · 50²)))
+//
+// This file does NOT define a "red" / M-wavelength cone — cats
+// don't have one, and adding a third cone here would silently
+// turn the model into a trichromat. Postcondition keeps the
+// output bounded.
+
+module cone_l;
+
+const CONE_L_PEAK_NM:  Real = 554.0
+const CONE_L_SIGMA_NM: Real =  50.0
+
+@verify(lean, theorem = "cone_l_sensitivity_bounded_unit")
+fn cone_l_sensitivity(wavelength_nm: Real) -> Real
+    where chain_order <= 1
+    ensures (result >= 0.0)
+    ensures (result <= 1.0)
+{
+    exp(-((wavelength_nm - CONE_L_PEAK_NM) * (wavelength_nm - CONE_L_PEAK_NM))
+         / (2.0 * CONE_L_SIGMA_NM * CONE_L_SIGMA_NM))
+}

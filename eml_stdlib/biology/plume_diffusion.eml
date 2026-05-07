@@ -1,0 +1,47 @@
+// plume_diffusion.eml
+//
+// Gaussian plume model — concentration of an odorant released at
+// a continuous point source, advected downwind, dispersed by
+// turbulence:
+//
+//     C(x, y) = Q / (2π · σ_x · σ_y · u) · exp(-y² / (2 σ_y²))
+//
+// Q = source strength (molecules/s), u = wind speed (m/s),
+// σ_x and σ_y = downwind-dependent dispersion lengths
+// (Pasquill-Gifford curves; we use σ ∝ √x as a standard low-
+// turbulence approximation for the EML kernel).
+//
+// This is the same model atmospheric dispersion calculations use
+// for industrial pollutants and the same one a search-and-rescue
+// dog navigates while running a track. A trained detection dog
+// effectively integrates this concentration field across its
+// turn-by-turn path until it reaches the source.
+//
+// Postcondition: C ≥ 0 everywhere — exp is non-negative, all
+// constants are positive. Required by the binding equation
+// downstream.
+
+module plume_diffusion;
+
+const PI:           Real = 3.14159265358979
+const WIND_SPEED:   Real = 1.0    // m/s, light breeze
+const SIGMA_COEFF:  Real = 0.2    // dispersion coefficient
+
+@verify(lean, theorem = "plume_concentration_nonneg")
+fn plume_concentration(
+    source_strength: Real{q | q >= 0.0},
+    downwind_x_m:    Real{x | x > 0.0},
+    crosswind_y_m:   Real,
+)
+    -> Real{r | r >= 0.0}
+    where chain_order <= 1
+{
+    // σ_y(x) = c · √x — dispersion grows with downwind distance.
+    // We approximate σ_x ≈ σ_y and roll both into the prefactor.
+    max(0.0,
+        source_strength
+            / (2.0 * PI * SIGMA_COEFF * SIGMA_COEFF * downwind_x_m * WIND_SPEED)
+            * exp(-(crosswind_y_m * crosswind_y_m)
+                  / (2.0 * SIGMA_COEFF * SIGMA_COEFF * downwind_x_m))
+    )
+}

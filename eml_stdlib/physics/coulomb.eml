@@ -1,0 +1,48 @@
+// coulomb.eml -- Coulomb's law for electrostatic force / field.
+//
+//   F = k_e * q1 * q2 / r^2
+//   E = k_e * q     / r^2
+//
+// k_e = 8.9875517923e9 N*m^2/C^2 (Coulomb constant).
+// Chain order 0 -- pure rational arithmetic.
+
+module coulomb;
+
+const COULOMB_K: Real = 8.9875517923e9
+const EPS_0:     Real = 8.8541878128e-12
+
+// Force between two point charges separated by r.
+@verify(lean, theorem = "coulomb_force_sign_matches_charge_product")
+fn force(q1: Real, q2: Real, r: Real) -> Real
+    where chain_order <= 0,
+          domain: r > 0.0
+{
+    COULOMB_K * q1 * q2 / (r * r)
+}
+
+// Electric field of a single point charge at distance r.
+@verify(lean, theorem = "coulomb_field_sign_matches_charge")
+fn field(q: Real, r: Real) -> Real
+    where chain_order <= 0,
+          domain: r > 0.0
+{
+    COULOMB_K * q / (r * r)
+}
+
+// Potential energy of a pair of charges at separation r.
+@verify(lean, theorem = "coulomb_potential_energy_sign_matches_charges")
+fn potential_energy(q1: Real, q2: Real, r: Real) -> Real
+    where chain_order <= 0,
+          domain: r > 0.0
+{
+    COULOMB_K * q1 * q2 / r
+}
+
+// Electrostatic potential of a single point charge at distance r.
+@verify(lean, theorem = "coulomb_potential_sign_matches_charge")
+fn potential(q: Real, r: Real) -> Real
+    where chain_order <= 0,
+          domain: r > 0.0
+{
+    COULOMB_K * q / r
+}

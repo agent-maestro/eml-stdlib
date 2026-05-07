@@ -1,0 +1,44 @@
+// cryptochrome.eml
+//
+// Cryptochrome radical-pair magnetoreception. Cryptochrome (CRY)
+// is a flavoprotein in the bird retina; absorbing a blue-light
+// photon excites a flavin/tryptophan radical pair whose singlet
+// vs. triplet recombination yield depends on the orientation of
+// the geomagnetic field relative to the molecular axis:
+//
+//     Φ(B, θ) = 1/3 + (2/15) · (γ · B · τ)² · (3·cos²(θ) - 1)
+//
+// θ is the angle between the field vector and the radical-pair
+// axis; γ is the gyromagnetic ratio (~28 GHz/T); τ is the
+// recombination lifetime (~µs). The term `3·cos²(θ) - 1` is the
+// signature P₂ Legendre polynomial — the same anisotropy
+// signature seen in NMR and EPR spectra. This is "quantum
+// biology" in the strict sense: the spin-coherence of the
+// radical pair has to outlast environmental decoherence to
+// transmit a usable signal (Hore & Mouritsen 2016).
+//
+// Postcondition: Φ ∈ [0, 1] — it's a quantum yield, a probability.
+
+module cryptochrome;
+
+const ONE_THIRD:   Real = 0.3333333333333333
+
+@verify(lean, theorem = "cryptochrome_yield_in_unit_interval")
+fn cryptochrome_yield(
+    field_strength_T: Real{b | b >= 0.0},
+    angle_rad:        Real,
+    coupling:         Real{c | c >= 0.0},
+) -> Real{r | 0.0 <= r && r <= 1.0}
+    where chain_order <= 1
+{
+    // (γ·B·τ)² is bundled into `coupling` for clean units; the
+    // model is qualitative, not quantitative, in this file (the
+    // exact pre-factor is a tuning parameter for a given CRY
+    // isoform). The clamp pins the postcondition.
+    clamp(
+        ONE_THIRD + (2.0 / 15.0) * coupling
+            * (3.0 * cos(angle_rad) * cos(angle_rad) - 1.0),
+        0.0,
+        1.0
+    )
+}

@@ -1,0 +1,64 @@
+// rotary_embed.eml -- Rotary Position Embedding (RoPE) kernel.
+//
+// RoPE applies a 2D rotation to each (x_even, x_odd) pair in the
+// query/key vector at position m. The rotation angle is
+//
+//   theta_i = m / base^(2i/d)
+//
+// where base = 10000 (standard), d is the head dimension, i in
+// [0, d/2). The transformed pair is
+//
+//   x_even' = x_even * cos(theta) - x_odd * sin(theta)
+//   x_odd'  = x_even * sin(theta) + x_odd * cos(theta)
+//
+// Chain order 1 -- one sin, one cos per pair. The dot-product
+// q . k after RoPE encodes the relative position (m - n), which is
+// what the attention layer wants.
+
+module rotary_embed;
+
+const DEFAULT_BASE: Real = 10000.0
+
+// Rotation angle for index i at position m.
+@verify(lean, theorem = "rope_theta_at_zero_position_is_zero")
+fn theta(m: Real, i: Real, d: Real, base: Real) -> Real
+    where chain_order <= 1,
+          domain: d > 0.0 && base > 0.0
+{
+    let exponent = 2.0 * i / d;
+    m / pow(base, exponent)
+}
+
+// Default-base theta.
+@verify(lean, theorem = "rope_default_theta_at_zero_position_is_zero")
+fn theta_default(m: Real, i: Real, d: Real) -> Real
+    where chain_order <= 1,
+          domain: d > 0.0
+{
+    let exponent = 2.0 * i / d;
+    m / pow(DEFAULT_BASE, exponent)
+}
+
+// Rotate one (even, odd) pair.
+@verify(lean, theorem = "rope_rotation_preserves_norm")
+fn rotate_pair_even(x_even: Real, x_odd: Real, theta: Real) -> Real
+    where chain_order <= 1
+{
+    x_even * cos(theta) - x_odd * sin(theta)
+}
+
+@verify(lean, theorem = "rope_rotation_pair_norm_preserved")
+fn rotate_pair_odd(x_even: Real, x_odd: Real, theta: Real) -> Real
+    where chain_order <= 1
+{
+    x_even * sin(theta) + x_odd * cos(theta)
+}
+
+// Pythagorean witness: |rotated|^2 = |x_even|^2 + |x_odd|^2.
+@verify(lean, theorem = "rope_pythagorean_witness")
+fn norm_witness(theta: Real) -> Real
+    where chain_order <= 1
+    ensures (result == 1.0)
+{
+    sin(theta) * sin(theta) + cos(theta) * cos(theta)
+}

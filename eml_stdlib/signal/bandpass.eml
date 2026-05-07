@@ -1,0 +1,39 @@
+// bandpass.eml -- band-pass filter as a cascade of low-pass and
+// high-pass single-pole stages.
+//
+//   y_lp[n] = alpha_lp * x + (1 - alpha_lp) * y_lp[n-1]
+//   y[n]    = alpha_hp * (y[n-1] + y_lp[n] - prev_lp)
+//
+// The user picks two cutoff frequencies (f_low, f_high) with
+// f_low < f_high and gets a band-pass with -3dB corners at those
+// points. Chain order 0 throughout.
+
+module bandpass;
+
+const TWO_PI: Real = 6.283185307179586
+
+@verify(lean, theorem = "bandpass_step_in_input_envelope")
+fn bandpass_step(x: Real, prev_lp: Real, prev_y: Real,
+                  alpha_lp: Real, alpha_hp: Real) -> Real
+    where chain_order <= 0
+    requires (alpha_lp >= 0.0)
+    requires (alpha_lp <= 1.0)
+    requires (alpha_hp >= 0.0)
+    requires (alpha_hp <= 1.0)
+{
+    let lp_now = alpha_lp * x + (1.0 - alpha_lp) * prev_lp;
+    alpha_hp * (prev_y + lp_now - prev_lp)
+}
+
+// Convert (cutoff_lo_hz, cutoff_hi_hz, dt) -> (alpha_lp, alpha_hp).
+@verify(lean, theorem = "bandpass_alpha_pair_in_unit_interval")
+fn alphas_from_cutoffs(f_low: Real, f_high: Real, dt: Real) -> (Real, Real)
+    where chain_order <= 0,
+          domain: f_low > 0.0 && f_high > f_low && dt >= 0.0
+{
+    let rc_lp = 1.0 / (TWO_PI * f_high);
+    let rc_hp = 1.0 / (TWO_PI * f_low);
+    let alpha_lp = dt    / (rc_lp + dt);
+    let alpha_hp = rc_hp / (rc_hp + dt);
+    (alpha_lp, alpha_hp)
+}

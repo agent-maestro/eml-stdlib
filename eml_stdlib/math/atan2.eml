@@ -1,0 +1,61 @@
+// atan2.eml -- four-quadrant arctan.
+//
+// Real atan2 needs branching by quadrant, which falls outside the
+// pure-EML chain-order calculus.  This module ships the principal
+// branches as separate kernels; the caller picks one by checking
+// the sign of x (the FPGA backend lowers the dispatch to a mux).
+//
+// References:
+//   - atan2_pos_x   :  x > 0          -> atan(y/x)
+//   - atan2_neg_x   :  x < 0, y >= 0  -> atan(y/x) + pi
+//   - atan2_neg_x_neg_y : x < 0, y < 0 -> atan(y/x) - pi
+//   - atan2_zero_x  :  x = 0          -> +/- pi/2 depending on y
+
+module atan2_module;
+
+const PI:      Real = 3.141592653589793
+const HALF_PI: Real = 1.5707963267948966
+
+@verify(lean, theorem = "atan2_pos_x_in_open_half_pi_band")
+fn atan2_pos_x(y: Real, x: Real) -> Real
+    where chain_order <= 2,
+          domain: x > 0.0
+    ensures (result >  -HALF_PI)
+    ensures (result <   HALF_PI)
+{
+    atan(y / x)
+}
+
+@verify(lean, theorem = "atan2_neg_x_upper_in_band")
+fn atan2_neg_x_upper(y: Real, x: Real) -> Real
+    where chain_order <= 2,
+          domain: x < 0.0
+    requires (y >= 0.0)
+{
+    atan(y / x) + PI
+}
+
+@verify(lean, theorem = "atan2_neg_x_lower_in_band")
+fn atan2_neg_x_lower(y: Real, x: Real) -> Real
+    where chain_order <= 2,
+          domain: x < 0.0
+    requires (y < 0.0)
+{
+    atan(y / x) - PI
+}
+
+@verify(lean, theorem = "atan2_zero_x_pos_y")
+fn atan2_zero_x_pos_y() -> Real
+    where chain_order <= 0
+    ensures (result == HALF_PI)
+{
+    HALF_PI
+}
+
+@verify(lean, theorem = "atan2_zero_x_neg_y")
+fn atan2_zero_x_neg_y() -> Real
+    where chain_order <= 0
+    ensures (result == -HALF_PI)
+{
+    -HALF_PI
+}

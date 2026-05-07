@@ -1,0 +1,71 @@
+// thermistor.eml -- NTC thermistor models.
+//
+// Two regimes ship here:
+//
+//   Beta model (chain order 1):
+//     R(T) = R_ref * exp(B * (1/T - 1/T_ref))
+//
+//   Steinhart-Hart (chain order 1, three-coefficient):
+//     1/T = A + B * ln(R) + C * (ln R)^3
+//
+// T in kelvin, R in ohms. Both forms invertible: the Beta model
+// gives R -> T in closed form via ln; Steinhart needs the
+// 3rd-order polynomial inversion which we ship as `temperature_steinhart`.
+
+module thermistor;
+
+const ZERO_C_K: Real = 273.15
+
+// ── Beta model ────────────────────────────────────────────────
+
+@verify(lean, theorem = "thermistor_beta_resistance_positive")
+fn resistance_beta(t_kelvin: Real, t_ref_kelvin: Real,
+                   r_ref: Real, beta: Real) -> Real
+    where chain_order <= 1,
+          domain: t_kelvin > 0.0 && t_ref_kelvin > 0.0 && r_ref > 0.0
+    ensures (result > 0.0)
+{
+    r_ref * exp(beta * (1.0 / t_kelvin - 1.0 / t_ref_kelvin))
+}
+
+@verify(lean, theorem = "thermistor_beta_temperature_positive")
+fn temperature_beta(r: Real, t_ref_kelvin: Real,
+                    r_ref: Real, beta: Real) -> Real
+    where chain_order <= 1,
+          domain: r > 0.0 && t_ref_kelvin > 0.0 && r_ref > 0.0 && beta != 0.0
+    ensures (result > 0.0)
+{
+    let inv_t = 1.0 / t_ref_kelvin + ln(r / r_ref) / beta;
+    1.0 / inv_t
+}
+
+// ── Steinhart-Hart (forward only; inversion is a cubic) ───────
+
+@verify(lean, theorem = "thermistor_steinhart_inv_t_positive")
+fn inv_temperature_steinhart(r: Real, a: Real, b: Real, c: Real) -> Real
+    where chain_order <= 1,
+          domain: r > 0.0
+{
+    let lnR  = ln(r);
+    let ln3R = lnR * lnR * lnR;
+    a + b * lnR + c * ln3R
+}
+
+@verify(lean, theorem = "thermistor_steinhart_temperature_positive")
+fn temperature_steinhart(r: Real, a: Real, b: Real, c: Real) -> Real
+    where chain_order <= 1,
+          domain: r > 0.0
+    ensures (result > 0.0)
+{
+    let inv_t = inv_temperature_steinhart(r, a, b, c);
+    1.0 / inv_t
+}
+
+// Convenience: kelvin <-> celsius.
+@verify(lean, theorem = "celsius_to_kelvin_offset")
+fn kelvin_from_celsius(celsius: Real) -> Real
+    where chain_order <= 0
+    ensures (result == celsius + ZERO_C_K)
+{
+    celsius + ZERO_C_K
+}

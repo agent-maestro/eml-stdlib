@@ -1,0 +1,42 @@
+// cos.eml -- cosine, mirror of sin.eml.
+
+module cos_module;
+
+const PI:     Real = 3.141592653589793
+const TWO_PI: Real = 6.283185307179586
+
+@verify(lean, theorem = "cos_in_unit_interval")
+fn cos_kernel(x: Real) -> Real
+    where chain_order <= 1
+    ensures (result >= -1.0)
+    ensures (result <= 1.0)
+{
+    cos(x)
+}
+
+@verify(lean, theorem = "cos_zero_is_one")
+fn cos_at_zero() -> Real
+    where chain_order <= 0
+    ensures (result == 1.0)
+{
+    cos(0.0)
+}
+
+// Squared cosine -- pythagorean partner of sin_sq.
+@verify(lean, theorem = "cos_sq_nonneg")
+fn cos_sq(x: Real) -> Real
+    where chain_order <= 1
+    ensures (result >= 0.0)
+{
+    cos(x) * cos(x)
+}
+
+// Pythagorean witness. By construction equals 1.0 for every x.
+// Closes against MachLib.pythagorean.
+@verify(lean, theorem = "pythagorean_witness")
+fn pythagorean(x: Real) -> Real
+    where chain_order <= 1
+    ensures (result == 1.0)
+{
+    sin(x) * sin(x) + cos(x) * cos(x)
+}

@@ -1,0 +1,47 @@
+// notch_filter.eml -- 2nd-order biquad notch (band-reject) filter.
+//
+// Removes a single frequency f0 with a tunable Q. The biquad
+// coefficients are derived in `notch_coeffs`; the run-time step
+// is the standard Direct-Form-I biquad evaluator.
+//
+// Common use: 50/60 Hz mains hum on instrumentation, and the
+// power-line carrier on the spectrum analyser feed.
+
+module notch_filter;
+
+const TWO_PI: Real = 6.283185307179586
+
+// ── Coefficient generator (chain order 1) ──────────────────────
+// Returns (b0, b1, b2, a1, a2) for the biquad
+//   H(z) = (b0 + b1*z^-1 + b2*z^-2) / (1 + a1*z^-1 + a2*z^-2)
+// Implementing a notch at frequency f0 (Hz) with quality Q.
+// Sample rate fs in Hz.
+
+@verify(lean, theorem = "notch_coeffs_a0_unity")
+fn notch_coeffs(f0: Real, q: Real, fs: Real) -> (Real, Real, Real, Real, Real)
+    where chain_order <= 1,
+          domain: f0 > 0.0 && q > 0.0 && fs > 2.0 * f0
+{
+    let omega  = TWO_PI * f0 / fs;
+    let alpha  = sin(omega) / (2.0 * q);
+    let cos_w  = cos(omega);
+    let a0_inv = 1.0 / (1.0 + alpha);
+    let b0     = 1.0 * a0_inv;
+    let b1     = -2.0 * cos_w * a0_inv;
+    let b2     = 1.0 * a0_inv;
+    let a1     = -2.0 * cos_w * a0_inv;
+    let a2     = (1.0 - alpha) * a0_inv;
+    (b0, b1, b2, a1, a2)
+}
+
+// ── Per-sample step (chain order 0) ────────────────────────────
+// Direct-Form-I evaluator. Caller threads (x1, x2, y1, y2)
+// through frames.
+
+@verify(lean, theorem = "notch_step_linear_in_inputs")
+fn notch_step(x: Real, x1: Real, x2: Real, y1: Real, y2: Real,
+              b0: Real, b1: Real, b2: Real, a1: Real, a2: Real) -> Real
+    where chain_order <= 0
+{
+    b0 * x + b1 * x1 + b2 * x2 - a1 * y1 - a2 * y2
+}

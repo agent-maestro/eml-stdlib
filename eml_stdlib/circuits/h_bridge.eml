@@ -1,0 +1,69 @@
+// h_bridge.eml -- DC-motor H-bridge driver.
+//
+// Four MOSFETs (Q1..Q4) form an H around the load. Two control
+// signals determine the four valid quadrants:
+//
+//   forward  : Q1, Q4 on -- current flows + -> motor + -> motor - -> -
+//   reverse  : Q2, Q3 on -- reversed
+//   brake    : Q3, Q4 on (low-side) or Q1, Q2 on (high-side)
+//   coast    : all off
+//
+// PWM the gate signal at 20-50 kHz to control torque. Avoid the
+// shoot-through condition where a high-side and matching low-side
+// device are both ON -- the dead-time ensures a brief moment with
+// both off between transitions.
+
+module h_bridge;
+
+@spice_voltage(name = "Vbus",  a = "vbus",   b = "0",      value = 12.0)
+@spice_resistor(name = "Rmot", a = "out_a",  b = "out_b",  value = 2.0)
+@spice_capacitor(name = "Cdc", a = "vbus",   b = "0",      value = 100.0e-6)
+fn circuit() -> Real
+    where chain_order <= 0
+{
+    0.0
+}
+
+// ── Mathematical certificates ─────────────────────────────────
+
+// Output voltage as a function of duty cycle for forward direction.
+//   V_motor = duty * V_bus
+@verify(lean, theorem = "h_bridge_forward_proportional_to_duty")
+fn forward_voltage(duty: Real, v_bus: Real) -> Real
+    where chain_order <= 0,
+          domain: v_bus > 0.0
+    requires (duty >= 0.0)
+    requires (duty <= 1.0)
+    ensures (result >= 0.0)
+    ensures (result <= v_bus)
+{
+    duty * v_bus
+}
+
+// Reverse direction.
+@verify(lean, theorem = "h_bridge_reverse_proportional_to_duty")
+fn reverse_voltage(duty: Real, v_bus: Real) -> Real
+    where chain_order <= 0,
+          domain: v_bus > 0.0
+    requires (duty >= 0.0)
+    requires (duty <= 1.0)
+    ensures (result <= 0.0)
+    ensures (result >= -v_bus)
+{
+    -duty * v_bus
+}
+
+// Dead-time compensation -- the motor sees a slightly smaller
+// voltage than the commanded duty due to the dead-band.
+//   V_eff = duty * V_bus * (1 - f_pwm * t_dead * 2)
+@verify(lean, theorem = "h_bridge_dead_time_loss_nonneg")
+fn dead_time_loss(duty: Real, v_bus: Real,
+                  f_pwm: Real, t_dead: Real) -> Real
+    where chain_order <= 0,
+          domain: v_bus > 0.0 && f_pwm > 0.0 && t_dead >= 0.0
+    requires (duty >= 0.0)
+    requires (duty <= 1.0)
+    ensures (result >= 0.0)
+{
+    duty * v_bus * (2.0 * f_pwm * t_dead)
+}

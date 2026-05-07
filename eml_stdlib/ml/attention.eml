@@ -1,0 +1,70 @@
+// attention.eml -- scaled dot-product attention kernel.
+//
+// One query-key pair contributes a score:
+//
+//   score = (q . k) / sqrt(d_k)
+//
+// The softmax over scores produces the attention weights; the
+// output is the weighted sum of values:
+//
+//   out = sum_j softmax(score_j) * v_j
+//
+// EML kernels operate on scalars; the host threads in the dot
+// product, the LSE reduction, and the value sum. This module
+// provides:
+//
+//   scale_factor(d_k)        -- 1 / sqrt(d_k)
+//   score_qk(q_dot_k, scale) -- chain order 0 multiply
+//   attention_step(...)      -- per-(j) contribution to output
+//
+// Plus the mask kernels for causal / padding masking.
+
+module attention;
+
+@verify(lean, theorem = "attn_scale_positive")
+fn scale_factor(d_k: Real) -> Real
+    where chain_order <= 1,
+          domain: d_k > 0.0
+    ensures (result > 0.0)
+{
+    1.0 / sqrt(d_k)
+}
+
+@verify(lean, theorem = "attn_score_signed")
+fn score_qk(q_dot_k: Real, scale: Real) -> Real
+    where chain_order <= 0,
+          domain: scale > 0.0
+{
+    q_dot_k * scale
+}
+
+// Per-position contribution to the output. softmax_weight is the
+// pre-computed exp(score_j - lse) value from the host. v is the
+// j-th value.
+@verify(lean, theorem = "attn_step_signed")
+fn attention_step(softmax_weight: Real, v: Real) -> Real
+    where chain_order <= 0
+    requires (softmax_weight >= 0.0)
+    requires (softmax_weight <= 1.0)
+{
+    softmax_weight * v
+}
+
+// Causal mask: returns -1e30 for masked positions, 0 otherwise.
+// Caller adds this to the score before softmax.
+@verify(lean, theorem = "causal_mask_signed")
+fn causal_mask(query_pos: Real, key_pos: Real) -> Real
+    where chain_order <= 0
+{
+    let allowed = clamp((query_pos - key_pos) * 1.0e30 + 1.0, 0.0, 1.0);
+    (1.0 - allowed) * -1.0e30
+}
+
+// Padding mask -- positions where pad == 1 get -inf.
+@verify(lean, theorem = "pad_mask_signed")
+fn padding_mask(pad: Real) -> Real
+    where chain_order <= 0
+    requires (pad == 0.0 || pad == 1.0)
+{
+    pad * -1.0e30
+}

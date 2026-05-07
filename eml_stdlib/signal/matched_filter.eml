@@ -1,0 +1,48 @@
+// matched_filter.eml
+//
+// Echo correlation — the math that turns a noisy received-signal
+// stream into a clean range estimate. A matched filter is the
+// optimal linear receiver for a known waveform in additive white
+// Gaussian noise: it maximizes the post-filter SNR by correlating
+// the received signal against a template copy of the chirp.
+//
+// At the lag τ corresponding to a true echo, the correlator
+// output is bounded by the Cauchy-Schwarz inequality:
+//
+//     |⟨template, received⟩| ≤ ‖template‖ · ‖received‖
+//
+// where ‖·‖ is the L² norm of the windowed signal. We model the
+// peak score as a scalar function:
+//
+//     score(t_amp, r_amp, overlap) = t_amp · r_amp · overlap
+//
+// `overlap` is the normalized template-vs-echo cross-correlation
+// at the candidate lag, in [-1, 1]; for a perfect match it sits
+// at +1. Pulse-compression gain — the SNR multiplier from the
+// chirp's time-bandwidth product — is folded into `r_amp` upstream.
+// The bat's auditory cortex implements something equivalent to
+// this correlator in physiology: the "delay-tuned neurons" of
+// the inferior colliculus fire maximally when the post-emission
+// delay matches their preferred τ (Suga 1990).
+//
+// Postconditions:
+//   * The score is bounded above by `t_amp · r_amp` — pulse
+//     compression cannot manufacture more correlation energy
+//     than the inputs carry.
+//   * The score is bounded below by `-t_amp · r_amp` — a 180°-
+//     out-of-phase echo can drive the inner product fully
+//     negative but no further.
+
+module matched_filter;
+
+@verify(lean, theorem = "matched_filter_cauchy_schwarz")
+fn matched_filter_score(
+    template_amplitude: Real{a | a >= 0.0},
+    received_amplitude: Real{a | a >= 0.0},
+    overlap:            Real{o | -1.0 <= o && o <= 1.0},
+) -> Real{r | -template_amplitude * received_amplitude <= r
+              && r <= template_amplitude * received_amplitude}
+    where chain_order <= 0
+{
+    template_amplitude * received_amplitude * overlap
+}

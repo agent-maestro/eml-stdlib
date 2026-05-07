@@ -1,0 +1,36 @@
+# fft_butterfly.eml — radix-2 Cooley-Tukey FFT butterfly
+
+@kernel
+name:        "fft_butterfly"
+description: "Radix-2 Cooley-Tukey butterfly: produces X[k] and X[k+N/2] from E[k] and O[k]."
+chain_order: 1   # exp(-i*2π*k/N) is one transcendental step
+domain:      complex
+
+@params
+N: int       # transform size, power of 2
+k: int       # current bin, 0 ≤ k < N/2
+E: complex   # even-indexed sub-DFT output at position k
+O: complex   # odd-indexed sub-DFT output at position k
+
+@returns
+X_top:    complex  # X[k]      = E + W * O
+X_bottom: complex  # X[k+N/2]  = E - W * O
+
+@operating_range
+N >= 2 and (N & (N - 1)) == 0   # N is power of 2
+0 <= k < N / 2
+|E| <= |max_input|
+|O| <= |max_input|
+
+@verify
+magnitude_bounded:                   |X_top| <= |E| + |O| AND |X_bottom| <= |E| + |O|
+no_nan_in_range:                     X_top.real, X_top.imag, X_bottom.real, X_bottom.imag are finite for all valid params
+conjugate_symmetry_for_real_input:   if E ∈ ℝ and O ∈ ℝ, then conj(X_top(N,k,E,O)) == X_bottom(N,N-k,E,O) at k=N/2
+twiddle_unit_magnitude:              |exp(-i * 2π * k / N)| == 1 (exact)
+branch_proximity_safe:               1 / |W + 1| < ∞ (always; |W + 1| = |1 + e^{-iθ}| > 0 for θ ≠ π)
+
+@body
+twiddle:  W = exp(-i * 2 * PI * k / N)
+output:
+    X_top    = E + W * O
+    X_bottom = E - W * O

@@ -1,0 +1,92 @@
+# rotation.eml — single-qubit rotations Rx(θ), Ry(θ), Rz(θ)
+
+@kernel
+name:        "rx"
+description: "Rotation about x-axis: Rx(θ) = exp(-iθ X/2) = [[cos(θ/2), -i sin(θ/2)], [-i sin(θ/2), cos(θ/2)]]"
+chain_order: 1
+domain:      complex
+
+@params
+theta:   real
+psi_0:   complex
+psi_1:   complex
+
+@returns
+psi_0_out: complex
+psi_1_out: complex
+
+@operating_range
+|psi_0|² + |psi_1|² == 1
+theta is finite real
+
+@verify
+unitarity:           U†U = I
+determinant:         |det(Rx(θ))| = 1
+periodicity:         Rx(θ + 4π) = Rx(θ)  (spinor double cover)
+output_normalized:   |psi_0_out|² + |psi_1_out|² == 1
+
+@body
+c = cos(theta / 2)
+s = sin(theta / 2)
+psi_0_out = c * psi_0 - i * s * psi_1
+psi_1_out = -i * s * psi_0 + c * psi_1
+
+
+@kernel
+name:        "ry"
+description: "Rotation about y-axis: Ry(θ) = [[cos(θ/2), -sin(θ/2)], [sin(θ/2), cos(θ/2)]]"
+chain_order: 1
+domain:      complex
+
+@params
+theta:   real
+psi_0:   complex
+psi_1:   complex
+
+@returns
+psi_0_out: complex
+psi_1_out: complex
+
+@operating_range
+|psi_0|² + |psi_1|² == 1
+
+@verify
+unitarity:           U†U = I
+determinant:         |det(Ry(θ))| = 1
+periodicity:         Ry(θ + 4π) = Ry(θ)
+output_normalized:   |psi_0_out|² + |psi_1_out|² == 1
+
+@body
+c = cos(theta / 2)
+s = sin(theta / 2)
+psi_0_out = c * psi_0 - s * psi_1
+psi_1_out = s * psi_0 + c * psi_1
+
+
+@kernel
+name:        "rz"
+description: "Rotation about z-axis: Rz(θ) = [[exp(-iθ/2), 0], [0, exp(iθ/2)]]"
+chain_order: 1
+domain:      complex
+
+@params
+theta:   real
+psi_0:   complex
+psi_1:   complex
+
+@returns
+psi_0_out: complex
+psi_1_out: complex
+
+@operating_range
+|psi_0|² + |psi_1|² == 1
+
+@verify
+unitarity:           U†U = I
+determinant:         |det(Rz(θ))| = 1
+periodicity:         Rz(θ + 4π) = Rz(θ)
+output_normalized:   |psi_0_out|² + |psi_1_out|² == 1
+
+@body
+psi_0_out = exp(-i * theta / 2) * psi_0
+psi_1_out = exp( i * theta / 2) * psi_1

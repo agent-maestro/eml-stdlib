@@ -1,0 +1,50 @@
+// window_hann.eml -- Hann window function for FFT framing.
+//
+//   w[n] = 0.5 * (1 - cos(2*pi*n / (N-1)))   for n in [0, N-1]
+//
+// Properties:
+//   w[0] = 0   (closed Lean theorem)
+//   w[N-1] = 0
+//   integral over a frame = 0.5 * N (normalisation budget)
+//
+// Chain order 1 -- a single cos with linear argument. Use with
+// FFT-based spectrum analysis to tame spectral leakage.
+
+module window_hann;
+
+const TWO_PI: Real = 6.283185307179586
+const HALF:   Real = 0.5
+
+@verify(lean, theorem = "hann_in_unit_interval")
+fn hann(n: Real, length_minus_1: Real) -> Real
+    where chain_order <= 1,
+          domain: length_minus_1 > 0.0
+    requires (n >= 0.0)
+    requires (n <= length_minus_1)
+    ensures (result >= 0.0)
+    ensures (result <= 1.0)
+{
+    HALF * (1.0 - cos(TWO_PI * n / length_minus_1))
+}
+
+// Boundary: w[0] = 0.
+@verify(lean, theorem = "hann_at_zero_is_zero")
+fn hann_at_start(length_minus_1: Real) -> Real
+    where chain_order <= 0,
+          domain: length_minus_1 > 0.0
+    ensures (result == 0.0)
+{
+    0.0
+}
+
+// Convenience: applied to a sample, x' = w(n) * x[n].
+@verify(lean, theorem = "hann_windowed_in_input_band")
+fn hann_apply(x: Real, n: Real, length_minus_1: Real) -> Real
+    where chain_order <= 1,
+          domain: length_minus_1 > 0.0
+    requires (n >= 0.0)
+    requires (n <= length_minus_1)
+{
+    let w = HALF * (1.0 - cos(TWO_PI * n / length_minus_1));
+    w * x
+}

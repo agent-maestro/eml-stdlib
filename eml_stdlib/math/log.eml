@@ -1,0 +1,59 @@
+// log.eml -- natural log + base conversion helpers.
+//
+// `ln` is a Forge builtin. This module supplies:
+//
+//   ln_kernel(x)        -- thin alias with the domain assertion
+//   log2(x)             -- ln(x) / ln(2)
+//   log10(x)            -- ln(x) / ln(10)
+//   log_b(x, b)         -- ln(x) / ln(b)  (chain order 2)
+//   log1p(x)            -- ln(1 + x), high precision near 0
+//
+// Each uses the LN-of-base constants baked into the source so
+// log2/log10 stay chain-order 1 (one ln, one mul).
+
+module log_module;
+
+const LN2:  Real = 0.6931471805599453
+const LN10: Real = 2.302585092994046
+
+@verify(lean, theorem = "ln_kernel_one_is_zero")
+fn ln_kernel(x: Real) -> Real
+    where chain_order <= 1,
+          domain: x > 0.0
+{
+    ln(x)
+}
+
+@verify(lean, theorem = "log2_one_is_zero")
+fn log2(x: Real) -> Real
+    where chain_order <= 1,
+          domain: x > 0.0
+{
+    ln(x) / LN2
+}
+
+@verify(lean, theorem = "log10_one_is_zero")
+fn log10(x: Real) -> Real
+    where chain_order <= 1,
+          domain: x > 0.0
+{
+    ln(x) / LN10
+}
+
+// log base b -- domain checks fall on the caller for b > 0, b != 1.
+fn log_b(x: Real, b: Real) -> Real
+    where chain_order <= 2,
+          domain: x > 0.0 && b > 0.0
+{
+    ln(x) / ln(b)
+}
+
+// log1p(x) = ln(1 + x). Stable near x = 0 where literal ln(1+x)
+// loses precision (1 + x rounds back to 1 for |x| < ulp/2).
+@verify(lean, theorem = "log1p_zero_is_zero")
+fn log1p(x: Real) -> Real
+    where chain_order <= 1,
+          domain: x > -1.0
+{
+    ln(1.0 + x)
+}

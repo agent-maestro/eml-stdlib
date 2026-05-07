@@ -1,0 +1,80 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "eml-stdlib"
+version = "0.1.0"
+description = "Verified standard library for the EML language. 99 modules / 305 functions / 257 with @verify(lean) contracts spanning math, DSP, control, physics, circuits, sensors, biology, wave carriers, quantum gates, and ML."
+readme = "README.md"
+license = { text = "MIT" }
+authors = [
+    { name = "Arturo R. Almaguer", email = "almaguer1986@gmail.com" },
+    { name = "Mosa Creates LLC" },
+]
+maintainers = [
+    { name = "Arturo R. Almaguer", email = "almaguer1986@gmail.com" },
+]
+keywords = [
+    "eml",
+    "compiler",
+    "stdlib",
+    "formal-verification",
+    "lean",
+    "machlib",
+    "fpga",
+    "spice",
+    "ml",
+    "signal-processing",
+    "physics",
+    "quantum",
+    "photonics",
+    "spintronics",
+    "phononics",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Mathematics",
+    "Topic :: Software Development :: Compilers",
+    "Topic :: Software Development :: Libraries",
+    "Typing :: Typed",
+]
+requires-python = ">=3.11"
+dependencies = []
+
+[project.urls]
+Homepage      = "https://monogate.dev/learn/eml/intro"
+Repository    = "https://github.com/agent-maestro/eml-stdlib"
+Issues        = "https://github.com/agent-maestro/eml-stdlib/issues"
+"Forge Compiler" = "https://github.com/agent-maestro/forge"
+"MachLib"     = "https://machlib.org"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8",
+    "ruff>=0.5",
+    "mypy>=1.10",
+]
+
+[tool.setuptools.packages.find]
+include = ["eml_stdlib*"]
+exclude = ["scripts*", "tests*"]
+
+[tool.setuptools.package-data]
+# Ship every .eml file plus the introspection catalog.
+"eml_stdlib" = [
+    "**/*.eml",
+    "catalog.json",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"

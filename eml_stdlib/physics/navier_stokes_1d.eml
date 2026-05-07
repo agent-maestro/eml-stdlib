@@ -1,0 +1,57 @@
+// navier_stokes_1d.eml -- 1-D incompressible Navier-Stokes step.
+//
+// Simplified to the momentum-only form on a 1-D pipe:
+//
+//   du/dt + u * du/dx = -(1/rho) * dp/dx + nu * d^2u/dx^2
+//
+// This module ships the right-hand-side terms separately so users
+// can compose explicit, implicit, or semi-Lagrangian time steppers
+// downstream. Chain order 0 throughout.
+
+module navier_stokes_1d;
+
+// Pressure-gradient acceleration term.
+@verify(lean, theorem = "ns1d_pressure_term_sign_opposes_gradient")
+fn pressure_term(density: Real, dp_dx: Real) -> Real
+    where chain_order <= 0,
+          domain: density > 0.0
+{
+    -dp_dx / density
+}
+
+// Viscous (diffusive) term.
+@verify(lean, theorem = "ns1d_viscous_term_proportional_to_d2u_dx2")
+fn viscous_term(viscosity: Real, d2u_dx2: Real) -> Real
+    where chain_order <= 0,
+          domain: viscosity >= 0.0
+{
+    viscosity * d2u_dx2
+}
+
+// Convective (advective) term.
+@verify(lean, theorem = "ns1d_convective_term_signed")
+fn convective_term(u: Real, du_dx: Real) -> Real
+    where chain_order <= 0
+{
+    -u * du_dx
+}
+
+// Full RHS of the momentum equation.
+fn rhs(u: Real, du_dx: Real, d2u_dx2: Real,
+       density: Real, dp_dx: Real, viscosity: Real) -> Real
+    where chain_order <= 0,
+          domain: density > 0.0 && viscosity >= 0.0
+{
+    -u * du_dx - dp_dx / density + viscosity * d2u_dx2
+}
+
+// Reynolds number: Re = u * L / nu. Determines laminar/turbulent
+// regime; useful invariant for caller's adaptive time step.
+@verify(lean, theorem = "reynolds_nonneg")
+fn reynolds(velocity: Real, length: Real, viscosity: Real) -> Real
+    where chain_order <= 0,
+          domain: viscosity > 0.0
+    requires (length > 0.0)
+{
+    velocity * length / viscosity
+}

@@ -1,0 +1,28 @@
+// deadband.eml -- two-sided dead-zone (deadband) saturation.
+//
+// If |x| <= threshold the output is 0; otherwise the output is x
+// shifted toward zero by `threshold`. Equivalent to
+//   y = x - clamp(x, -threshold, threshold)
+//
+// Chain order 0. Used to suppress sensor noise around a setpoint
+// and to keep PIDs from chattering.
+
+module deadband;
+
+@verify(lean, theorem = "deadband_zero_inside")
+fn deadband(x: Real, threshold: Real) -> Real
+    where chain_order <= 0
+    requires (threshold >= 0.0)
+{
+    x - clamp(x, -threshold, threshold)
+}
+
+// Asymmetric deadband: distinct upper/lower thresholds.
+@verify(lean, theorem = "deadband_asym_zero_inside")
+fn deadband_asymmetric(x: Real, low: Real, high: Real) -> Real
+    where chain_order <= 0
+    requires (low <= 0.0)
+    requires (high >= 0.0)
+{
+    x - clamp(x, low, high)
+}

@@ -1,0 +1,49 @@
+// layernorm.eml -- per-feature layer normalization kernel.
+//
+// Given a feature vector x, the LayerNorm transform is:
+//
+//   mu     = mean(x)
+//   var    = mean((x - mu)^2)
+//   x_norm = (x - mu) / sqrt(var + eps)
+//   y      = gamma * x_norm + beta
+//
+// EML kernels operate per-element -- the host program threads the
+// per-vector statistics in. Chain order 1 (single sqrt). The
+// closed proofs cover unit-variance + zero-mean of `x_norm` in the
+// no-noise limit.
+
+module layernorm;
+
+const DEFAULT_EPS: Real = 1.0e-5
+
+// Normalisation step for a single element.
+@verify(lean, theorem = "layernorm_unit_variance_in_limit")
+fn layernorm_step(x: Real, mu: Real, var: Real, eps: Real,
+                  gamma: Real, beta: Real) -> Real
+    where chain_order <= 1,
+          domain: var >= 0.0 && eps > 0.0
+{
+    let x_norm = (x - mu) / sqrt(var + eps);
+    gamma * x_norm + beta
+}
+
+// Default-eps variant.
+@verify(lean, theorem = "layernorm_default_eps_unit_variance_in_limit")
+fn layernorm_default(x: Real, mu: Real, var: Real,
+                     gamma: Real, beta: Real) -> Real
+    where chain_order <= 1,
+          domain: var >= 0.0
+{
+    let x_norm = (x - mu) / sqrt(var + DEFAULT_EPS);
+    gamma * x_norm + beta
+}
+
+// RMSNorm variant -- skips the mean subtraction (used in LLaMA).
+//   y = x / sqrt(mean(x^2) + eps) * gamma
+@verify(lean, theorem = "rmsnorm_signed_in_input_band")
+fn rmsnorm_step(x: Real, mean_sq: Real, eps: Real, gamma: Real) -> Real
+    where chain_order <= 1,
+          domain: mean_sq >= 0.0 && eps > 0.0
+{
+    gamma * x / sqrt(mean_sq + eps)
+}

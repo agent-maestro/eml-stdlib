@@ -1,0 +1,42 @@
+// hall_effect.eml -- Hall sensor model.
+//
+// The Hall voltage produced by a current I flowing through a
+// conductor of thickness t in a perpendicular magnetic field B is
+//
+//   V_H = (I * B) / (n * q * t)
+//
+// where n is the carrier concentration (1/m^3) and q the elementary
+// charge. Chain order 0.
+
+module hall_effect;
+
+const Q_E: Real = 1.602176634e-19  // elementary charge (C)
+
+@verify(lean, theorem = "hall_voltage_sign_matches_field_direction")
+fn hall_voltage(current: Real, b_field: Real,
+                carrier_density: Real, thickness: Real) -> Real
+    where chain_order <= 0,
+          domain: carrier_density > 0.0 && thickness > 0.0
+{
+    (current * b_field) / (carrier_density * Q_E * thickness)
+}
+
+// Hall coefficient R_H = 1 / (n * q). Material constant.
+@verify(lean, theorem = "hall_coefficient_sign_matches_carrier")
+fn hall_coefficient(carrier_density: Real) -> Real
+    where chain_order <= 0,
+          domain: carrier_density > 0.0
+    ensures (result > 0.0)
+{
+    1.0 / (carrier_density * Q_E)
+}
+
+// Inverse: derive B from a measured Hall voltage with known I, n, t.
+@verify(lean, theorem = "hall_field_from_voltage_proportional")
+fn b_from_voltage(v_hall: Real, current: Real,
+                  carrier_density: Real, thickness: Real) -> Real
+    where chain_order <= 0,
+          domain: current != 0.0 && carrier_density > 0.0 && thickness > 0.0
+{
+    v_hall * carrier_density * Q_E * thickness / current
+}

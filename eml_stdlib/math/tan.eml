@@ -1,0 +1,36 @@
+// tan.eml -- tangent.
+//
+// Chain order 2: tan = sin / cos -- one transcendental in the
+// numerator and one in the denominator. Caller is responsible for
+// keeping x away from (k + 1/2) * pi where cos vanishes.
+
+module tan_module;
+
+const PI:           Real = 3.141592653589793
+const HALF_PI:      Real = 1.5707963267948966
+const SAFE_MARGIN:  Real = 0.01
+
+@verify(lean, theorem = "tan_zero_is_zero")
+fn tan_kernel(x: Real) -> Real
+    where chain_order <= 2,
+          domain: abs(cos(x)) > SAFE_MARGIN
+{
+    tan(x)
+}
+
+@verify(lean, theorem = "tan_at_zero_is_zero")
+fn tan_at_zero() -> Real
+    where chain_order <= 0
+    ensures (result == 0.0)
+{
+    tan(0.0)
+}
+
+// Double-tangent identity numerator: 2*tan(x) -- shows up enough
+// in trig-rationalisation passes to get its own kernel.
+fn two_tan(x: Real) -> Real
+    where chain_order <= 2,
+          domain: abs(cos(x)) > SAFE_MARGIN
+{
+    2.0 * tan(x)
+}

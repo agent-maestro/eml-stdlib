@@ -1,0 +1,57 @@
+// rtd.eml -- Pt100 / Pt1000 RTD models (Callendar-Van Dusen).
+//
+//   R(T) = R_0 * (1 + A*T + B*T^2)              for T >= 0 deg C
+//   R(T) = R_0 * (1 + A*T + B*T^2 + C*(T-100)*T^3)  for T < 0 deg C
+//
+// Standard IEC 60751 coefficients:
+//   A = 3.9083e-3
+//   B = -5.775e-7
+//   C = -4.183e-12  (used only for T < 0)
+//
+// All temperatures in degrees Celsius.
+
+module rtd;
+
+const A: Real = 3.9083e-3
+const B: Real = -5.775e-7
+const C: Real = -4.183e-12
+
+// Forward: R from T (deg C) for T >= 0.
+@verify(lean, theorem = "rtd_resistance_above_zero_positive")
+fn resistance_pos(r0: Real, t_celsius: Real) -> Real
+    where chain_order <= 0,
+          domain: r0 > 0.0
+    requires (t_celsius >= 0.0)
+    requires (t_celsius <= 850.0)
+    ensures (result > 0.0)
+{
+    r0 * (1.0 + A * t_celsius + B * t_celsius * t_celsius)
+}
+
+// Forward: R from T (deg C) for T < 0.
+@verify(lean, theorem = "rtd_resistance_below_zero_positive")
+fn resistance_neg(r0: Real, t_celsius: Real) -> Real
+    where chain_order <= 0,
+          domain: r0 > 0.0
+    requires (t_celsius >= -200.0)
+    requires (t_celsius <  0.0)
+    ensures (result > 0.0)
+{
+    let t  = t_celsius;
+    let t2 = t * t;
+    let t3 = t2 * t;
+    r0 * (1.0 + A * t + B * t2 + C * (t - 100.0) * t3)
+}
+
+// Inverse for T >= 0 -- closed-form quadratic in t.
+//   t = ((-r0 * A) + sqrt(r0^2 * A^2 - 4 * r0 * B * (r0 - r))) / (2 * r0 * B)
+@verify(lean, theorem = "rtd_temperature_above_zero_signed")
+fn temperature_pos(r0: Real, r: Real) -> Real
+    where chain_order <= 1,
+          domain: r0 > 0.0 && r > 0.0
+{
+    let aR2 = r0 * r0 * A * A;
+    let bR  = 4.0 * r0 * B * (r0 - r);
+    let num = -r0 * A + sqrt(aR2 - bR);
+    num / (2.0 * r0 * B)
+}

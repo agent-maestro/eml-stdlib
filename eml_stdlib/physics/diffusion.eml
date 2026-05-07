@@ -1,0 +1,45 @@
+// diffusion.eml -- 1-D diffusion (heat / mass) equation snapshot.
+//
+//   c(x, t) = (M / sqrt(4*pi*D*t)) * exp(-x^2 / (4*D*t))
+//
+// Closed-form Gaussian solution to the diffusion equation
+//   dc/dt = D * d^2c/dx^2
+// for an initial impulse of mass M at the origin. Chain order 1.
+// At t = 0 the solution is a delta function -- callers that need
+// the impulse should use the Fick steady-state form instead.
+
+module diffusion;
+
+const PI:          Real = 3.141592653589793
+const SQRT_4_PI:   Real = 3.5449077018110318
+
+@verify(lean, theorem = "diffusion_concentration_positive_for_finite_time")
+fn concentration(mass: Real, diffusivity: Real, x: Real, t: Real) -> Real
+    where chain_order <= 1,
+          domain: t > 0.0 && diffusivity > 0.0
+    requires (mass > 0.0)
+    ensures (result > 0.0)
+{
+    let four_dt = 4.0 * diffusivity * t;
+    let prefactor = mass / sqrt(PI * four_dt);
+    prefactor * exp(-x * x / four_dt)
+}
+
+// Standard deviation of the diffusion blob at time t: sigma = sqrt(2*D*t).
+@verify(lean, theorem = "diffusion_sigma_positive_for_finite_time")
+fn sigma(diffusivity: Real, t: Real) -> Real
+    where chain_order <= 1,
+          domain: t > 0.0 && diffusivity > 0.0
+    ensures (result > 0.0)
+{
+    sqrt(2.0 * diffusivity * t)
+}
+
+// Fick's first law: flux = -D * dc/dx (steady-state form).
+@verify(lean, theorem = "fick_flux_sign_opposes_gradient")
+fn fick_first_law(diffusivity: Real, gradient: Real) -> Real
+    where chain_order <= 0,
+          domain: diffusivity > 0.0
+{
+    -diffusivity * gradient
+}

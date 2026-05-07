@@ -1,0 +1,74 @@
+// buck_converter.eml -- step-down DC-DC buck converter (CCM).
+//
+// In continuous-conduction mode the steady-state output voltage is
+//
+//   V_out = duty * V_in
+//
+// Output ripple is set by the inductor and output cap:
+//
+//   delta_I_L = (V_in - V_out) * duty / (L * f_sw)
+//   delta_V_out = delta_I_L / (8 * Cout * f_sw)
+//
+// The LC corner sets the closed-loop bandwidth (~1/10 of f_sw).
+
+module buck_converter;
+
+@spice_voltage(name = "Vin",  a = "vin",   b = "0",   value = 12.0)
+@spice_inductor(name = "L1",  a = "sw",    b = "out", value = 22.0e-6)
+@spice_capacitor(name = "Cout", a = "out", b = "0",   value = 47.0e-6)
+@spice_resistor(name = "Rload", a = "out", b = "0",   value = 5.0)
+fn circuit() -> Real
+    where chain_order <= 0
+{
+    0.0
+}
+
+// ── Mathematical certificates ─────────────────────────────────
+
+@verify(lean, theorem = "buck_output_voltage_below_input")
+fn output_voltage(duty: Real, v_in: Real) -> Real
+    where chain_order <= 0,
+          domain: v_in > 0.0
+    requires (duty >= 0.0)
+    requires (duty <= 1.0)
+    ensures (result >= 0.0)
+    ensures (result <= v_in)
+{
+    duty * v_in
+}
+
+// Inductor ripple current.
+@verify(lean, theorem = "buck_inductor_ripple_nonneg")
+fn inductor_ripple(v_in: Real, v_out: Real, duty: Real,
+                   inductance: Real, f_sw: Real) -> Real
+    where chain_order <= 0,
+          domain: inductance > 0.0 && f_sw > 0.0 && v_in >= v_out
+    requires (duty >= 0.0)
+    requires (duty <= 1.0)
+    ensures (result >= 0.0)
+{
+    (v_in - v_out) * duty / (inductance * f_sw)
+}
+
+// Output voltage ripple.
+@verify(lean, theorem = "buck_output_ripple_nonneg")
+fn output_ripple(delta_il: Real, c_out: Real, f_sw: Real) -> Real
+    where chain_order <= 0,
+          domain: c_out > 0.0 && f_sw > 0.0 && delta_il >= 0.0
+    ensures (result >= 0.0)
+{
+    delta_il / (8.0 * c_out * f_sw)
+}
+
+// Critical inductance -- below this, the buck enters DCM.
+@verify(lean, theorem = "buck_critical_inductance_positive")
+fn critical_inductance(v_out: Real, duty: Real,
+                        i_load: Real, f_sw: Real) -> Real
+    where chain_order <= 0,
+          domain: v_out > 0.0 && f_sw > 0.0 && i_load > 0.0
+    requires (duty >= 0.0)
+    requires (duty <= 1.0)
+    ensures (result >= 0.0)
+{
+    (1.0 - duty) * v_out / (2.0 * i_load * f_sw)
+}

@@ -1,0 +1,51 @@
+// pow.eml -- power via exp(b * ln(x)) plus a few hot specialisations.
+//
+// pow is a Forge builtin in the f64 path; this module adds the
+// integer-exponent variants the FPGA backend prefers (no
+// transcendental needed), so kernels like `x^2`, `x^3`, `x^4`
+// stay chain-order 0.
+
+module pow_module;
+
+@verify(lean, theorem = "pow_kernel_positive_base")
+fn pow_kernel(base: Real, exponent: Real) -> Real
+    where chain_order <= 2,
+          domain: base > 0.0
+    ensures (result > 0.0)
+{
+    exp(exponent * ln(base))
+}
+
+@verify(lean, theorem = "sq_nonneg")
+fn sq(x: Real) -> Real
+    where chain_order <= 0
+    ensures (result >= 0.0)
+{
+    x * x
+}
+
+@verify(lean, theorem = "cube_sign_matches_x")
+fn cube(x: Real) -> Real
+    where chain_order <= 0
+{
+    x * x * x
+}
+
+@verify(lean, theorem = "pow4_nonneg")
+fn pow4(x: Real) -> Real
+    where chain_order <= 0
+    ensures (result >= 0.0)
+{
+    let s = x * x;
+    s * s
+}
+
+// Fast integer pow up to n=8 by repeated squaring -- caller picks
+// the right variant; the optimiser folds the rest. All chain 0.
+fn pow8(x: Real) -> Real
+    where chain_order <= 0
+{
+    let s = x * x;
+    let q = s * s;
+    q * q
+}

@@ -1,0 +1,38 @@
+// rod_sensitivity.eml
+//
+// Feline rhodopsin (rod photoreceptor) spectral sensitivity.
+// Modeled as a normalized Gaussian centered at peak absorbance:
+//
+//     S(λ) = exp(-((λ - λ_peak)² / (2σ²)))
+//
+// Parameters from van Norren & Vos (1974), "Spectral transmission
+// of the human ocular media": cat rhodopsin λ_peak = 498 nm, with
+// full-width-half-max ≈ 100 nm → σ ≈ 50 nm. This is the classical
+// "scotopic" (low-light) channel — the same machinery that lets
+// cats hunt at one-sixth the light intensity humans need.
+//
+// Co-domain by construction: exp(-x) for x ≥ 0 lives in (0, 1].
+// The @verify contract pins this for downstream pipeline safety
+// (a sensitivity > 1 would imply photon gain in a passive
+// receptor, which is unphysical).
+//
+// Phase F migration: the wavelength input is bounded to the
+// physiologically meaningful visible-light window via a parameter
+// refinement; the sensitivity output is constrained to [0, 1] via
+// a return refinement instead of two `ensures` clauses. The
+// refinement-aware Lean lowering inserts both bounds as theorem
+// hypotheses / conclusions automatically.
+
+module rod_sensitivity;
+
+const ROD_PEAK_NM:  Real = 498.0
+const ROD_SIGMA_NM: Real =  50.0
+
+@verify(lean, theorem = "rod_sensitivity_bounded_unit")
+fn rod_sensitivity(wavelength_nm: Real{w | 300.0 <= w && w <= 800.0})
+    -> Real{r | 0.0 <= r && r <= 1.0}
+    where chain_order <= 1
+{
+    exp(-((wavelength_nm - ROD_PEAK_NM) * (wavelength_nm - ROD_PEAK_NM))
+         / (2.0 * ROD_SIGMA_NM * ROD_SIGMA_NM))
+}

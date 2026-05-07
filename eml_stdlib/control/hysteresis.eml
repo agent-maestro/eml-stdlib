@@ -1,0 +1,28 @@
+// hysteresis.eml -- Schmitt-trigger / hysteresis switching.
+//
+//   if state == 0 (off):  switch on  iff x > threshold_on
+//   if state == 1 (on):   switch off iff x < threshold_off
+//
+// Caller threads `state` through frames as a 0/1 Real. The kernel
+// returns the new state. Chain order 0.
+//
+// The asymmetry threshold_on > threshold_off prevents chatter --
+// ubiquitous in thermostat / relay / battery-charger logic.
+
+module hysteresis;
+
+@verify(lean, theorem = "hysteresis_state_in_zero_one")
+fn hysteresis_step(x: Real, state: Real,
+                   threshold_on: Real, threshold_off: Real) -> Real
+    where chain_order <= 0
+    requires (threshold_on > threshold_off)
+    requires (state == 0.0 || state == 1.0)
+    ensures (result >= 0.0)
+    ensures (result <= 1.0)
+{
+    let on_via_x  = clamp((x - threshold_on)  * 1.0e30, 0.0, 1.0);
+    let off_via_x = clamp((threshold_off - x) * 1.0e30, 0.0, 1.0);
+    let next_when_off = on_via_x;
+    let next_when_on  = 1.0 - off_via_x;
+    state * next_when_on + (1.0 - state) * next_when_off
+}

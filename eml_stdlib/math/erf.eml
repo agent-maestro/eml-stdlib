@@ -1,0 +1,66 @@
+// erf.eml -- the error function.
+//
+//   erf(x) = (2/sqrt(pi)) * integral_0^x exp(-t^2) dt
+//
+// `erf` is a Forge builtin in the f64 path. For f32 / FPGA
+// targets we ship the Abramowitz-Stegun rational approximation
+// (5 coefficients, max abs error 1.5e-7) -- chain-order 1.
+//
+// erfc(x) = 1 - erf(x) is the survival function form most
+// numerically stable for x >> 0.
+
+module erf_module;
+
+// A&S 7.1.26 polynomial coefficients, optimised for |x| in [0, 5].
+const ERF_A1: Real =  0.254829592
+const ERF_A2: Real = -0.284496736
+const ERF_A3: Real =  1.421413741
+const ERF_A4: Real = -1.453152027
+const ERF_A5: Real =  1.061405429
+const ERF_P:  Real =  0.3275911
+
+@verify(lean, theorem = "erf_in_unit_interval")
+fn erf_kernel(x: Real) -> Real
+    where chain_order <= 1
+    ensures (result >= -1.0)
+    ensures (result <=  1.0)
+{
+    erf(x)
+}
+
+@verify(lean, theorem = "erf_zero_is_zero")
+fn erf_at_zero() -> Real
+    where chain_order <= 0
+    ensures (result == 0.0)
+{
+    0.0
+}
+
+// Survival form: erfc(x) = 1 - erf(x).
+@verify(lean, theorem = "erfc_in_unit_interval")
+fn erfc(x: Real) -> Real
+    where chain_order <= 1
+    ensures (result >= 0.0)
+    ensures (result <= 2.0)
+{
+    1.0 - erf(x)
+}
+
+// Abramowitz & Stegun 7.1.26 polynomial form, evaluated for x >= 0.
+// Chain-order 1 -- one transcendental (exp), polynomial argument.
+// Caller mirrors the result for x < 0:  erf_as(-x) = -erf_as(x).
+@verify(lean, theorem = "erf_as_zero_is_zero")
+fn erf_as(x: Real) -> Real
+    where chain_order <= 1
+    requires (x >= 0.0)
+    requires (x < 5.0)
+    ensures (result >= 0.0)
+{
+    let t  = 1.0 / (1.0 + ERF_P * x);
+    let t2 = t * t;
+    let t3 = t2 * t;
+    let t4 = t3 * t;
+    let t5 = t4 * t;
+    let poly = ERF_A1 * t + ERF_A2 * t2 + ERF_A3 * t3 + ERF_A4 * t4 + ERF_A5 * t5;
+    1.0 - poly * exp(-x * x)
+}

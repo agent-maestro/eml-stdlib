@@ -1,0 +1,35 @@
+// receptor_binding.eml
+//
+// Olfactory receptor binding — Michaelis-Menten kinetics. An
+// odorant molecule reversibly binds to a receptor; at steady
+// state, the fraction of bound receptors is:
+//
+//     r(C) = R_max · C / (C + K_d)
+//
+// `K_d` (dissociation constant) sets the half-saturation
+// concentration; `R_max` is the maximum response amplitude. This
+// is the same equation that governs every reversible-binding
+// reaction in pharmacology, biochemistry, and immunoassay design.
+//
+// Olfactory dose-response curves in vivo follow this shape with
+// remarkable fidelity (Firestein 2001, "How the olfactory system
+// makes sense of scents") — each receptor contributes a
+// Michaelis-Menten term to the population activity.
+//
+// Postcondition: r ∈ [0, R_max] for all non-negative C. The
+// downstream dog/human comparison takes ratios of receptor
+// outputs; an out-of-range value would produce a meaningless
+// or unbounded ratio.
+
+module receptor_binding;
+
+const R_MAX: Real = 1.0
+const K_D:   Real = 1.0e-6   // 1 ppm — typical dog receptor (~10⁴× tighter than human)
+
+@verify(lean, theorem = "receptor_binding_in_unit_interval")
+fn receptor_binding(concentration: Real{c | c >= 0.0})
+    -> Real{r | 0.0 <= r && r <= R_MAX}
+    where chain_order <= 0
+{
+    clamp(R_MAX * concentration / (concentration + K_D), 0.0, R_MAX)
+}

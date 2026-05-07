@@ -1,0 +1,32 @@
+// cone_s.eml
+//
+// Feline short-wavelength (S, "blue") cone spectral sensitivity.
+// Cats are dichromats — only S and L cones, no medium-wavelength
+// "red" cone. The S cone is the cleaner of the two; its peak at
+// 450 nm is well-isolated from the L cone at 554 nm.
+//
+// Source: Loop et al. (1987), "Cone receptor population in the
+// adult cat retina." Peak λ ≈ 450 nm, FWHM ≈ 70 nm → σ ≈ 30 nm
+// (the cone curve is narrower than the rod's because cone opsins
+// have tighter absorption profiles).
+//
+//     S(λ) = exp(-((λ - 450)² / (2 · 30²)))
+//
+// Postcondition pins the sensitivity to [0, 1]; values outside
+// would corrupt every downstream channel of the cat-vision
+// transform.
+
+module cone_s;
+
+const CONE_S_PEAK_NM:  Real = 450.0
+const CONE_S_SIGMA_NM: Real =  30.0
+
+@verify(lean, theorem = "cone_s_sensitivity_bounded_unit")
+fn cone_s_sensitivity(wavelength_nm: Real) -> Real
+    where chain_order <= 1
+    ensures (result >= 0.0)
+    ensures (result <= 1.0)
+{
+    exp(-((wavelength_nm - CONE_S_PEAK_NM) * (wavelength_nm - CONE_S_PEAK_NM))
+         / (2.0 * CONE_S_SIGMA_NM * CONE_S_SIGMA_NM))
+}

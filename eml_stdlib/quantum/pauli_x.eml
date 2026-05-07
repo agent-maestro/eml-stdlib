@@ -1,0 +1,29 @@
+# pauli_x.eml — Pauli X (NOT) gate
+
+@kernel
+name:        "pauli_x"
+description: "Pauli X (bit flip): |0⟩ ↔ |1⟩. Matrix [[0,1],[1,0]]."
+chain_order: 0    # constant matrix, no transcendental primitives
+domain:      complex (state vector)
+
+@params
+psi_0: complex   # input amplitude of |0⟩
+psi_1: complex   # input amplitude of |1⟩
+
+@returns
+psi_0_out: complex   # output amplitude of |0⟩ (= old psi_1)
+psi_1_out: complex   # output amplitude of |1⟩ (= old psi_0)
+
+@operating_range
+|psi_0|² + |psi_1|² == 1   (state normalized)
+
+@verify
+unitarity:           U†U = I,  i.e. permutation preserves inner product
+determinant:         det(X) = -1  (det magnitude = 1)
+hermitian:           X = X†
+involutory:          X² = I
+output_normalized:   |psi_0_out|² + |psi_1_out|² == 1
+
+@body
+psi_0_out = psi_1
+psi_1_out = psi_0

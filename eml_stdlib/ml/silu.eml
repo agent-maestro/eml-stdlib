@@ -1,0 +1,40 @@
+// silu.eml -- SiLU / Swish activation.
+//
+//   silu(x) = x * sigmoid(x) = x / (1 + exp(-x))
+//
+// Same shape and chain-order class as sigmoid; the multiplication
+// by x makes the activation unbounded above, which matches the
+// behaviour modern transformer architectures want.
+
+module silu;
+
+const SILU_X_MAX: Real = 30.0
+
+@verify(lean, theorem = "silu_at_zero_is_zero")
+fn silu(x: Real) -> Real
+    where chain_order <= 1
+    requires (abs(x) < SILU_X_MAX)
+    ensures (result >= -1.0)  // global lower bound is ~-0.278
+{
+    x / (1.0 + exp(-x))
+}
+
+// Beta-Swish variant: x * sigmoid(beta * x).
+@verify(lean, theorem = "swish_at_zero_is_zero")
+fn swish(x: Real, beta: Real) -> Real
+    where chain_order <= 1
+    requires (abs(beta * x) < SILU_X_MAX)
+{
+    x / (1.0 + exp(-beta * x))
+}
+
+// Derivative -- f'(x) = sigmoid(x) + x * sigmoid'(x)
+//                    = sigmoid(x) * (1 + x * (1 - sigmoid(x))).
+@verify(lean, theorem = "silu_derivative_at_zero_is_one_half")
+fn silu_grad(x: Real) -> Real
+    where chain_order <= 1
+    requires (abs(x) < SILU_X_MAX)
+{
+    let s = 1.0 / (1.0 + exp(-x));
+    s + x * s * (1.0 - s)
+}

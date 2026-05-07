@@ -1,0 +1,66 @@
+// ldo.eml -- low-dropout linear regulator.
+//
+// Output voltage is set by the feedback divider:
+//
+//   V_out = V_ref * (1 + R1 / R2)
+//
+// The pass element drops V_in - V_out at full load current; LDO
+// efficiency is V_out / V_in (the rest is dissipated as heat).
+// PSRR (power-supply rejection ratio) is set by the loop gain;
+// stability requires a tame load capacitor with a particular ESR.
+
+module ldo;
+
+@spice_voltage(name = "Vin",  a = "vin",  b = "0", value = 5.0)
+@spice_resistor(name = "R1",  a = "out",  b = "fb", value = 10000.0)
+@spice_resistor(name = "R2",  a = "fb",   b = "0",  value = 10000.0)
+@spice_capacitor(name = "Cout", a = "out", b = "0", value = 10.0e-6)
+fn circuit() -> Real
+    where chain_order <= 0
+{
+    0.0
+}
+
+// ── Mathematical certificates ─────────────────────────────────
+
+@verify(lean, theorem = "ldo_output_voltage_above_reference")
+fn output_voltage(v_ref: Real, r1: Real, r2: Real) -> Real
+    where chain_order <= 0,
+          domain: v_ref > 0.0 && r1 >= 0.0 && r2 > 0.0
+    ensures (result >= v_ref)
+{
+    v_ref * (1.0 + r1 / r2)
+}
+
+@verify(lean, theorem = "ldo_efficiency_in_unit_interval")
+fn efficiency(v_in: Real, v_out: Real) -> Real
+    where chain_order <= 0,
+          domain: v_in > 0.0 && v_out > 0.0 && v_in >= v_out
+    ensures (result >= 0.0)
+    ensures (result <= 1.0)
+{
+    v_out / v_in
+}
+
+// Power dissipated in the pass element at load current i_load.
+@verify(lean, theorem = "ldo_dissipation_nonneg")
+fn dissipation(v_in: Real, v_out: Real, i_load: Real) -> Real
+    where chain_order <= 0
+    requires (v_in >= v_out)
+    requires (i_load >= 0.0)
+    ensures (result >= 0.0)
+{
+    (v_in - v_out) * i_load
+}
+
+// Dropout voltage -- the minimum (V_in - V_out) the LDO needs to
+// stay in regulation at i_load. Linear approximation.
+@verify(lean, theorem = "ldo_dropout_nonneg")
+fn dropout_voltage(r_ds_on: Real, i_load: Real) -> Real
+    where chain_order <= 0,
+          domain: r_ds_on > 0.0
+    requires (i_load >= 0.0)
+    ensures (result >= 0.0)
+{
+    r_ds_on * i_load
+}

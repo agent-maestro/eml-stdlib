@@ -1,0 +1,63 @@
+// strain_gauge.eml -- foil-resistance strain gauge model.
+//
+// The gauge factor GF relates fractional resistance change to
+// strain epsilon:
+//
+//   GF = (dR / R) / epsilon
+//
+// In a Wheatstone-bridge front-end with excitation Vex, the
+// quarter-bridge output is V_out = (Vex / 4) * GF * epsilon (small-
+// signal). Half- and full-bridge configurations multiply that by
+// 2x and 4x respectively.
+
+module strain_gauge;
+
+@verify(lean, theorem = "strain_resistance_change_proportional_to_strain")
+fn resistance_change(r_nominal: Real, gf: Real, strain: Real) -> Real
+    where chain_order <= 0,
+          domain: r_nominal > 0.0
+{
+    r_nominal * gf * strain
+}
+
+// Inverse: strain from a measured (dR / R).
+@verify(lean, theorem = "strain_from_dr_over_r_signed")
+fn strain_from_dr(dr_over_r: Real, gf: Real) -> Real
+    where chain_order <= 0,
+          domain: gf != 0.0
+{
+    dr_over_r / gf
+}
+
+// Quarter-bridge Wheatstone output, small signal.
+@verify(lean, theorem = "quarter_bridge_signed")
+fn quarter_bridge_voltage(v_excitation: Real, gf: Real, strain: Real) -> Real
+    where chain_order <= 0
+{
+    0.25 * v_excitation * gf * strain
+}
+
+// Half-bridge (two active gauges in opposite arms).
+@verify(lean, theorem = "half_bridge_signed")
+fn half_bridge_voltage(v_excitation: Real, gf: Real, strain: Real) -> Real
+    where chain_order <= 0
+{
+    0.5 * v_excitation * gf * strain
+}
+
+// Full bridge (four active gauges).
+@verify(lean, theorem = "full_bridge_signed")
+fn full_bridge_voltage(v_excitation: Real, gf: Real, strain: Real) -> Real
+    where chain_order <= 0
+{
+    v_excitation * gf * strain
+}
+
+// Stress from strain via Young's modulus E.
+@verify(lean, theorem = "stress_proportional_to_strain")
+fn stress(youngs_modulus: Real, strain: Real) -> Real
+    where chain_order <= 0,
+          domain: youngs_modulus > 0.0
+{
+    youngs_modulus * strain
+}

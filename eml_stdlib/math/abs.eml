@@ -1,0 +1,45 @@
+// abs.eml -- |x|, sign, and clamp.
+//
+// All chain-order 0 -- pure piecewise linear. Listed in stdlib so
+// downstream kernels can reference them by their stable, qualified
+// names instead of relying on the parser-level builtin.
+
+module abs_module;
+
+@verify(lean, theorem = "abs_nonneg")
+fn abs_kernel(x: Real) -> Real
+    where chain_order <= 0
+    ensures (result >= 0.0)
+{
+    abs(x)
+}
+
+// Three-valued sign. Caller is responsible for branch-free
+// implementation downstream of the optimiser.
+@verify(lean, theorem = "sign_in_unit_interval")
+fn sign(x: Real) -> Real
+    where chain_order <= 0
+    ensures (result >= -1.0)
+    ensures (result <= 1.0)
+{
+    clamp(x * 1.0e30, -1.0, 1.0)
+}
+
+// Symmetric clamp. Equivalent to clamp(x, -limit, limit).
+@verify(lean, theorem = "saturate_in_band")
+fn saturate(x: Real, limit: Real) -> Real
+    where chain_order <= 0,
+          domain: limit > 0.0
+{
+    clamp(x, -limit, limit)
+}
+
+// Soft sign: x / (1 + |x|). Smooth approximation to sign(x);
+// useful as a saturating activation. Chain order 0 even though
+// it composes a divide -- no transcendentals.
+@verify(lean, theorem = "softsign_in_open_unit_interval")
+fn softsign(x: Real) -> Real
+    where chain_order <= 0
+{
+    x / (1.0 + abs(x))
+}
