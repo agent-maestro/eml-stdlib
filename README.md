@@ -22,6 +22,24 @@ And get a verified PBR specular shader.
 - **466 carry an `@verify(lean, …)` contract** (89%)
 - Every function declares its **Pfaffian chain order** in the type
 
+## Used by
+
+Four Godot 4 prototypes are live consumers of the kernels here. Each one is
+a working application of a different stdlib slice; together they cover most
+of what game engines actually do at runtime.
+
+| Prototype | Stdlib slice exercised | What it proves |
+|-----------|------------------------|----------------|
+| **spellforge** | `math/`, `signal/` | Verified expression-tree gameplay — every spell is an EML expression that type-checks as a function |
+| **longshot** | `ballistics/` (mirrored line-for-line) | Real exterior ballistics in a 2D sniper sim — drag, gravity, wind, Coriolis, spin drift |
+| **apex-predator** | `ballistics/` + `biology/` + `biology/abilities/` + `signal/` | Asymmetric PvP with split-screen + per-viewport fragment-shader fog of war; 25 species evolve a beast through 4 stages |
+| **monowave** | local `eml/` mirrors of `signal/` + `gaming/noise/` + `gaming/shading/` | Deterministic music visualizer — same audio in, same visuals out, no randomness anywhere |
+
+The 10 kernels in `biology/abilities/` were promoted up from apex-predator's
+local `eml/abilities/` directory in v0.4.0. The local copies remain in that
+repo because `scripts/build_stdlib.py` reads from them as the source-of-truth;
+deleting them locally would break the stdlib build.
+
 ## Use
 
 After `pip install`, import the location of the `.eml` source files
