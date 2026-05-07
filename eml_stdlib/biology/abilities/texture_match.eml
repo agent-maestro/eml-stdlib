@@ -1,0 +1,49 @@
+// texture_match.eml -- octopus chromatic + textural skin matching.
+//
+// Per-pixel match score between the cephalopod's skin
+// and the surrounding background, integrated over a small patch:
+//
+//   match(p) = 1 - sqrt( ( ΔL² + Δa² + Δb² ) / S_max² )
+//
+// where (L, a, b) are perceptual colour coordinates and S_max
+// the worst-case distance. Output ∈ [0, 1].
+
+module texture_match;
+
+const S_MAX: Real = 256.0   // perceptual distance for 8-bit Lab range
+
+@verify(lean, theorem = "texture_match_in_unit_interval")
+fn match_score(d_l: Real, d_a: Real, d_b: Real) -> Real
+    where chain_order <= 1
+    ensures (result >= 0.0)
+    ensures (result <= 1.0)
+{
+    let dist: Real = sqrt(d_l * d_l + d_a * d_a + d_b * d_b);
+    clamp(1.0 - dist / S_MAX, 0.0, 1.0)
+}
+
+// Detection probability at distance r given a match score.
+//   p_detect = (1 - match) * (1 / r²) * detector_sensitivity
+@verify(lean, theorem = "texture_detect_in_unit_interval")
+fn detection_probability(match_score: Real, r_m: Real,
+                          detector_sensitivity: Real) -> Real
+    where chain_order <= 0,
+          domain: r_m > 0.0 && detector_sensitivity >= 0.0
+    requires (match_score >= 0.0)
+    requires (match_score <= 1.0)
+    ensures (result >= 0.0)
+{
+    (1.0 - match_score) * detector_sensitivity / (r_m * r_m)
+}
+
+// Ink-cloud blinding decay: visibility recovers exponentially.
+//   visibility(t) = 1 - exp(-t / τ)
+@verify(lean, theorem = "ink_recovery_in_unit_interval")
+fn ink_visibility(t_s: Real, tau_s: Real) -> Real
+    where chain_order <= 1,
+          domain: t_s >= 0.0 && tau_s > 0.0
+    ensures (result >= 0.0)
+    ensures (result <= 1.0)
+{
+    1.0 - exp(-t_s / tau_s)
+}

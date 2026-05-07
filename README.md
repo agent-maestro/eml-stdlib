@@ -17,9 +17,9 @@ And get a verified PBR specular shader.
 
 ## At a glance
 
-- **168 modules** across **21 categories**
-- **491 functions** total
-- **436 carry an `@verify(lean, …)` contract** (88%)
+- **178 modules** across **22 categories**
+- **521 functions** total
+- **466 carry an `@verify(lean, …)` contract** (89%)
 - Every function declares its **Pfaffian chain order** in the type
 
 ## Use
@@ -162,6 +162,23 @@ Biology — vision, olfaction, magnetoreception, ion channels.
 | `receptor_binding.eml` | receptor_binding | 0 | 1/1 | monogate-research/exploration/dog_olfaction/eml/receptor_binding.eml |
 | `rod_sensitivity.eml` | rod_sensitivity | 1 | 1/1 | monogate-research/exploration/cat_vision/eml/rod_sensitivity.eml |
 | `tapetum.eml` | tapetum_gain, tapetum_amplify | 1 | 2/2 | monogate-research/exploration/cat_vision/eml/tapetum.eml |
+
+### `biology/abilities/` — 10 modules / 30 fns / 30 verified
+
+Biology / abilities — creature combat, movement, and cover: elastic energy, locomotion, chromatophore camouflage, toxin pharmacokinetics, ballistic armor, bioelectric discharge, texture matching, sprint metabolism, muscle power, bite force.
+
+| File | Functions | Chain | Verified | Origin |
+|------|-----------|-------|----------|--------|
+| `abilities/ballistic_armor.eml` | kinetic_energy, energy_absorbed, energy_penetrating, … (+1) | 0,1 | 4/4 | apex-predator/eml/abilities/ballistic_armor.eml |
+| `abilities/bite_force.eml` | bite_force_n, damage_per_bite, stage_multiplier | 0,1 | 3/3 | apex-predator/eml/abilities/bite_force.eml |
+| `abilities/chromatophore.eml` | bragg_wavelength, transparency, detection_contrast | 0,1 | 3/3 | apex-predator/eml/abilities/chromatophore.eml |
+| `abilities/discharge.eml` | voltage, voltage_default, pulse_energy | 0,1 | 3/3 | apex-predator/eml/abilities/discharge.eml |
+| `abilities/elastic_energy.eml` | takeoff_velocity, jump_height, jump_range | 0,1 | 3/3 | apex-predator/eml/abilities/elastic_energy.eml |
+| `abilities/locomotion.eml` | ground_speed, speed_multiplier, wall_climb_capable | 0 | 3/3 | apex-predator/eml/abilities/locomotion.eml |
+| `abilities/muscle_power.eml` | total_power, power_to_weight, top_speed_proxy | 0,1 | 3/3 | apex-predator/eml/abilities/muscle_power.eml |
+| `abilities/sprint.eml` | velocity, distance_covered | 1 | 2/2 | apex-predator/eml/abilities/sprint.eml |
+| `abilities/texture_match.eml` | match_score, detection_probability, ink_visibility | 0,1 | 3/3 | apex-predator/eml/abilities/texture_match.eml |
+| `abilities/toxin.eml` | concentration, damage_rate, total_damage | 1 | 3/3 | apex-predator/eml/abilities/toxin.eml |
 
 ### `carriers/` — 12 modules / 40 fns / 24 verified
 

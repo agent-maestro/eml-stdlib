@@ -27,6 +27,7 @@ CATEGORY_ORDER = [
     ("circuits", "Analog circuits — RC, voltage divider, CMOS, MOSFET, PLL, LDO, buck."),
     ("sensors",  "Sensors — Hall effect, thermistor, RTD, accelerometer, strain gauge."),
     ("biology",  "Biology — vision, olfaction, magnetoreception, ion channels."),
+    ("biology/abilities", "Biology / abilities — creature combat, movement, and cover: elastic energy, locomotion, chromatophore camouflage, toxin pharmacokinetics, ballistic armor, bioelectric discharge, texture matching, sprint metabolism, muscle power, bite force."),
     ("carriers", "Wave carriers — photonic, magnonic, phononic, ferronic."),
     ("quantum",  "Quantum gates — Hadamard, Pauli, phase, CNOT, Grover oracle."),
     ("ml",         "Machine learning — activations, attention, RoPE, layernorm, loss."),

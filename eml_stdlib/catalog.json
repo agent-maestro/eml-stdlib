@@ -479,6 +479,246 @@
     "source": "monogate-research/exploration/cat_vision/eml/tapetum.eml"
   },
   {
+    "category": "biology/abilities",
+    "file": "biology/abilities/ballistic_armor.eml",
+    "module": "ballistic_armor",
+    "functions": [
+      {
+        "name": "kinetic_energy",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "energy_absorbed",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "energy_penetrating",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "ricochet_probability",
+        "chain_order": 1,
+        "verified": true
+      }
+    ],
+    "description": "armadillo plate / ballistic vest absorption.",
+    "source": "apex-predator/eml/abilities/ballistic_armor.eml"
+  },
+  {
+    "category": "biology/abilities",
+    "file": "biology/abilities/bite_force.eml",
+    "module": "bite_force",
+    "functions": [
+      {
+        "name": "bite_force_n",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "damage_per_bite",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "stage_multiplier",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "jaw-power scaling for the beast's stage attacks.",
+    "source": "apex-predator/eml/abilities/bite_force.eml"
+  },
+  {
+    "category": "biology/abilities",
+    "file": "biology/abilities/chromatophore.eml",
+    "module": "chromatophore",
+    "functions": [
+      {
+        "name": "bragg_wavelength",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "transparency",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "detection_contrast",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "gecko / cephalopod camouflage via Bragg reflection.",
+    "source": "apex-predator/eml/abilities/chromatophore.eml"
+  },
+  {
+    "category": "biology/abilities",
+    "file": "biology/abilities/discharge.eml",
+    "module": "discharge",
+    "functions": [
+      {
+        "name": "voltage",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "voltage_default",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "pulse_energy",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "electric eel discharge waveform.",
+    "source": "apex-predator/eml/abilities/discharge.eml"
+  },
+  {
+    "category": "biology/abilities",
+    "file": "biology/abilities/elastic_energy.eml",
+    "module": "elastic_energy",
+    "functions": [
+      {
+        "name": "takeoff_velocity",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "jump_height",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "jump_range",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "flea-style elastic-jump physics.",
+    "source": "apex-predator/eml/abilities/elastic_energy.eml"
+  },
+  {
+    "category": "biology/abilities",
+    "file": "biology/abilities/locomotion.eml",
+    "module": "locomotion",
+    "functions": [
+      {
+        "name": "ground_speed",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "speed_multiplier",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "wall_climb_capable",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "many-legged speed bonus model (centipede).",
+    "source": "apex-predator/eml/abilities/locomotion.eml"
+  },
+  {
+    "category": "biology/abilities",
+    "file": "biology/abilities/muscle_power.eml",
+    "module": "muscle_power",
+    "functions": [
+      {
+        "name": "total_power",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "power_to_weight",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "top_speed_proxy",
+        "chain_order": 1,
+        "verified": true
+      }
+    ],
+    "description": "striated-muscle power-to-mass scaling.",
+    "source": "apex-predator/eml/abilities/muscle_power.eml"
+  },
+  {
+    "category": "biology/abilities",
+    "file": "biology/abilities/sprint.eml",
+    "module": "sprint",
+    "functions": [
+      {
+        "name": "velocity",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "distance_covered",
+        "chain_order": 1,
+        "verified": true
+      }
+    ],
+    "description": "cheetah-style burst-acceleration model.",
+    "source": "apex-predator/eml/abilities/sprint.eml"
+  },
+  {
+    "category": "biology/abilities",
+    "file": "biology/abilities/texture_match.eml",
+    "module": "texture_match",
+    "functions": [
+      {
+        "name": "match_score",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "detection_probability",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "ink_visibility",
+        "chain_order": 1,
+        "verified": true
+      }
+    ],
+    "description": "octopus chromatic + textural skin matching.",
+    "source": "apex-predator/eml/abilities/texture_match.eml"
+  },
+  {
+    "category": "biology/abilities",
+    "file": "biology/abilities/toxin.eml",
+    "module": "toxin",
+    "functions": [
+      {
+        "name": "concentration",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "damage_rate",
+        "chain_order": 1,
+        "verified": true
+      },
+      {
+        "name": "total_damage",
+        "chain_order": 1,
+        "verified": true
+      }
+    ],
+    "description": "viper-bite damage-over-time model.",
+    "source": "apex-predator/eml/abilities/toxin.eml"
+  },
+  {
     "category": "carriers",
     "file": "carriers/acoustic_cloak.eml",
     "module": "acoustic_cloak",

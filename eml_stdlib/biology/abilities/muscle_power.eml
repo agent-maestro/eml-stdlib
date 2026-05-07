@@ -1,0 +1,47 @@
+// muscle_power.eml -- striated-muscle power-to-mass scaling.
+//
+// Peak power per kg of muscle ~ 250 W/kg in mammals. Power-to-weight
+// scales linearly with mass-fraction of muscle:
+//
+//   P_total = P_per_kg * mass_kg * muscle_fraction
+//
+// Chain order 0. Used by beast stage thresholds (each consumed
+// animal adds a small muscle-mass contribution).
+
+module muscle_power;
+
+const P_PER_KG: Real = 250.0   // W/kg, peak skeletal muscle
+
+@verify(lean, theorem = "muscle_power_nonneg")
+fn total_power(mass_kg: Real, muscle_fraction: Real) -> Real
+    where chain_order <= 0,
+          domain: mass_kg >= 0.0
+    requires (muscle_fraction >= 0.0)
+    requires (muscle_fraction <= 1.0)
+    ensures (result >= 0.0)
+{
+    P_PER_KG * mass_kg * muscle_fraction
+}
+
+// Power-to-weight ratio (W/kg total body).
+@verify(lean, theorem = "muscle_power_to_weight_nonneg")
+fn power_to_weight(muscle_fraction: Real) -> Real
+    where chain_order <= 0
+    requires (muscle_fraction >= 0.0)
+    requires (muscle_fraction <= 1.0)
+    ensures (result >= 0.0)
+{
+    P_PER_KG * muscle_fraction
+}
+
+// Top-speed proxy: P-to-W against drag = constant gives v ∝ ∛P.
+@verify(lean, theorem = "muscle_topspeed_proxy_nonneg")
+fn top_speed_proxy(muscle_fraction: Real, k_drag_inv_cube: Real) -> Real
+    where chain_order <= 1,
+          domain: k_drag_inv_cube >= 0.0
+    requires (muscle_fraction >= 0.0)
+    requires (muscle_fraction <= 1.0)
+    ensures (result >= 0.0)
+{
+    pow(P_PER_KG * muscle_fraction * k_drag_inv_cube, 0.333333)
+}

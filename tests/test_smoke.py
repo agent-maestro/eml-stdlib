@@ -8,7 +8,7 @@ import eml_stdlib
 
 
 def test_version_exposed() -> None:
-    assert eml_stdlib.__version__ == "0.3.0"
+    assert eml_stdlib.__version__ == "0.4.0"
 
 
 def test_categories_match_directory_layout() -> None:
@@ -57,8 +57,8 @@ def test_catalog_loadable_and_well_formed() -> None:
 def test_catalog_minimum_verified_count() -> None:
     cat = eml_stdlib.load_catalog()
     verified = sum(1 for m in cat for f in m["functions"] if f["verified"])
-    # Regression guard: never drop below the v0.3 coverage.
-    assert verified >= 400, f"verified count regressed: {verified}"
+    # Regression guard: never drop below v0.4 coverage (466).
+    assert verified >= 460, f"verified count regressed: {verified}"
 
 
 def test_ballistics_category_present() -> None:

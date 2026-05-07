@@ -1,0 +1,44 @@
+// toxin.eml -- viper-bite damage-over-time model.
+//
+// Toxin concentration in the bloodstream follows first-order
+// exponential clearance:
+//
+//   C(t) = C_0 * exp(-k * t)
+//
+// Damage rate is proportional to concentration above the LD50
+// threshold; integral over the wound's active window yields total
+// damage. Chain order 1.
+
+module toxin;
+
+@verify(lean, theorem = "toxin_concentration_nonneg")
+fn concentration(dose: Real, k_clearance: Real, t_seconds: Real) -> Real
+    where chain_order <= 1,
+          domain: dose >= 0.0 && k_clearance >= 0.0 && t_seconds >= 0.0
+    ensures (result >= 0.0)
+{
+    dose * exp(-k_clearance * t_seconds)
+}
+
+// Instantaneous damage rate (HP per second).
+@verify(lean, theorem = "toxin_damage_rate_nonneg")
+fn damage_rate(dose: Real, k_clearance: Real, t_seconds: Real,
+               toxicity: Real) -> Real
+    where chain_order <= 1,
+          domain: dose >= 0.0 && k_clearance >= 0.0 && t_seconds >= 0.0 && toxicity >= 0.0
+    ensures (result >= 0.0)
+{
+    toxicity * dose * exp(-k_clearance * t_seconds)
+}
+
+// Total damage integrated from t=0 to t=T.
+//   D = (toxicity * dose / k) * (1 - exp(-k*T))
+@verify(lean, theorem = "toxin_total_damage_nonneg")
+fn total_damage(dose: Real, k_clearance: Real, duration_s: Real,
+                toxicity: Real) -> Real
+    where chain_order <= 1,
+          domain: dose >= 0.0 && k_clearance > 0.0 && duration_s >= 0.0 && toxicity >= 0.0
+    ensures (result >= 0.0)
+{
+    (toxicity * dose / k_clearance) * (1.0 - exp(-k_clearance * duration_s))
+}

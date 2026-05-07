@@ -1,0 +1,45 @@
+// discharge.eml -- electric eel discharge waveform.
+//
+// Eel pulse voltage:
+//
+//   V(t) = V_peak * exp(-t / τ)
+//
+// where V_peak ≈ 860 V and τ ≈ 2 ms. Chain order 1.
+//
+// Used by the eel ability to compute EMP duration on hunter
+// instruments and stun damage on the beast.
+
+module discharge;
+
+const V_PEAK_DEFAULT: Real = 860.0     // Volts
+const TAU_DEFAULT:    Real = 0.002     // seconds
+
+@verify(lean, theorem = "discharge_voltage_nonneg")
+fn voltage(v_peak: Real, tau_s: Real, t_s: Real) -> Real
+    where chain_order <= 1,
+          domain: v_peak >= 0.0 && tau_s > 0.0 && t_s >= 0.0
+    ensures (result >= 0.0)
+{
+    v_peak * exp(-t_s / tau_s)
+}
+
+// Default-parameters convenience.
+@verify(lean, theorem = "discharge_default_voltage_nonneg")
+fn voltage_default(t_s: Real) -> Real
+    where chain_order <= 1,
+          domain: t_s >= 0.0
+    ensures (result >= 0.0)
+{
+    V_PEAK_DEFAULT * exp(-t_s / TAU_DEFAULT)
+}
+
+// Energy delivered per pulse (J), assuming constant body resistance.
+//   E = V_peak² * τ / (2 * R)
+@verify(lean, theorem = "discharge_energy_nonneg")
+fn pulse_energy(v_peak: Real, tau_s: Real, body_ohm: Real) -> Real
+    where chain_order <= 0,
+          domain: v_peak >= 0.0 && tau_s >= 0.0 && body_ohm > 0.0
+    ensures (result >= 0.0)
+{
+    v_peak * v_peak * tau_s / (2.0 * body_ohm)
+}

@@ -1,0 +1,36 @@
+// sprint.eml -- cheetah-style burst-acceleration model.
+//
+//   v(t) = v_max * (1 - exp(-t / τ))
+//
+// Asymptotic approach to peak speed; cheetahs hit ~95% of peak in
+// ~3 s. Chain order 1.
+
+module sprint;
+
+const V_MAX_CHEETAH:  Real = 33.3   // m/s (~120 km/h)
+const TAU_CHEETAH:    Real = 1.2    // seconds, time constant
+
+@verify(lean, theorem = "sprint_velocity_in_band")
+fn velocity(v_max: Real, tau_s: Real, t_s: Real) -> Real
+    where chain_order <= 1,
+          domain: v_max >= 0.0 && tau_s > 0.0 && t_s >= 0.0
+    ensures (result >= 0.0)
+    ensures (result <= v_max)
+{
+    v_max * (1.0 - exp(-t_s / tau_s))
+}
+
+// Distance covered from cold start at time t.
+//   x(t) = v_max * (t - τ * (1 - exp(-t/τ)))
+@verify(lean, theorem = "sprint_distance_nonneg")
+fn distance_covered(v_max: Real, tau_s: Real, t_s: Real) -> Real
+    where chain_order <= 1,
+          domain: v_max >= 0.0 && tau_s > 0.0 && t_s >= 0.0
+    ensures (result >= 0.0)
+{
+    v_max * (t_s - tau_s * (1.0 - exp(-t_s / tau_s)))
+}
+
+// Burst duration before fatigue kicks in (cheetah ≈ 30 s).
+const BURST_LIMIT_S:   Real = 30.0
+const COOLDOWN_S:      Real = 30.0

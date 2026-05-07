@@ -19,7 +19,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-__version__ = "0.3.0"
+__version__ = "0.4.0"
 
 _PACKAGE_ROOT = Path(__file__).resolve().parent
 _CATALOG_PATH = _PACKAGE_ROOT / "catalog.json"

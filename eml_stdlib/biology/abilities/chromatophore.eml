@@ -1,0 +1,50 @@
+// chromatophore.eml -- gecko / cephalopod camouflage via Bragg reflection.
+//
+// Iridophore stacks reflect a band of wavelengths centred on:
+//
+//   λ = 2 * n * d * cos(θ)
+//
+// where n is refractive index, d the lamellar spacing, θ the
+// viewing angle. The chromatophore can dilate/contract d so the
+// reflected band shifts. Chain order 1 (cos).
+
+module chromatophore;
+
+@verify(lean, theorem = "bragg_wavelength_nonneg")
+fn bragg_wavelength(refractive_index: Real, spacing_nm: Real,
+                     angle_rad: Real) -> Real
+    where chain_order <= 1,
+          domain: refractive_index > 0.0 && spacing_nm > 0.0
+    ensures (result >= 0.0)
+{
+    let cos_t: Real = clamp(cos(angle_rad), 0.0, 1.0);
+    2.0 * refractive_index * spacing_nm * cos_t
+}
+
+// Camouflage transparency [0, 1] as a function of motion.
+// Stationary subject: full Bragg-tuned camouflage.
+// Moving subject: temporal mismatch leaks the silhouette.
+//   transparency = max_t * exp(-velocity / tau)
+@verify(lean, theorem = "camo_transparency_in_unit_interval")
+fn transparency(max_t: Real, velocity_mps: Real, tau_mps: Real) -> Real
+    where chain_order <= 1,
+          domain: max_t >= 0.0 && max_t <= 1.0 && tau_mps > 0.0
+    requires (velocity_mps >= 0.0)
+    ensures (result >= 0.0)
+    ensures (result <= 1.0)
+{
+    max_t * exp(-velocity_mps / tau_mps)
+}
+
+// Detection contrast against the background at distance r.
+// contrast(r, transparency) = (1 - transparency) * base_contrast / r²
+@verify(lean, theorem = "camo_contrast_drops_with_distance")
+fn detection_contrast(transparency: Real, base_contrast: Real, r_m: Real) -> Real
+    where chain_order <= 0,
+          domain: r_m > 0.0 && base_contrast >= 0.0
+    requires (transparency >= 0.0)
+    requires (transparency <= 1.0)
+    ensures (result >= 0.0)
+{
+    (1.0 - transparency) * base_contrast / (r_m * r_m)
+}

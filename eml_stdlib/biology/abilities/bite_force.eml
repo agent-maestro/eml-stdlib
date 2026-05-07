@@ -1,0 +1,48 @@
+// bite_force.eml -- jaw-power scaling for the beast's stage attacks.
+//
+// Bite force at the canines:
+//
+//   F_bite = k * BSL² * cos(θ_jaw)
+//
+// where BSL is the body's bite-strength linear factor (proxy for
+// mass-and-jaw-leverage compound) and θ_jaw the jaw opening angle.
+// Chain order 1 (cos). Used to compute how many points of damage
+// the beast deals per stage.
+
+module bite_force;
+
+@verify(lean, theorem = "bite_force_nonneg")
+fn bite_force_n(k: Real, bsl: Real, jaw_angle_rad: Real) -> Real
+    where chain_order <= 1,
+          domain: k >= 0.0 && bsl >= 0.0
+    ensures (result >= 0.0)
+{
+    let c: Real = clamp(cos(jaw_angle_rad), 0.0, 1.0);
+    k * bsl * bsl * c
+}
+
+// Damage delivered per bite, scaling with bite force and a wound
+// constant (HP per Newton, calibrated to game balance).
+@verify(lean, theorem = "bite_damage_nonneg")
+fn damage_per_bite(bite_force_n_in: Real, wound_constant: Real) -> Real
+    where chain_order <= 0,
+          domain: bite_force_n_in >= 0.0 && wound_constant >= 0.0
+    ensures (result >= 0.0)
+{
+    bite_force_n_in * wound_constant
+}
+
+// Stage-multiplier for the beast's bite, callable from beast_combat.
+//   stage 0 (hands):  0.10
+//   stage 1 (claws):  0.30
+//   stage 2 (bite):   0.60
+//   stage 3 (lunge):  0.80
+@verify(lean, theorem = "bite_stage_multiplier_nondecreasing")
+fn stage_multiplier(stage: Real) -> Real
+    where chain_order <= 0,
+          domain: stage >= 0.0
+    ensures (result >= 0.0)
+{
+    let s_clamped: Real = clamp(stage, 0.0, 3.0);
+    0.10 + 0.235 * s_clamped + 0.0166 * s_clamped * s_clamped
+}

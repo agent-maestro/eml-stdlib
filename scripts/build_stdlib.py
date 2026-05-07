@@ -111,6 +111,19 @@ COPY_MAP: list[tuple[str, str | None]] = [
     ("biology/cryptochrome.eml",       "monogate-research/exploration/pigeon_magnetoreception/eml/cryptochrome.eml"),
     ("biology/geomagnetic_field.eml",  "monogate-research/exploration/pigeon_magnetoreception/eml/geomagnetic_field.eml"),
 
+    # ── biology/abilities (creature combat / movement / cover) ──
+    # Promoted from apex-predator/eml/abilities in stdlib v0.4.0.
+    ("biology/abilities/elastic_energy.eml",  "apex-predator/eml/abilities/elastic_energy.eml"),
+    ("biology/abilities/locomotion.eml",      "apex-predator/eml/abilities/locomotion.eml"),
+    ("biology/abilities/chromatophore.eml",   "apex-predator/eml/abilities/chromatophore.eml"),
+    ("biology/abilities/toxin.eml",           "apex-predator/eml/abilities/toxin.eml"),
+    ("biology/abilities/ballistic_armor.eml", "apex-predator/eml/abilities/ballistic_armor.eml"),
+    ("biology/abilities/discharge.eml",       "apex-predator/eml/abilities/discharge.eml"),
+    ("biology/abilities/texture_match.eml",   "apex-predator/eml/abilities/texture_match.eml"),
+    ("biology/abilities/sprint.eml",          "apex-predator/eml/abilities/sprint.eml"),
+    ("biology/abilities/muscle_power.eml",    "apex-predator/eml/abilities/muscle_power.eml"),
+    ("biology/abilities/bite_force.eml",      "apex-predator/eml/abilities/bite_force.eml"),
+
     # ── carriers ─────────────────────────────────────────────────
     ("carriers/mach_zehnder.eml",       "forge/examples/carriers/photonics/mach_zehnder.eml"),
     ("carriers/ring_resonator.eml",     "forge/examples/carriers/photonics/ring_resonator.eml"),

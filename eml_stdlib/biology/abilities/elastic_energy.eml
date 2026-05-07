@@ -1,0 +1,42 @@
+// elastic_energy.eml -- flea-style elastic-jump physics.
+//
+// A flea stores energy in its resilin pad, then releases it
+// instantaneously. Take-off velocity is governed by:
+//
+//   v = sqrt(2 * E / m)
+//
+// where E is stored elastic energy (J) and m the body mass (kg).
+// Chain order 1 (sqrt). Used by the beast jump ability.
+
+module elastic_energy;
+
+@verify(lean, theorem = "elastic_takeoff_velocity_nonneg")
+fn takeoff_velocity(elastic_energy_j: Real, mass_kg: Real) -> Real
+    where chain_order <= 1,
+          domain: elastic_energy_j >= 0.0 && mass_kg > 0.0
+    ensures (result >= 0.0)
+{
+    sqrt(2.0 * elastic_energy_j / mass_kg)
+}
+
+// Maximum jump height assuming straight-up release, no drag.
+//   h = v² / (2g)
+@verify(lean, theorem = "elastic_jump_height_nonneg")
+fn jump_height(elastic_energy_j: Real, mass_kg: Real, g: Real) -> Real
+    where chain_order <= 0,
+          domain: elastic_energy_j >= 0.0 && mass_kg > 0.0 && g > 0.0
+    ensures (result >= 0.0)
+{
+    elastic_energy_j / (mass_kg * g)
+}
+
+// Range of a 45° elastic launch (no drag, level ground).
+//   R = v² / g
+@verify(lean, theorem = "elastic_jump_range_nonneg")
+fn jump_range(elastic_energy_j: Real, mass_kg: Real, g: Real) -> Real
+    where chain_order <= 0,
+          domain: elastic_energy_j >= 0.0 && mass_kg > 0.0 && g > 0.0
+    ensures (result >= 0.0)
+{
+    2.0 * elastic_energy_j / (mass_kg * g)
+}

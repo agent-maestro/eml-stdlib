@@ -1,0 +1,61 @@
+// ballistic_armor.eml -- armadillo plate / ballistic vest absorption.
+//
+// Kinetic energy delivered by a bullet:
+//   E_k = ½ * m * v²
+//
+// Armour absorbs a fraction of that energy; remaining energy
+// causes wound damage. Chain order 0.
+
+module ballistic_armor;
+
+@verify(lean, theorem = "kinetic_energy_nonneg")
+fn kinetic_energy(mass_kg: Real, velocity_mps: Real) -> Real
+    where chain_order <= 0,
+          domain: mass_kg >= 0.0
+    ensures (result >= 0.0)
+{
+    0.5 * mass_kg * velocity_mps * velocity_mps
+}
+
+// Energy absorbed by armor with given absorption coefficient
+// (dimensionless, [0,1]).
+@verify(lean, theorem = "armor_absorbed_in_band")
+fn energy_absorbed(mass_kg: Real, velocity_mps: Real,
+                   absorption_coeff: Real) -> Real
+    where chain_order <= 0,
+          domain: mass_kg >= 0.0
+    requires (absorption_coeff >= 0.0)
+    requires (absorption_coeff <= 1.0)
+    ensures (result >= 0.0)
+{
+    let e_k: Real = 0.5 * mass_kg * velocity_mps * velocity_mps;
+    e_k * absorption_coeff
+}
+
+// Energy that penetrates (delivered to flesh).
+@verify(lean, theorem = "armor_penetrating_energy_nonneg")
+fn energy_penetrating(mass_kg: Real, velocity_mps: Real,
+                      absorption_coeff: Real) -> Real
+    where chain_order <= 0,
+          domain: mass_kg >= 0.0
+    requires (absorption_coeff >= 0.0)
+    requires (absorption_coeff <= 1.0)
+    ensures (result >= 0.0)
+{
+    let e_k: Real = 0.5 * mass_kg * velocity_mps * velocity_mps;
+    e_k * (1.0 - absorption_coeff)
+}
+
+// Ricochet probability rises sharply for shallow impact angles.
+// θ_impact = angle between bullet velocity and surface normal.
+//   p_ricochet = 1 - cos(θ_impact)^2   for θ in (0, π/2)
+@verify(lean, theorem = "ricochet_probability_in_unit_interval")
+fn ricochet_probability(angle_rad: Real) -> Real
+    where chain_order <= 1,
+          domain: angle_rad >= 0.0
+    ensures (result >= 0.0)
+    ensures (result <= 1.0)
+{
+    let c: Real = clamp(cos(angle_rad), 0.0, 1.0);
+    1.0 - c * c
+}

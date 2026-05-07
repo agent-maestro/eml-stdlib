@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "eml-stdlib"
-version = "0.3.0"
+version = "0.4.0"
 description = "The first verified standard library for game development. PBR shaders, procedural noise, procedural textures, lighting, terrain, animation curves, particles, audio attenuation + Doppler, rigid-body physics — every module with @verify(lean) bounds. Plus the math/signal/control/biology/ballistics/ML kernels powering the rest of the Monogate stack."
 readme = "README.md"
 license = { text = "MIT" }

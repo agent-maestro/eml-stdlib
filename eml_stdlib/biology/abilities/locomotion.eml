@@ -1,0 +1,50 @@
+// locomotion.eml -- many-legged speed bonus model (centipede).
+//
+// Stride frequency f * stride length L = ground-speed v.
+// More legs in phase → higher achievable f at the same metabolic
+// cost. Linear surrogate:
+//
+//   v(n_legs) = v_base * (1 + α * (n_legs - 2))
+//
+// with α = 0.10 per pair beyond the bipedal baseline; chain 0.
+
+module locomotion;
+
+const ALPHA_PER_LEG_PAIR: Real = 0.10
+const N_LEGS_BASELINE:    Real = 2.0   // bipedal human reference
+
+@verify(lean, theorem = "locomotion_speed_grows_with_legs")
+fn ground_speed(v_base: Real, n_legs: Real) -> Real
+    where chain_order <= 0,
+          domain: v_base >= 0.0 && n_legs >= 0.0
+    ensures (result >= 0.0)
+{
+    let extra_pairs: Real = clamp((n_legs - N_LEGS_BASELINE) * 0.5, 0.0, 100.0);
+    v_base * (1.0 + ALPHA_PER_LEG_PAIR * extra_pairs)
+}
+
+// Same expressed as a multiplier on the base speed.
+@verify(lean, theorem = "locomotion_multiplier_geq_one")
+fn speed_multiplier(n_legs: Real) -> Real
+    where chain_order <= 0,
+          domain: n_legs >= 0.0
+    ensures (result >= 1.0)
+{
+    let extra_pairs: Real = clamp((n_legs - N_LEGS_BASELINE) * 0.5, 0.0, 100.0);
+    1.0 + ALPHA_PER_LEG_PAIR * extra_pairs
+}
+
+// Wall-climbing toggle threshold: enough legs and enough adhesion to
+// support body weight against gravity. Returns 1.0 if climbing is
+// possible, 0.0 otherwise (for clamp-style boolean dispatch).
+@verify(lean, theorem = "wall_climb_threshold_in_zero_one")
+fn wall_climb_capable(n_legs: Real, adhesion_n_per_leg: Real,
+                       body_weight_n: Real) -> Real
+    where chain_order <= 0,
+          domain: n_legs >= 0.0 && adhesion_n_per_leg >= 0.0
+    ensures (result >= 0.0)
+    ensures (result <= 1.0)
+{
+    let total_grip: Real = n_legs * adhesion_n_per_leg;
+    clamp((total_grip - body_weight_n) * 1.0e6, 0.0, 1.0)
+}
