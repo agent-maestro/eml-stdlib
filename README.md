@@ -1,19 +1,20 @@
 # eml-stdlib
 
-**The first verified standard library for game development.**
-Every shader, every texture, every physics formula — with a mathematical proof.
+**An EML standard-library prototype for game development.**
+Shaders, textures, and physics formulas carry explicit verification contracts
+or proof-obligation hooks where available.
 
 Plus the math, signal-processing, control, biology, ballistics, and ML kernels
-that built the rest of the Monogate stack. Every module compiles to GDScript,
-GLSL, HLSL, C, Python, and Lean (and ~30 other backends via Forge); every
-`@verify` contract has a Lean proof obligation against MachLib.
+that built the rest of the Monogate stack. Modules are intended to compile to
+GDScript, GLSL, HLSL, C, Python, and Lean through Forge-supported targets;
+`@verify` contracts are tracked as proof obligations against MachLib.
 
 ```bash
 pip install eml-stdlib
 eml-compile eml_stdlib/gaming/shading/pbr_specular.eml --target glsl
 ```
 
-And get a verified PBR specular shader.
+And get a PBR specular shader with explicit verification metadata.
 
 ## At a glance
 

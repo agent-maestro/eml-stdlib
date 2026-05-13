@@ -1,4 +1,4 @@
-"""eml-stdlib -- verified standard library for the EML language.
+"""eml-stdlib -- EML standard-library prototype.
 
 This package ships *.eml source files (not Python modules). Use
 the helpers below to locate them so a Forge project can wire them
