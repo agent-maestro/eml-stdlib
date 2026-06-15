@@ -9,11 +9,11 @@ description = "EML standard-library prototype for game development. PBR shaders,
 readme = "README.md"
 license = { text = "MIT" }
 authors = [
-    { name = "Arturo R. Almaguer", email = "almaguer1986@gmail.com" },
+    { name = "Arturo R. Almaguer", email = "contact@monogate.dev" },
     { name = "Mosa Creates LLC" },
 ]
 maintainers = [
-    { name = "Arturo R. Almaguer", email = "almaguer1986@gmail.com" },
+    { name = "Arturo R. Almaguer", email = "contact@monogate.dev" },
 ]
 keywords = [
     "eml",
