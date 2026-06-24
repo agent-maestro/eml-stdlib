@@ -34,14 +34,14 @@ fn relative_airspeed(v_bullet: Real, v_wind_along: Real) -> Real
 // radians, measured from the shooter's forward direction.
 //   v_perp  =  v_wind * sin(bearing - heading)
 //   v_along = -v_wind * cos(bearing - heading)
-@verify(lean, theorem = "wind_components_pythagorean")
+@verify(lean, theorem = "wind_perp_component")
 fn perp_component(v_wind: Real, bearing: Real, heading: Real) -> Real
     where chain_order <= 1
 {
     v_wind * sin(bearing - heading)
 }
 
-@verify(lean, theorem = "wind_components_pythagorean")
+@verify(lean, theorem = "wind_along_component")
 fn along_component(v_wind: Real, bearing: Real, heading: Real) -> Real
     where chain_order <= 1
 {
