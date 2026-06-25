@@ -33,6 +33,7 @@ fn temperature_beta(r: Real, t_ref_kelvin: Real,
                     r_ref: Real, beta: Real) -> Real
     where chain_order <= 1,
           domain: r > 0.0 && t_ref_kelvin > 0.0 && r_ref > 0.0 && beta != 0.0
+    requires (1.0 / t_ref_kelvin + ln(r / r_ref) / beta > 0.0)
     ensures (result > 0.0)
 {
     let inv_t = 1.0 / t_ref_kelvin + ln(r / r_ref) / beta;
@@ -55,6 +56,7 @@ fn inv_temperature_steinhart(r: Real, a: Real, b: Real, c: Real) -> Real
 fn temperature_steinhart(r: Real, a: Real, b: Real, c: Real) -> Real
     where chain_order <= 1,
           domain: r > 0.0
+    requires (inv_temperature_steinhart(r, a, b, c) > 0.0)
     ensures (result > 0.0)
 {
     let inv_t = inv_temperature_steinhart(r, a, b, c);

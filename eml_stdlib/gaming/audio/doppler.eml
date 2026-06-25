@@ -19,6 +19,7 @@ fn observed_frequency(f_source: Real, v_sound: Real,
           domain: v_sound > 0.0
     requires (f_source >= 0.0)
     requires (v_sound + v_source_away_from_listener > 0.0)
+    requires (v_sound + v_listener_toward_source >= 0.0)
     ensures (result >= 0.0)
 {
     f_source * (v_sound + v_listener_toward_source)
@@ -32,6 +33,7 @@ fn observed_frequency_air(f_source: Real,
     where chain_order <= 0
     requires (f_source >= 0.0)
     requires (V_SOUND_AIR + v_source_away_from_listener > 0.0)
+    requires (V_SOUND_AIR + v_listener_toward_source >= 0.0)
     ensures (result >= 0.0)
 {
     f_source * (V_SOUND_AIR + v_listener_toward_source)
