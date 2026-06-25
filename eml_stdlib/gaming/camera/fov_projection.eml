@@ -10,10 +10,16 @@
 
 module fov_projection;
 
+// The fov upper bound is the symbolic pi() (half-FOV in the first quadrant
+// (0, pi/2) ⇒ tan > 0 ⇒ the coefficient is positive). pi() renders as the EXACT
+// real pi in the Lean obligation, so `fov < pi` ⇒ `0.5*fov < pi/2` cleanly;
+// compute backends lower it to the float64 literal, so the runtime domain is
+// the standard "FOV below 180°". (Was the decimal 3.141, which needed the
+// unprovable `3.141 < pi` bridge.)
 @verify(lean, theorem = "fov_m00_positive")
 fn m00(fov_y_rad: Real, aspect: Real) -> Real
     where chain_order <= 2,
-          domain: fov_y_rad > 0.0 && fov_y_rad < 3.141 && aspect > 0.0
+          domain: fov_y_rad > 0.0 && fov_y_rad < pi() && aspect > 0.0
     ensures (result > 0.0)
 {
     1.0 / (aspect * tan(0.5 * fov_y_rad))
@@ -22,7 +28,7 @@ fn m00(fov_y_rad: Real, aspect: Real) -> Real
 @verify(lean, theorem = "fov_m11_positive")
 fn m11(fov_y_rad: Real) -> Real
     where chain_order <= 2,
-          domain: fov_y_rad > 0.0 && fov_y_rad < 3.141
+          domain: fov_y_rad > 0.0 && fov_y_rad < pi()
     ensures (result > 0.0)
 {
     1.0 / tan(0.5 * fov_y_rad)
