@@ -5,23 +5,22 @@
 
 module atan_module;
 
-// NOTE (real-vs-float subtlety): the true range of atan is the OPEN interval
-// (-pi/2, pi/2); atan(x) -> +-pi/2 only as x -> +-inf, never reaching it. The
-// constant below is the nearest IEEE-754 double to pi/2, which is STRICTLY LESS
-// than pi/2 (1.5707963267948966 < 1.57079632679489661923...). So the strict
-// bound `result > -HALF_PI` is true in float arithmetic but FALSE over the reals
-// for sufficiently large negative x (atan(x) can fall in the gap
-// (-pi/2, -HALF_PI)). The `atan_in_open_half_pi_band` obligation is therefore
-// left UNVERIFIED on purpose: a sound Lean proof needs a symbolic `pi/2` bound
-// (not a truncated decimal) plus an arctan range axiom in MachLib. Flagged
-// rather than closed with an unsound axiom.
-const HALF_PI: Real = 1.5707963267948966
+// NOTE (why the bound is symbolic pi(), not a decimal): the true range of atan
+// is the OPEN interval (-pi/2, pi/2); atan(x) -> +-pi/2 only as x -> +-inf,
+// never reaching it. The nearest IEEE-754 double to pi/2 is STRICTLY LESS than
+// pi/2 (1.5707963267948966 < 1.57079632679489661923...), so a decimal `HALF_PI`
+// bound is FALSE over the reals for large negative x (atan can land in the gap
+// (-pi/2, -HALF_PI)) and the obligation cannot be closed soundly. The `pi()`
+// builtin renders the EXACT real pi/2 in the Lean/Coq/Isabelle obligation
+// (Real.pi, PI, pi) while compute backends still lower it to the float64-nearest
+// literal, so this is sound AND keeps runtime semantics. Closed against the
+// MachLib arctan range lemmas (no unsound axiom).
 
 @verify(lean, theorem = "atan_in_open_half_pi_band")
 fn atan_kernel(x: Real) -> Real
     where chain_order <= 1
-    ensures (result >  -HALF_PI)
-    ensures (result <   HALF_PI)
+    ensures (result >  -(pi() / 2.0))
+    ensures (result <    pi() / 2.0)
 {
     atan(x)
 }

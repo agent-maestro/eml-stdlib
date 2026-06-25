@@ -16,12 +16,17 @@ module atan2_module;
 const PI:      Real = 3.141592653589793
 const HALF_PI: Real = 1.5707963267948966
 
+// The open-interval band uses symbolic pi() (exact pi/2 in the Lean/Coq/
+// Isabelle obligation) rather than the decimal HALF_PI, which is < pi/2 and
+// would make the strict bound false over the reals. See atan.eml for the full
+// real-vs-float note. HALF_PI / PI below stay decimal: they are exact return
+// values (zero-x branches) or compute terms (+-pi shift), not strict bounds.
 @verify(lean, theorem = "atan2_pos_x_in_open_half_pi_band")
 fn atan2_pos_x(y: Real, x: Real) -> Real
     where chain_order <= 2,
           domain: x > 0.0
-    ensures (result >  -HALF_PI)
-    ensures (result <   HALF_PI)
+    ensures (result >  -(pi() / 2.0))
+    ensures (result <    pi() / 2.0)
 {
     atan(y / x)
 }
