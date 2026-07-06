@@ -17,28 +17,30 @@
 // regression-gated to ULP across every target with a real toolchain
 // (tests/equivalence/test_matrix_cross_target.py).
 //
-// The @verify contract is an entrywise monotonicity guarantee: if the
-// transition, prior covariance, and process noise all have non-negative
-// entries, so does the propagated covariance -- each element of P' is a
-// sum of products (F*P*F) plus Q, i.e. a sum of products of non-negatives.
-// Proven per element (forall i j) sorryAx-free via mach_sign. (The deeper
-// structural properties -- symmetry / positive-semidefiniteness of P' --
-// are a natural next contract once the verify path grows cross-element
-// equalities; the numeric cross-target-equivalence gate already pins the
-// arithmetic itself.)
+// The @verify contract is the CENTRAL structural invariant of a covariance
+// matrix: SYMMETRY is preserved. A covariance is symmetric by definition,
+// and the congruence-plus-noise F*P*Fᵀ + Q keeps it symmetric -- if the
+// prior P and the process noise Q are symmetric, so is P'. Proven
+// sorryAx-free (mach_ring, no classical axioms) as the cross-element
+// equation result[0][1] = result[1][0], given the symmetric-input
+// preconditions. A filter that silently breaks covariance symmetry
+// diverges (the gain computation assumes it); this contract guarantees the
+// predict step never does.
+//
+// (Entrywise non-negativity is ALSO provable per element via mach_sign;
+// the remaining structural property -- positive-semidefiniteness of P' --
+// needs quadratic-form / semidefinite reasoning beyond ring identities and
+// is the next frontier. The numeric cross-target-equivalence gate pins the
+// arithmetic itself to ULP across every target.)
 
 module kalman2d_predict;
 
-@verify(lean, theorem = "kalman2d_cov_predict_nonneg")
+@verify(lean, theorem = "kalman2d_cov_predict_symmetric")
 fn cov_predict(F: Mat<2,2>, P: Mat<2,2>, Q: Mat<2,2>) -> Mat<2,2>
     where chain_order <= 0
-    requires (F[0][0] >= 0.0) requires (F[0][1] >= 0.0)
-    requires (F[1][0] >= 0.0) requires (F[1][1] >= 0.0)
-    requires (P[0][0] >= 0.0) requires (P[0][1] >= 0.0)
-    requires (P[1][0] >= 0.0) requires (P[1][1] >= 0.0)
-    requires (Q[0][0] >= 0.0) requires (Q[0][1] >= 0.0)
-    requires (Q[1][0] >= 0.0) requires (Q[1][1] >= 0.0)
-    ensures (result >= 0.0)
+    requires (P[0][1] == P[1][0])
+    requires (Q[0][1] == Q[1][0])
+    ensures (result[0][1] == result[1][0])
 {
     F * P * transpose(F) + Q
 }
