@@ -1,0 +1,44 @@
+// kalman2d_predict.eml -- N-D Kalman covariance propagation (predict step).
+//
+//   P' = F * P * transpose(F) + Q
+//
+// The MATRIX generalization of kalman_1d's scalar variance drift
+// (`p + q`): a full covariance matrix pushed forward through the state-
+// transition F and inflated by the process-noise covariance Q. This is
+// the predict half of every multi-state Kalman filter -- a constant-
+// velocity tracker (position + velocity), an IMU attitude estimator, a
+// battery state-of-charge + internal-resistance model.
+//
+// eml-stdlib's first MATRIX-OPERATOR kernel. The body is written the way
+// the math is written -- `F * P * transpose(F) + Q` -- and the compiler
+// lowers the operators (matmul, transpose, matrix-add) to the flat
+// per-element form every backend already emits. One source becomes C /
+// Rust / C++ / Java / ... AND a machine-checked Lean theorem, and is
+// regression-gated to ULP across every target with a real toolchain
+// (tests/equivalence/test_matrix_cross_target.py).
+//
+// The @verify contract is an entrywise monotonicity guarantee: if the
+// transition, prior covariance, and process noise all have non-negative
+// entries, so does the propagated covariance -- each element of P' is a
+// sum of products (F*P*F) plus Q, i.e. a sum of products of non-negatives.
+// Proven per element (forall i j) sorryAx-free via mach_sign. (The deeper
+// structural properties -- symmetry / positive-semidefiniteness of P' --
+// are a natural next contract once the verify path grows cross-element
+// equalities; the numeric cross-target-equivalence gate already pins the
+// arithmetic itself.)
+
+module kalman2d_predict;
+
+@verify(lean, theorem = "kalman2d_cov_predict_nonneg")
+fn cov_predict(F: Mat<2,2>, P: Mat<2,2>, Q: Mat<2,2>) -> Mat<2,2>
+    where chain_order <= 0
+    requires (F[0][0] >= 0.0) requires (F[0][1] >= 0.0)
+    requires (F[1][0] >= 0.0) requires (F[1][1] >= 0.0)
+    requires (P[0][0] >= 0.0) requires (P[0][1] >= 0.0)
+    requires (P[1][0] >= 0.0) requires (P[1][1] >= 0.0)
+    requires (Q[0][0] >= 0.0) requires (Q[0][1] >= 0.0)
+    requires (Q[1][0] >= 0.0) requires (Q[1][1] >= 0.0)
+    ensures (result >= 0.0)
+{
+    F * P * transpose(F) + Q
+}

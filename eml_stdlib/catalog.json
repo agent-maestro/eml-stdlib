@@ -1337,6 +1337,20 @@
   },
   {
     "category": "control",
+    "file": "control/kalman2d_predict.eml",
+    "module": "kalman2d_predict",
+    "functions": [
+      {
+        "name": "cov_predict",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "N-D Kalman covariance propagation (predict step).",
+    "source": "new"
+  },
+  {
+    "category": "control",
     "file": "control/kalman_1d.eml",
     "module": "kalman_1d",
     "functions": [
