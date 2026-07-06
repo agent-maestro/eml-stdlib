@@ -1,0 +1,40 @@
+// pid3.eml -- 3-axis (vector) PID controller.
+//
+//   output = Kp * error + Ki * integral + Kd * derivative    (per axis)
+//
+// The vector generalization of pid.eml: one PID per axis, sharing the
+// gains, for 3-DOF control -- drone attitude (roll/pitch/yaw), a
+// robot-arm end-effector, a camera gimbal. Chain order 0 (a linear
+// combination of the inputs).
+//
+// The @verify contract is the SAME real safety property as the scalar
+// PID, now PER AXIS: every component of the command is clamped to the
+// actuator's physical range [OUT_MIN, OUT_MAX], regardless of the error /
+// integral / derivative history. The clamp is the actuator saturation; a
+// commanded value outside the range is physically undeliverable, so the
+// contract guarantees the controller never asks for one.
+//
+// eml-stdlib's first fixed-shape VECTOR kernel. It exercises the full
+// vector surface on real control code: `Vec<3>` params, scalar*vector
+// (gain * signal) and vector+vector (summing the three terms) resolved
+// elementwise, and a per-component `clamp` -- each verified component-wise
+// as a `Fin 3 -> Real` proof. One source lowers to C / GPU / Rust / ...
+// and to a machine-checked Lean theorem.
+
+module pid3_controller;
+
+const Kp: Real = 1.5
+const Ki: Real = 0.4
+const Kd: Real = 0.05
+
+const OUT_MIN: Real = -1.0
+const OUT_MAX: Real =  1.0
+
+@verify(lean, theorem = "pid3_output_clamped")
+fn pid3(error: Vec<3>, integral: Vec<3>, derivative: Vec<3>) -> Vec<3>
+    where chain_order <= 0
+    ensures (result >= OUT_MIN)
+    ensures (result <= OUT_MAX)
+{
+    clamp(Kp * error + Ki * integral + Kd * derivative, OUT_MIN, OUT_MAX)
+}
