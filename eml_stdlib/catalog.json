@@ -1566,6 +1566,11 @@
         "name": "fuse3_bounded",
         "chain_order": 0,
         "verified": true
+      },
+      {
+        "name": "fuse4_bounded",
+        "chain_order": 0,
+        "verified": true
       }
     ],
     "description": "confidence-weighted fusion of redundant sensors.",

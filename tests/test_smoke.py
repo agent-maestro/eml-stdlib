@@ -58,7 +58,7 @@ def test_catalog_minimum_verified_count() -> None:
     cat = eml_stdlib.load_catalog()
     verified = sum(1 for m in cat for f in m["functions"] if f["verified"])
     # Regression guard: never drop below v0.4 coverage (466).
-    assert verified >= 474, f"verified count regressed: {verified}"
+    assert verified >= 475, f"verified count regressed: {verified}"
 
 
 def test_ballistics_category_present() -> None:

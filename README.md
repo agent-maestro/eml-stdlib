@@ -18,8 +18,8 @@ And get a verified PBR specular shader.
 ## At a glance
 
 - **184 modules** across **22 categories**
-- **545 functions** total
-- **474 carry an `@verify(lean, …)` contract** (86%)
+- **546 functions** total
+- **475 carry an `@verify(lean, …)` contract** (86%)
 - Every function declares its **Pfaffian chain order** in the type
 
 ## Used by
@@ -105,7 +105,7 @@ DSP — filters, FFT, windows, matched-filter.
 | `window_hamming.eml` | hamming, hamming_at_start, hamming_apply | 0,1 | 3/3 | **new** |
 | `window_hann.eml` | hann, hann_at_start, hann_apply | 0,1 | 3/3 | **new** |
 
-### `control/` — 12 modules / 36 fns / 20 verified
+### `control/` — 12 modules / 37 fns / 21 verified
 
 Control — PID, Kalman, LQR, hysteresis, deadband.
 
@@ -122,7 +122,7 @@ Control — PID, Kalman, LQR, hysteresis, deadband.
 | `kalman_1d.eml` | kalman1d_predict, kalman1d_update, kalman1d_step | 0 | 3/3 | **new** |
 | `lqr_1d.eml` | riccati, lqr_gain, lqr_control | 0,1 | 3/3 | **new** |
 | `pid.eml` | pid | 0 | 1/1 | forge/examples/pid_controller.eml |
-| `weighted_fusion.eml` | fuse3, fuse3_bounded | 0 | 1/2 | **new** |
+| `weighted_fusion.eml` | fuse3, fuse3_bounded, fuse4_bounded | 0 | 2/3 | **new** |
 
 ### `physics/` — 9 modules / 30 fns / 28 verified
 

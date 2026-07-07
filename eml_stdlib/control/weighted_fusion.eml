@@ -46,3 +46,24 @@ fn fuse3_bounded(a: Real, b: Real, c: Real,
 {
     w1 * a + w2 * b + w3 * c
 }
+
+// Quad-redundant fusion (e.g. a 4-IMU voting set in flight control). Same
+// interval-preservation guarantee at arity 4 — proven sorryAx-free via the
+// N=4 convex closer, which bridges to the general convexN_le/ge theorem.
+@verify(lean, theorem = "weighted_fuse4_in_range")
+fn fuse4_bounded(a: Real, b: Real, c: Real, d: Real,
+                 w1: Real, w2: Real, w3: Real, w4: Real,
+                 lo: Real, hi: Real) -> Real
+    where chain_order <= 0
+    requires (w1 >= 0.0)
+    requires (w2 >= 0.0)
+    requires (w3 >= 0.0)
+    requires (w4 >= 0.0)
+    requires (w1 + w2 + w3 + w4 == 1.0)
+    requires (a <= hi) requires (b <= hi) requires (c <= hi) requires (d <= hi)
+    requires (a >= lo) requires (b >= lo) requires (c >= lo) requires (d >= lo)
+    ensures (result <= hi)
+    ensures (result >= lo)
+{
+    w1 * a + w2 * b + w3 * c + w4 * d
+}
