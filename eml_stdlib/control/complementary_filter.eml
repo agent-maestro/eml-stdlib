@@ -15,16 +15,18 @@
 // 1-state steady-state Kalman filter, so it earns its place next to the
 // full 2D filter in this category.
 //
-// VERIFIED vs OUT-OF-REACH, stated honestly:
+// VERIFIED, stated honestly:
 //   * `fuse` carries an @verify(lean) contract that a convex blend of two
-//     NON-NEGATIVE estimates stays non-negative -- proven sorryAx-free by
-//     MachLib's sign closer (the `1-α ≥ 0` fact is discharged from α ≤ 1).
-//   * The STRONGER property -- interval preservation, θ⁺ ∈ [min,max] of the
-//     inputs, the anti-drift guarantee that is the filter's whole reason for
-//     existing -- is NOT claimed. It reduces to α(g-M)+(1-α)(a-M) ≤ 0, a
-//     convexity/nonpositivity goal the current positivity closers cannot
-//     discharge (empirically leaves a `sorry`). Left for a convexity tactic
-//     rather than asserted with a vacuous theorem.
+//     NON-NEGATIVE estimates stays non-negative -- proven sorryAx-free.
+//   * `fuse_bounded` carries the STRONGER property that is the filter's whole
+//     reason for existing: INTERVAL PRESERVATION. If both estimates lie in a
+//     sensor's physical range [lo, hi], the fused estimate stays in [lo, hi]
+//     for ANY α ∈ [0,1] -- the anti-drift guarantee (a gyro alone would walk
+//     out of range unboundedly). This is a convexity bound, not a sign fact,
+//     so the positivity closers can't reach it; it is discharged by the
+//     MachLib lemmas `convex_comb_le` / `convex_comb_ge` (classical-free),
+//     proven sorryAx-free. (An earlier revision left this as a documented
+//     `sorry`; the convex-combination lemmas closed it.)
 
 module complementary_filter;
 
@@ -48,6 +50,28 @@ fn fuse(gyro_est: Real, accel_est: Real, alpha: Real) -> Real
     requires (gyro_est >= 0.0)
     requires (accel_est >= 0.0)
     ensures (result >= 0.0)
+{
+    alpha * gyro_est + (1.0 - alpha) * accel_est
+}
+
+// Interval-preserving blend: same convex combination, but PROVEN to keep the
+// fused estimate inside the sensor's physical range [lo, hi] for any
+// α ∈ [0,1] given both inputs are in range. This is the anti-drift guarantee
+// -- the whole point of fusing an absolute (accel) reference into a drifting
+// (gyro) one. lo/hi are the sensor range (e.g. tilt ∈ [-π, π]); they are
+// specification parameters, not used by the arithmetic.
+@verify(lean, theorem = "complementary_fuse_in_range")
+fn fuse_bounded(gyro_est: Real, accel_est: Real, alpha: Real,
+                lo: Real, hi: Real) -> Real
+    where chain_order <= 0
+    requires (alpha >= 0.0)
+    requires (alpha <= 1.0)
+    requires (gyro_est <= hi)
+    requires (accel_est <= hi)
+    requires (gyro_est >= lo)
+    requires (accel_est >= lo)
+    ensures (result <= hi)
+    ensures (result >= lo)
 {
     alpha * gyro_est + (1.0 - alpha) * accel_est
 }
