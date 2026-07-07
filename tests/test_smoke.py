@@ -48,7 +48,7 @@ def test_list_modules_filtered_by_category() -> None:
 def test_catalog_loadable_and_well_formed() -> None:
     cat = eml_stdlib.load_catalog()
     assert isinstance(cat, list)
-    assert len(cat) >= 183
+    assert len(cat) >= 184
     for entry in cat:
         assert {"category", "file", "module", "functions", "description", "source"} <= set(entry)
         assert isinstance(entry["functions"], list)
@@ -58,7 +58,7 @@ def test_catalog_minimum_verified_count() -> None:
     cat = eml_stdlib.load_catalog()
     verified = sum(1 for m in cat for f in m["functions"] if f["verified"])
     # Regression guard: never drop below v0.4 coverage (466).
-    assert verified >= 473, f"verified count regressed: {verified}"
+    assert verified >= 474, f"verified count regressed: {verified}"
 
 
 def test_ballistics_category_present() -> None:

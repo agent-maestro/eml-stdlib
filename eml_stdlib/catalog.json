@@ -1553,6 +1553,25 @@
     "source": "forge/examples/pid_controller.eml"
   },
   {
+    "category": "control",
+    "file": "control/weighted_fusion.eml",
+    "module": "weighted_fusion",
+    "functions": [
+      {
+        "name": "fuse3",
+        "chain_order": 0,
+        "verified": false
+      },
+      {
+        "name": "fuse3_bounded",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "confidence-weighted fusion of redundant sensors.",
+    "source": "new"
+  },
+  {
     "category": "gaming/animation",
     "file": "gaming/animation/bounce.eml",
     "module": "bounce",

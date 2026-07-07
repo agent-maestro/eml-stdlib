@@ -1,0 +1,48 @@
+// weighted_fusion.eml -- confidence-weighted fusion of redundant sensors.
+//
+// When three sensors measure the same quantity (redundant IMUs, a voting
+// triad in avionics, three range estimates), the robust estimate is a
+// confidence-weighted average `w1·a + w2·b + w3·c` with non-negative weights
+// summing to 1. It is the N-sensor generalisation of the two-input
+// complementary filter (see complementary_filter.eml).
+//
+// The guarantee that matters is the same INTERVAL PRESERVATION: if every
+// sensor reads inside a physical range [lo, hi], the fused estimate is also
+// in [lo, hi] -- a weighted average can never exceed its inputs, so a single
+// wild-but-in-range reading cannot throw the fusion out of range. That is a
+// convexity property (weights ≥ 0, Σw = 1), proven sorryAx-free via the
+// MachLib lemmas `convex_comb3_le` / `convex_comb3_ge` (classical-free).
+//
+// `fuse3` is the plain runtime kernel. `fuse3_bounded` carries the interval
+// contract; its weights-sum-to-one precondition `requires (w1+w2+w3 == 1.0)`
+// is exactly the hypothesis the convexity lemmas need.
+
+module weighted_fusion;
+
+// Confidence-weighted average of three sensor readings.
+fn fuse3(a: Real, b: Real, c: Real,
+         w1: Real, w2: Real, w3: Real) -> Real
+    where chain_order <= 0
+{
+    w1 * a + w2 * b + w3 * c
+}
+
+// Interval-preserving weighted fusion: with non-negative weights summing to 1
+// and all three readings in [lo, hi], the fused estimate stays in [lo, hi] --
+// proven for ANY such weights.
+@verify(lean, theorem = "weighted_fuse3_in_range")
+fn fuse3_bounded(a: Real, b: Real, c: Real,
+                 w1: Real, w2: Real, w3: Real,
+                 lo: Real, hi: Real) -> Real
+    where chain_order <= 0
+    requires (w1 >= 0.0)
+    requires (w2 >= 0.0)
+    requires (w3 >= 0.0)
+    requires (w1 + w2 + w3 == 1.0)
+    requires (a <= hi) requires (b <= hi) requires (c <= hi)
+    requires (a >= lo) requires (b >= lo) requires (c >= lo)
+    ensures (result <= hi)
+    ensures (result >= lo)
+{
+    w1 * a + w2 * b + w3 * c
+}
