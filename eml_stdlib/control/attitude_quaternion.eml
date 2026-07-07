@@ -1,0 +1,55 @@
+// attitude_quaternion.eml -- quaternion attitude representation, the standard
+// state of a 3D orientation / attitude estimator (drones, spacecraft, AHRS).
+//
+// A rotation in 3D is carried as a unit quaternion q = (w, x, y, z): no gimbal
+// lock (unlike Euler angles), and composition is a single product (unlike
+// rotation matrices, 9 numbers with 6 constraints). An attitude filter keeps
+// q as its state, propagates it from the gyro, and corrects it from the
+// accelerometer/magnetometer — the nonlinear rung above the linear/EKF filters
+// in this category.
+//
+// All four kernels are order-0 and element-wise, so Forge emits them to every
+// target: quat_mul / quat_conjugate reach RTL (pure multiply/accumulate) and
+// are ULP-equal across C/Rust/C++/Java; quat_normalize divides (software +
+// proof, not RTL).
+//
+// The flagship is quat_normalize: an attitude filter must RE-NORMALISE the
+// quaternion each step, because gyro integration walks the state off the unit
+// sphere (‖q‖ drifts from 1). @verify proves the result is EXACTLY a unit
+// quaternion, ‖normalize(q)‖² = 1 — sorryAx-free, the same whole-vector
+// unit-norm proof the `normalize` kernel carries, now at dimension 4.
+
+module attitude_quaternion;
+
+// Hamilton product q ⊗ r -- composition of two rotations (apply r, then q).
+// (w, x, y, z) convention. Not commutative (rotations don't commute).
+fn quat_mul(q: Vec<4>, r: Vec<4>) -> Vec<4>
+    where chain_order <= 0
+{
+    [q[0]*r[0] - q[1]*r[1] - q[2]*r[2] - q[3]*r[3],
+     q[0]*r[1] + q[1]*r[0] + q[2]*r[3] - q[3]*r[2],
+     q[0]*r[2] - q[1]*r[3] + q[2]*r[0] + q[3]*r[1],
+     q[0]*r[3] + q[1]*r[2] - q[2]*r[1] + q[3]*r[0]]
+}
+
+// Conjugate q* = (w, -x, -y, -z). For a UNIT quaternion this is the inverse
+// rotation (q* = q⁻¹), so it rotates a vector back / expresses the opposite
+// frame transform.
+fn quat_conjugate(q: Vec<4>) -> Vec<4>
+    where chain_order <= 0
+{
+    [q[0], 0.0 - q[1], 0.0 - q[2], 0.0 - q[3]]
+}
+
+// Re-normalise onto the unit sphere: q / ‖q‖. The projection back to a valid
+// rotation an attitude filter applies every step (gyro integration drifts off
+// the sphere). PROVEN: the result is EXACTLY a unit quaternion, ‖result‖² = 1
+// -- the whole-vector unit-norm contract, sorryAx-free, at dimension 4.
+@verify(lean, theorem = "quat_normalize_unit")
+fn quat_normalize(q: Vec<4>) -> Vec<4>
+    where chain_order <= 0
+    requires (dot(q, q) > 0.0)
+    ensures (dot(result, result) == 1.0)
+{
+    q / sqrt(dot(q, q))
+}

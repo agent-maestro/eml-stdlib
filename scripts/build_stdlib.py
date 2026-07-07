@@ -71,6 +71,7 @@ COPY_MAP: list[tuple[str, str | None]] = [
     ("control/complementary_filter.eml",   None),
     ("control/ekf_range_bearing.eml",      None),
     ("control/weighted_fusion.eml",        None),
+    ("control/attitude_quaternion.eml",    None),
     ("control/lqr_1d.eml",     None),
     ("control/deadband.eml",   None),
 

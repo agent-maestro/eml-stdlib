@@ -1285,6 +1285,30 @@
   },
   {
     "category": "control",
+    "file": "control/attitude_quaternion.eml",
+    "module": "attitude_quaternion",
+    "functions": [
+      {
+        "name": "quat_mul",
+        "chain_order": 0,
+        "verified": false
+      },
+      {
+        "name": "quat_conjugate",
+        "chain_order": 0,
+        "verified": false
+      },
+      {
+        "name": "quat_normalize",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "quaternion attitude representation, the standard",
+    "source": "new"
+  },
+  {
+    "category": "control",
     "file": "control/bangbang.eml",
     "module": "bangbang",
     "functions": [
