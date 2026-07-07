@@ -41,6 +41,26 @@ fn quat_conjugate(q: Vec<4>) -> Vec<4>
     [q[0], 0.0 - q[1], 0.0 - q[2], 0.0 - q[3]]
 }
 
+// Rotate a 3-vector by a unit quaternion: v' = q ⊗ (0,v) ⊗ q*. Written as the
+// expanded rotation matrix R(q)·v (which equals q⊗v⊗q* for a unit q), so it
+// stays a pure multiply/accumulate expression — no quaternion temporaries —
+// and reaches RTL. This is how an attitude estimate is USED: map a body-frame
+// vector to the world frame (or, via quat_conjugate, world gravity into the
+// body frame to compare against the accelerometer).
+fn quat_rotate_vec(q: Vec<4>, v: Vec<3>) -> Vec<3>
+    where chain_order <= 0
+{
+    [(1.0 - 2.0*(q[2]*q[2] + q[3]*q[3]))*v[0]
+        + 2.0*(q[1]*q[2] - q[0]*q[3])*v[1]
+        + 2.0*(q[1]*q[3] + q[0]*q[2])*v[2],
+     2.0*(q[1]*q[2] + q[0]*q[3])*v[0]
+        + (1.0 - 2.0*(q[1]*q[1] + q[3]*q[3]))*v[1]
+        + 2.0*(q[2]*q[3] - q[0]*q[1])*v[2],
+     2.0*(q[1]*q[3] - q[0]*q[2])*v[0]
+        + 2.0*(q[2]*q[3] + q[0]*q[1])*v[1]
+        + (1.0 - 2.0*(q[1]*q[1] + q[2]*q[2]))*v[2]]
+}
+
 // Re-normalise onto the unit sphere: q / ‖q‖. The projection back to a valid
 // rotation an attitude filter applies every step (gyro integration drifts off
 // the sphere). PROVEN: the result is EXACTLY a unit quaternion, ‖result‖² = 1

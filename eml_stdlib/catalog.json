@@ -1299,6 +1299,11 @@
         "verified": false
       },
       {
+        "name": "quat_rotate_vec",
+        "chain_order": 0,
+        "verified": false
+      },
+      {
         "name": "quat_normalize",
         "chain_order": 0,
         "verified": true

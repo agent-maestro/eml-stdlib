@@ -18,7 +18,7 @@ And get a verified PBR specular shader.
 ## At a glance
 
 - **185 modules** across **22 categories**
-- **549 functions** total
+- **550 functions** total
 - **476 carry an `@verify(lean, …)` contract** (86%)
 - Every function declares its **Pfaffian chain order** in the type
 
@@ -105,13 +105,13 @@ DSP — filters, FFT, windows, matched-filter.
 | `window_hamming.eml` | hamming, hamming_at_start, hamming_apply | 0,1 | 3/3 | **new** |
 | `window_hann.eml` | hann, hann_at_start, hann_apply | 0,1 | 3/3 | **new** |
 
-### `control/` — 13 modules / 40 fns / 22 verified
+### `control/` — 13 modules / 41 fns / 22 verified
 
 Control — PID, Kalman, LQR, hysteresis, deadband.
 
 | File | Functions | Chain | Verified | Origin |
 |------|-----------|-------|----------|--------|
-| `attitude_quaternion.eml` | quat_mul, quat_conjugate, quat_normalize | 0 | 1/3 | **new** |
+| `attitude_quaternion.eml` | quat_mul, quat_conjugate, quat_rotate_vec, quat_normalize | 0 | 1/4 | **new** |
 | `bangbang.eml` | bangbang, bangbang_symmetric | 0 | 2/2 | **new** |
 | `complementary_filter.eml` | integrate, fuse, fuse_bounded, fuse_tilt | 0 | 2/4 | **new** |
 | `deadband.eml` | deadband, deadband_asymmetric | 0 | 2/2 | **new** |
