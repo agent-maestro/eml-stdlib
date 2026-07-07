@@ -1,0 +1,83 @@
+// kalman2d_update.eml -- 2-state Kalman filter, measurement-UPDATE step.
+//
+// The measurement-fusion half of the filter (predict is in
+// kalman2d_predict.eml). A SCALAR measurement z with row H fuses into the
+// state x / covariance P:
+//
+//   y = z - H·x                        (innovation / residual)
+//   S = H·P·Hᵀ + R                     (innovation covariance, scalar)
+//   K = P·Hᵀ / S                       (Kalman gain, a Vec)
+//   x⁺ = x + K·y                       (state update)
+//   P⁺ = (I - K·Hᵀ)·P                  (covariance update)
+//
+// A scalar measurement (one sensor channel at a time) needs NO matrix
+// inverse -- S is a scalar, so the gain is a plain vector/scalar divide.
+// Multi-channel updates run these sequentially. This is how most embedded
+// filters actually run (IMU heading, wheel odometry, battery SoC).
+//
+// The math is written the way it reads -- `P * H`, `dot(H, P*H)`,
+// `outer(K, ...)` -- and Forge lowers the matrix/vector operators (matvec,
+// dot, outer product, vector÷scalar) to the flat element form every backend
+// emits, regression-gated to ULP across every target.
+//
+// `update_cov` is the fast textbook form. `update_cov_joseph` is the
+// numerically-stable Joseph form A·P·Aᵀ + W: a CONGRUENCE plus PSD noise,
+// so -- exactly like the predict step -- it provably keeps P⁺ positive-
+// semidefinite for ANY gain (the textbook form only does so under exact
+// arithmetic). @verify proves that PSD preservation, sorryAx-free.
+
+module kalman2d_update;
+
+// Innovation (measurement residual): y = z - H·x.
+fn innovation(H: Vec<2>, x: Vec<2>, z: Real) -> Real
+    where chain_order <= 0
+{
+    z - dot(H, x)
+}
+
+// Kalman gain: K = P·Hᵀ / (H·P·Hᵀ + R).  Scalar innovation covariance, so
+// no matrix inverse -- a vector divided by a positive scalar.
+fn gain(P: Mat<2,2>, H: Vec<2>, R: Real) -> Vec<2>
+    where chain_order <= 0
+    requires (R > 0.0)
+{
+    (P * H) / (dot(H, P * H) + R)
+}
+
+// State update: x⁺ = x + K·y.
+fn update_state(x: Vec<2>, K: Vec<2>, y: Real) -> Vec<2>
+    where chain_order <= 0
+{
+    x + K * y
+}
+
+// Covariance update (fast textbook form): P⁺ = P - K·(H·P) = (I - K·Hᵀ)·P.
+fn update_cov(P: Mat<2,2>, K: Vec<2>, H: Vec<2>) -> Mat<2,2>
+    where chain_order <= 0
+{
+    P - outer(K, P * H)
+}
+
+// The Joseph-form factor A = I - K·Hᵀ (written element-wise: no identity
+// literal needed). Fed to update_cov_joseph as the congruence transform.
+fn joseph_factor(K: Vec<2>, H: Vec<2>) -> Mat<2,2>
+    where chain_order <= 0
+{
+    [1.0 - K[0]*H[0], 0.0 - K[0]*H[1],
+     0.0 - K[1]*H[0], 1.0 - K[1]*H[1]]
+}
+
+// Joseph-form covariance update: P⁺ = A·P·Aᵀ + W  (A = I - K·Hᵀ,
+// W = K·R·Kᵀ). A congruence plus PSD noise -- identical structure to the
+// predict step -- so it provably preserves positive-semidefiniteness for
+// ANY gain, unconditionally on rounding. @verify proves it sorryAx-free via
+// the quadratic-form congruence zᵀ(A·P·Aᵀ + W)z = (Aᵀz)ᵀP(Aᵀz) + zᵀWz.
+@verify(lean, theorem = "kalman2d_joseph_psd")
+fn update_cov_joseph(A: Mat<2,2>, P: Mat<2,2>, W: Mat<2,2>) -> Mat<2,2>
+    where chain_order <= 0
+    requires (psd(P))
+    requires (psd(W))
+    ensures (psd(result))
+{
+    A * P * transpose(A) + W
+}

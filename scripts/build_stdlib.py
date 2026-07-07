@@ -66,6 +66,7 @@ COPY_MAP: list[tuple[str, str | None]] = [
     ("control/hysteresis.eml", None),
     ("control/kalman_1d.eml",  None),
     ("control/kalman2d_predict.eml", None),
+    ("control/kalman2d_update.eml",  None),
     ("control/lqr_1d.eml",     None),
     ("control/deadband.eml",   None),
 

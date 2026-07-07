@@ -39,6 +39,14 @@
 
 module kalman2d_predict;
 
+// State prediction: x⁻ = F·x  (drift the estimate through the dynamics).
+fn predict_state(F: Mat<2,2>, x: Vec<2>) -> Vec<2>
+    where chain_order <= 0
+{
+    F * x
+}
+
+// Covariance prediction: P⁻ = F·P·Fᵀ + Q  (drift + inflate the uncertainty).
 @verify(lean, theorem = "kalman2d_cov_predict_psd")
 fn cov_predict(F: Mat<2,2>, P: Mat<2,2>, Q: Mat<2,2>) -> Mat<2,2>
     where chain_order <= 0

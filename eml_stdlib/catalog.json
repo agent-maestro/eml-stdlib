@@ -1341,12 +1341,56 @@
     "module": "kalman2d_predict",
     "functions": [
       {
+        "name": "predict_state",
+        "chain_order": 0,
+        "verified": false
+      },
+      {
         "name": "cov_predict",
         "chain_order": 0,
         "verified": true
       }
     ],
     "description": "N-D Kalman covariance propagation (predict step).",
+    "source": "new"
+  },
+  {
+    "category": "control",
+    "file": "control/kalman2d_update.eml",
+    "module": "kalman2d_update",
+    "functions": [
+      {
+        "name": "innovation",
+        "chain_order": 0,
+        "verified": false
+      },
+      {
+        "name": "gain",
+        "chain_order": 0,
+        "verified": false
+      },
+      {
+        "name": "update_state",
+        "chain_order": 0,
+        "verified": false
+      },
+      {
+        "name": "update_cov",
+        "chain_order": 0,
+        "verified": false
+      },
+      {
+        "name": "joseph_factor",
+        "chain_order": 0,
+        "verified": false
+      },
+      {
+        "name": "update_cov_joseph",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "2-state Kalman filter, measurement-UPDATE step.",
     "source": "new"
   },
   {
