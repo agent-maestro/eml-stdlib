@@ -1304,6 +1304,30 @@
   },
   {
     "category": "control",
+    "file": "control/complementary_filter.eml",
+    "module": "complementary_filter",
+    "functions": [
+      {
+        "name": "integrate",
+        "chain_order": 0,
+        "verified": false
+      },
+      {
+        "name": "fuse",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "fuse_tilt",
+        "chain_order": 0,
+        "verified": false
+      }
+    ],
+    "description": "IMU tilt estimation by gyro/accelerometer",
+    "source": "new"
+  },
+  {
+    "category": "control",
     "file": "control/deadband.eml",
     "module": "deadband",
     "functions": [
@@ -1319,6 +1343,30 @@
       }
     ],
     "description": "two-sided dead-zone (deadband) saturation.",
+    "source": "new"
+  },
+  {
+    "category": "control",
+    "file": "control/ekf_range_bearing.eml",
+    "module": "ekf_range_bearing",
+    "functions": [
+      {
+        "name": "range",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "range_jacobian",
+        "chain_order": 0,
+        "verified": false
+      },
+      {
+        "name": "bearing_jacobian",
+        "chain_order": 0,
+        "verified": false
+      }
+    ],
+    "description": "Extended Kalman Filter measurement model for a",
     "source": "new"
   },
   {
@@ -1391,6 +1439,50 @@
       }
     ],
     "description": "2-state Kalman filter, measurement-UPDATE step.",
+    "source": "new"
+  },
+  {
+    "category": "control",
+    "file": "control/kalman2d_update_matrix.eml",
+    "module": "kalman2d_update_matrix",
+    "functions": [
+      {
+        "name": "innovation",
+        "chain_order": 0,
+        "verified": false
+      },
+      {
+        "name": "innovation_cov",
+        "chain_order": 0,
+        "verified": true
+      },
+      {
+        "name": "gain_matrix",
+        "chain_order": 0,
+        "verified": false
+      },
+      {
+        "name": "update_state",
+        "chain_order": 0,
+        "verified": false
+      },
+      {
+        "name": "update_cov",
+        "chain_order": 0,
+        "verified": false
+      },
+      {
+        "name": "joseph_factor",
+        "chain_order": 0,
+        "verified": false
+      },
+      {
+        "name": "update_cov_joseph",
+        "chain_order": 0,
+        "verified": true
+      }
+    ],
+    "description": "2-state Kalman filter, VECTOR-measurement",
     "source": "new"
   },
   {

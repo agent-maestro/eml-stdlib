@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "eml-stdlib"
-version = "0.4.0"
+version = "0.5.0"
 description = "EML standard-library prototype for game development. PBR shaders, procedural noise, procedural textures, lighting, terrain, animation curves, particles, audio attenuation + Doppler, rigid-body physics, and math/signal/control/biology/ballistics/ML kernels with explicit verification-contract metadata where available."
 readme = "README.md"
 license = { text = "MIT" }

@@ -8,7 +8,7 @@ import eml_stdlib
 
 
 def test_version_exposed() -> None:
-    assert eml_stdlib.__version__ == "0.4.0"
+    assert eml_stdlib.__version__ == "0.5.0"
 
 
 def test_categories_match_directory_layout() -> None:
@@ -48,7 +48,7 @@ def test_list_modules_filtered_by_category() -> None:
 def test_catalog_loadable_and_well_formed() -> None:
     cat = eml_stdlib.load_catalog()
     assert isinstance(cat, list)
-    assert len(cat) >= 168
+    assert len(cat) >= 183
     for entry in cat:
         assert {"category", "file", "module", "functions", "description", "source"} <= set(entry)
         assert isinstance(entry["functions"], list)
@@ -58,7 +58,7 @@ def test_catalog_minimum_verified_count() -> None:
     cat = eml_stdlib.load_catalog()
     verified = sum(1 for m in cat for f in m["functions"] if f["verified"])
     # Regression guard: never drop below v0.4 coverage (466).
-    assert verified >= 460, f"verified count regressed: {verified}"
+    assert verified >= 472, f"verified count regressed: {verified}"
 
 
 def test_ballistics_category_present() -> None:

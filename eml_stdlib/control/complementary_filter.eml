@@ -1,0 +1,65 @@
+// complementary_filter.eml -- IMU tilt estimation by gyro/accelerometer
+// sensor fusion (the workhorse of drones, self-balancing robots, phones).
+//
+// A gyroscope integrates cleanly over short horizons but DRIFTS without
+// bound; an accelerometer gives an absolute tilt from gravity but is noisy
+// and corrupted by linear acceleration. The complementary filter blends the
+// two with a single tuning weight α ∈ [0,1]:
+//
+//   θ_gyro⁺ = θ + ω·dt                       (integrate the gyro rate)
+//   θ⁺      = α·θ_gyro⁺ + (1-α)·θ_accel       (convex blend toward accel)
+//
+// α near 1 trusts the gyro (smooth, follows fast motion); α near 0 trusts
+// the accelerometer (drift-free, noisy). It is a one-line, division-free,
+// order-0 kernel -- ideal for a microcontroller ISR -- yet it is exactly a
+// 1-state steady-state Kalman filter, so it earns its place next to the
+// full 2D filter in this category.
+//
+// VERIFIED vs OUT-OF-REACH, stated honestly:
+//   * `fuse` carries an @verify(lean) contract that a convex blend of two
+//     NON-NEGATIVE estimates stays non-negative -- proven sorryAx-free by
+//     MachLib's sign closer (the `1-α ≥ 0` fact is discharged from α ≤ 1).
+//   * The STRONGER property -- interval preservation, θ⁺ ∈ [min,max] of the
+//     inputs, the anti-drift guarantee that is the filter's whole reason for
+//     existing -- is NOT claimed. It reduces to α(g-M)+(1-α)(a-M) ≤ 0, a
+//     convexity/nonpositivity goal the current positivity closers cannot
+//     discharge (empirically leaves a `sorry`). Left for a convexity tactic
+//     rather than asserted with a vacuous theorem.
+
+module complementary_filter;
+
+// Gyro dead-reckoning step: θ_gyro⁺ = θ + ω·dt.  Affine, and INTENTIONALLY
+// unverified -- integrating a rate has no bounded-output invariant to prove;
+// its unbounded drift is precisely what the fusion step below corrects.
+fn integrate(theta: Real, omega: Real, dt: Real) -> Real
+    where chain_order <= 0
+{
+    theta + omega * dt
+}
+
+// Convex blend of the gyro-integrated angle and the accelerometer angle:
+// θ⁺ = α·g + (1-α)·a.  Proven: for α ∈ [0,1] and non-negative inputs the
+// fused estimate is non-negative (a convex combination of non-negatives).
+@verify(lean, theorem = "complementary_fuse_nonneg")
+fn fuse(gyro_est: Real, accel_est: Real, alpha: Real) -> Real
+    where chain_order <= 0
+    requires (alpha >= 0.0)
+    requires (alpha <= 1.0)
+    requires (gyro_est >= 0.0)
+    requires (accel_est >= 0.0)
+    ensures (result >= 0.0)
+{
+    alpha * gyro_est + (1.0 - alpha) * accel_est
+}
+
+// One-shot tilt update: integrate the gyro then blend toward the
+// accelerometer, θ⁺ = α·(θ + ω·dt) + (1-α)·θ_accel.  The form embedded
+// filters actually run each IMU sample.
+fn fuse_tilt(theta: Real, omega: Real, accel_angle: Real,
+             alpha: Real, dt: Real) -> Real
+    where chain_order <= 0
+    requires (alpha >= 0.0)
+    requires (alpha <= 1.0)
+{
+    alpha * (theta + omega * dt) + (1.0 - alpha) * accel_angle
+}

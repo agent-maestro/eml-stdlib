@@ -1,0 +1,60 @@
+// ekf_range_bearing.eml -- Extended Kalman Filter measurement model for a
+// range/bearing sensor observing a known landmark from a 2D robot pose
+// (x, y, θ). The canonical EKF-SLAM / robot-localisation observation.
+//
+// A linear Kalman filter cannot use a range/bearing sensor: the measurement
+//   h(x) = [ √(Δx² + Δy²) ,  atan2(Δy, Δx) − θ ]   (Δx = lx−x, Δy = ly−y)
+// is NONLINEAR in the pose. The EXTENDED Kalman filter linearises it about
+// the current estimate with the measurement Jacobian H = ∂h/∂x, then reuses
+// the ordinary matrix update (see kalman2d_update_matrix.eml). Providing H
+// is the whole job of the EKF measurement model -- that is what this file is.
+//
+// The Jacobian rows are RATIONAL in (Δx, Δy, r) -- no atan2 needed for the
+// derivative even though the bearing measurement itself would be -- so they
+// lower to plain scalar arithmetic every Forge backend emits:
+//
+//   ∂range/∂(x,y)   = [ −Δx/r ,  −Δy/r ]         (unit vector, landmark→robot)
+//   ∂bearing/∂(x,y) = [  Δy/r² , −Δx/r² ]
+//   ∂bearing/∂θ     = −1                          (constant; omitted here)
+//
+// VERIFIED vs NUMERICAL, stated honestly:
+//   * `range` carries an @verify(lean) contract that the measured range is
+//     non-negative (a Euclidean distance) -- proven sorryAx-free.
+//   * The Jacobian rows are NUMERICALLY verified (cross-target vs a reference)
+//     but carry no proof contract: they divide by r (and r²), so a sound
+//     contract needs r>0 side conditions and division reasoning -- deferred,
+//     not asserted.
+
+module ekf_range_bearing;
+
+// Range measurement: r = √((lx−x)² + (ly−y)²).  A Euclidean distance, so
+// non-negative for ANY pose/landmark -- proven, not assumed.
+@verify(lean, theorem = "ekf_range_nonneg")
+fn range(x: Real, y: Real, lx: Real, ly: Real) -> Real
+    where chain_order <= 0
+    ensures (result >= 0.0)
+{
+    sqrt((lx - x)*(lx - x) + (ly - y)*(ly - y))
+}
+
+// Range row of the measurement Jacobian: ∂range/∂(x,y) = [−Δx/r, −Δy/r].
+// The unit vector pointing from the landmark toward the robot. Requires a
+// non-degenerate observation (robot not exactly on the landmark, r>0).
+fn range_jacobian(x: Real, y: Real, lx: Real, ly: Real) -> Vec<2>
+    where chain_order <= 0
+    requires ((lx - x)*(lx - x) + (ly - y)*(ly - y) > 0.0)
+{
+    [(x - lx) / sqrt((lx - x)*(lx - x) + (ly - y)*(ly - y)),
+     (y - ly) / sqrt((lx - x)*(lx - x) + (ly - y)*(ly - y))]
+}
+
+// Bearing row of the measurement Jacobian: ∂bearing/∂(x,y) = [Δy/r², −Δx/r²].
+// Rational in the deltas -- the bearing derivative needs no atan2. Requires
+// r²>0 (same non-degeneracy).
+fn bearing_jacobian(x: Real, y: Real, lx: Real, ly: Real) -> Vec<2>
+    where chain_order <= 0
+    requires ((lx - x)*(lx - x) + (ly - y)*(ly - y) > 0.0)
+{
+    [(ly - y) / ((lx - x)*(lx - x) + (ly - y)*(ly - y)),
+     (x - lx) / ((lx - x)*(lx - x) + (ly - y)*(ly - y))]
+}

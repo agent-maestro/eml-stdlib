@@ -1,0 +1,105 @@
+// kalman2d_update_matrix.eml -- 2-state Kalman filter, VECTOR-measurement
+// update step (the general matrix form).
+//
+// The sibling kalman2d_update.eml fuses ONE scalar channel at a time: its
+// innovation covariance S is a scalar, so the gain is a plain vector÷scalar
+// divide -- no matrix inverse. That is how most embedded filters run.
+//
+// This file is the GENERAL update: a full vector measurement z (Vec<2>)
+// with a matrix observation model H (Mat<2,2>) and a matrix measurement-
+// noise R (Mat<2,2>) fused in ONE step:
+//
+//   y = z - H·x                          (innovation, a Vec<2>)
+//   S = H·P·Hᵀ + R                       (innovation covariance, a Mat<2,2>)
+//   K = P·Hᵀ·S⁻¹                         (Kalman gain, a Mat<2,2>)
+//   x⁺ = x + K·y                         (state update)
+//   P⁺ = (I - K·H)·P                     (covariance update, textbook)
+//
+// The gain now needs a genuine MATRIX INVERSE of the 2×2 innovation
+// covariance. Forge lowers `inverse(...)` to the closed-form adjugate/det
+// (Cramer's rule) element expression, so the whole gain
+// `P * transpose(H) * inverse(H * P * transpose(H) + R)` lowers to flat
+// scalar arithmetic every backend emits -- regression-gated to ULP across
+// C / C++ / Rust / Java and cross-checked against numpy.
+//
+// PROVEN vs NUMERICAL, stated honestly:
+//   * innovation_cov and the Joseph covariance update carry @verify(lean)
+//     PSD contracts -- congruence-plus-PSD-noise, proven sorryAx-free for
+//     ANY input exactly as the predict step is.
+//   * gain_matrix is NUMERICALLY verified (cross-target + numpy) but NOT
+//     proof-verified: proving it needs det(S)≠0 side conditions and
+//     division reasoning, a separate and harder effort. No @verify is
+//     claimed on it rather than a vacuous one.
+
+module kalman2d_update_matrix;
+
+// Innovation (vector residual): y = z - H·x.
+fn innovation(H: Mat<2,2>, x: Vec<2>, z: Vec<2>) -> Vec<2>
+    where chain_order <= 0
+{
+    z - H * x
+}
+
+// Innovation covariance: S = H·P·Hᵀ + R.  A congruence H·P·Hᵀ (PSD when P
+// is) plus PSD measurement noise R -- so S is PSD for any input, proven the
+// same way the predict covariance is: zᵀ(H·P·Hᵀ + R)z = (Hᵀz)ᵀP(Hᵀz) + zᵀRz.
+@verify(lean, theorem = "kalman2d_innovation_cov_psd")
+fn innovation_cov(H: Mat<2,2>, P: Mat<2,2>, R: Mat<2,2>) -> Mat<2,2>
+    where chain_order <= 0
+    requires (psd(P))
+    requires (psd(R))
+    ensures (psd(result))
+{
+    H * P * transpose(H) + R
+}
+
+// Kalman gain (general form): K = P·Hᵀ·(H·P·Hᵀ + R)⁻¹.  The matrix inverse
+// of the innovation covariance -- the one place the vector-measurement
+// filter genuinely needs `inverse`. Requires a well-conditioned S (positive-
+// definite R guarantees it); no PSD/proof contract is claimed on the gain.
+fn gain_matrix(P: Mat<2,2>, H: Mat<2,2>, R: Mat<2,2>) -> Mat<2,2>
+    where chain_order <= 0
+    requires (psd(P))
+    requires (psd(R))
+{
+    P * transpose(H) * inverse(H * P * transpose(H) + R)
+}
+
+// State update: x⁺ = x + K·y  (K is now a matrix, so this is a matvec).
+fn update_state(x: Vec<2>, K: Mat<2,2>, y: Vec<2>) -> Vec<2>
+    where chain_order <= 0
+{
+    x + K * y
+}
+
+// Covariance update (fast textbook form): P⁺ = (I - K·H)·P = P - K·H·P.
+fn update_cov(P: Mat<2,2>, K: Mat<2,2>, H: Mat<2,2>) -> Mat<2,2>
+    where chain_order <= 0
+{
+    P - K * H * P
+}
+
+// Joseph-form factor A = I - K·H  (full 2×2; no identity literal needed).
+fn joseph_factor(K: Mat<2,2>, H: Mat<2,2>) -> Mat<2,2>
+    where chain_order <= 0
+{
+    [1.0 - (K[0][0]*H[0][0] + K[0][1]*H[1][0]),
+     0.0 - (K[0][0]*H[0][1] + K[0][1]*H[1][1]),
+     0.0 - (K[1][0]*H[0][0] + K[1][1]*H[1][0]),
+     1.0 - (K[1][0]*H[0][1] + K[1][1]*H[1][1])]
+}
+
+// Joseph-form covariance update: P⁺ = A·P·Aᵀ + W  (A = I - K·H,
+// W = K·R·Kᵀ). A congruence plus PSD noise -- provably PSD-preserving for
+// ANY gain, unconditionally on rounding, via zᵀ(A·P·Aᵀ + W)z =
+// (Aᵀz)ᵀP(Aᵀz) + zᵀWz. Identical structure to the scalar-measurement Joseph
+// step and to the predict step.
+@verify(lean, theorem = "kalman2d_matrix_joseph_psd")
+fn update_cov_joseph(A: Mat<2,2>, P: Mat<2,2>, W: Mat<2,2>) -> Mat<2,2>
+    where chain_order <= 0
+    requires (psd(P))
+    requires (psd(W))
+    ensures (psd(result))
+{
+    A * P * transpose(A) + W
+}
