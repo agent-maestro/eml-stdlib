@@ -2,6 +2,32 @@
 // range/bearing sensor observing a known landmark from a 2D robot pose
 // (x, y, θ). The canonical EKF-SLAM / robot-localisation observation.
 //
+// ⚠ NAME COLLISION -- IF YOU CAME HERE FOLLOWING THE rb-EKF SILICON TRAIL,
+// THIS IS THE WRONG FILE.
+//
+// A different kernel shares this filename. The reproduction trail (compiler-
+// derived Jacobian -> normalised form -> certified fixed-point lowering ->
+// emitted RTL -> silicon-capture replay, emission sha256 f47f6c81...) is built
+// on a 2-D RADAR TARGET TRACKER:
+//
+//     track(x0, x1) -> (sqrt(x0*x0 + x1*x1), atan(x1 / x0))
+//
+// 28 lines, sha256 31c4eedd44307984... (LF-normalised). It lives at:
+//
+//     github.com/agent-maestro/machlib
+//         reproduction/rb_ekf/kernel/ekf_range_bearing.eml
+//     upstream: forge/examples/ekf_range_bearing.eml @ 18c3851
+//
+// THIS file models a robot pose (x, y, θ) against a landmark -- 60 lines, a
+// different state vector, a different Jacobian, no silicon anchor. Emitting it
+// will not reproduce f47f6c81..., and the mismatch will not tell you why.
+//
+// Flagged rather than renamed: this file is referenced by name elsewhere, and a
+// rename would break working code to fix a documentation problem. Recorded
+// 2026-08-01, when a reproduction dry run walked the trail as a stranger and
+// found that searching public repositories for the source returns THIS file --
+// a plausible wrong answer, with nothing erroring.
+//
 // A linear Kalman filter cannot use a range/bearing sensor: the measurement
 //   h(x) = [ √(Δx² + Δy²) ,  atan2(Δy, Δx) − θ ]   (Δx = lx−x, Δy = ly−y)
 // is NONLINEAR in the pose. The EXTENDED Kalman filter linearises it about
