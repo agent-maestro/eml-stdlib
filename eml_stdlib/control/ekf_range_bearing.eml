@@ -31,7 +31,7 @@ module ekf_range_bearing;
 // non-negative for ANY pose/landmark -- proven, not assumed.
 @verify(lean, theorem = "ekf_range_nonneg")
 fn range(x: Real, y: Real, lx: Real, ly: Real) -> Real
-    where chain_order <= 0
+    where chain_order <= 1
     ensures (result >= 0.0)
 {
     sqrt((lx - x)*(lx - x) + (ly - y)*(ly - y))
@@ -41,7 +41,7 @@ fn range(x: Real, y: Real, lx: Real, ly: Real) -> Real
 // The unit vector pointing from the landmark toward the robot. Requires a
 // non-degenerate observation (robot not exactly on the landmark, r>0).
 fn range_jacobian(x: Real, y: Real, lx: Real, ly: Real) -> Vec<2>
-    where chain_order <= 0
+    where chain_order <= 1
     requires ((lx - x)*(lx - x) + (ly - y)*(ly - y) > 0.0)
 {
     [(x - lx) / sqrt((lx - x)*(lx - x) + (ly - y)*(ly - y)),

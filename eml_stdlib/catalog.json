@@ -1305,7 +1305,7 @@
       },
       {
         "name": "quat_normalize",
-        "chain_order": 0,
+        "chain_order": 1,
         "verified": true
       }
     ],
@@ -1386,12 +1386,12 @@
     "functions": [
       {
         "name": "range",
-        "chain_order": 0,
+        "chain_order": 1,
         "verified": true
       },
       {
         "name": "range_jacobian",
-        "chain_order": 0,
+        "chain_order": 1,
         "verified": false
       },
       {

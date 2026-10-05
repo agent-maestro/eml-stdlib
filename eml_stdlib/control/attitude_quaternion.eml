@@ -67,7 +67,7 @@ fn quat_rotate_vec(q: Vec<4>, v: Vec<3>) -> Vec<3>
 // -- the whole-vector unit-norm contract, sorryAx-free, at dimension 4.
 @verify(lean, theorem = "quat_normalize_unit")
 fn quat_normalize(q: Vec<4>) -> Vec<4>
-    where chain_order <= 0
+    where chain_order <= 1
     requires (dot(q, q) > 0.0)
     ensures (dot(result, result) == 1.0)
 {

@@ -111,11 +111,11 @@ Control — PID, Kalman, LQR, hysteresis, deadband.
 
 | File | Functions | Chain | Verified | Origin |
 |------|-----------|-------|----------|--------|
-| `attitude_quaternion.eml` | quat_mul, quat_conjugate, quat_rotate_vec, quat_normalize | 0 | 1/4 | **new** |
+| `attitude_quaternion.eml` | quat_mul, quat_conjugate, quat_rotate_vec, quat_normalize | 0,1 | 1/4 | **new** |
 | `bangbang.eml` | bangbang, bangbang_symmetric | 0 | 2/2 | **new** |
 | `complementary_filter.eml` | integrate, fuse, fuse_bounded, fuse_tilt | 0 | 2/4 | **new** |
 | `deadband.eml` | deadband, deadband_asymmetric | 0 | 2/2 | **new** |
-| `ekf_range_bearing.eml` | range, range_jacobian, bearing_jacobian | 0 | 1/3 | **new** |
+| `ekf_range_bearing.eml` | range, range_jacobian, bearing_jacobian | 0,1 | 1/3 | **new** |
 | `hysteresis.eml` | hysteresis_step | 0 | 1/1 | **new** |
 | `kalman2d_predict.eml` | predict_state, cov_predict | 0 | 1/2 | **new** |
 | `kalman2d_update.eml` | innovation, gain, update_state, … (+3) | 0 | 1/6 | **new** |
