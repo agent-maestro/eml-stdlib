@@ -8,7 +8,7 @@ import eml_stdlib
 
 
 def test_version_exposed() -> None:
-    assert eml_stdlib.__version__ == "0.5.0"
+    assert eml_stdlib.__version__ == "0.5.1"
 
 
 def test_categories_match_directory_layout() -> None:
